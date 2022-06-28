@@ -37,6 +37,7 @@ get_header();
 
                 </div>
             </div>
+            <div>
                 <img src="https://assets.website-files.com/5ec2a2f907dd528c95f3acd3/5ec46897405dcd1076e10506_ellipses-background-hero-01-radio-template.svg" alt="" class="bg-hero-ellipses-01">
             </div>
 
