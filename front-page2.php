@@ -55,6 +55,7 @@ get_header();
 
                 </div>
             </div>
+            <div>
                 <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/ellipses-background-hero-01.svg" alt="" class="bg-hero-ellipses-01">
             </div>
 
