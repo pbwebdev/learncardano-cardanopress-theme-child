@@ -166,16 +166,16 @@ li.nav-item{
 	margin-bottom: 1em;
 }
 
- .fa-youtube{
+.hero-cta .fa-youtube{
 	color: #c4302b;
 }
- .fa-spotify{
+.hero-cta .fa-spotify{
 	color: #1DB954;
 }
-.fa-apple{
+.hero-cta .fa-apple{
 	color: #d56dfb;
 }
- .fa-google{
+.hero-cta .fa-google{
 	color: #4285F4;
 }
 
