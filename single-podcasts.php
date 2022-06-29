@@ -19,19 +19,20 @@ get_header(); ?>
 
                     <div class="content-header py-5">
                         <div class="container">
-                            <div class="row">
-                                <div class="col-md-4">
+                            <div class="row px-4">
+                                <div class="col-md-4 col-sm-12">
                                     <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/learn-cardano-podcast-cover-360x360.jpg">
                                 </div>
-                                <div class="col-md-8  align-self-center">
+                                <div class="col-md-8 col-sm-12  align-self-center">
                                     <h1 class="entry-title"><?php the_title(); ?></h1>
                                     <div class="hero-host">
                                             <div class="hosted-wrapper">
                                                 <img src="https://pbs.twimg.com/profile_images/1524504182149234689/jZ-c0Dlq_400x400.jpg" alt="Peter Bui - Learn Cardano Podcast" class="hosted-picture float-start">
-                                                <p class="hosted-text">Hosted by Peter Bui </p>
-                                                <p class="episode-date"> <?php the_time('F jS, Y') ?></p>
+                                                <span class="hosted-text">Episode by Peter Bui</span> <span> on </span> <span class="episode-date"> <?php the_time('F jS, Y') ?></span>
                                             </div>
                                     </div>
+                                    <?php the_field('spreaker_code'); ?>
+                                    <span class="float-start share-title">Share</span> <div class="addthis_inline_share_toolbox"></div>
                                 </div>
                             </div>
                         </div>
@@ -40,7 +41,16 @@ get_header(); ?>
                     <div class="content-body py-5">
                         <div class="container">
                             <div class="row justify-content-md-center">
-                                <div class="col-md-8">
+                                <div class="col-lg-8 col-md-12">
+                                    <?php if( get_field('youtube_video') ): ?>
+                                        <div class="youtube-embed mb-2">
+                                            <h2>Watch on YouTube</h2>
+                                            <style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
+                                            <div class='embed-container'>
+                                                <iframe src='https://www.youtube.com/embed/<?php the_field('youtube_video'); ?>' frameborder='0' allowfullscreen></iframe>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
                                     <?php the_content(); ?>
                                 </div>
                             </div>
@@ -48,28 +58,26 @@ get_header(); ?>
                     </div>
 
 
-
-                    <?php
-                    $post_id = get_the_ID();
-                    $key = ThemePlate()->key;
-//                    $ids = array(
-//                        'dc_dream_notes',
-//                        'dc_dream_feelings',
-//                        'dc_dream_consult',
-//                        'dc_consultation_author',
-//                        'dc_consultation_content'
-//                    );
-
-
-                    ?>
-
-
-                    <div class="podcast-comments section">
+                    <div class="podcast-comments pt-5 section">
                         <div class="container">
                             <div class="row justify-content-md-center">
-                                <div class="col-md-8">
-                                    <h3>Comments</h3>
-                                    <?php comments_template(); ?>
+                                <div class="col-lg-10 col-md-12">
+                                    <h2>Comments</h2>
+                                    <?php
+
+                                    // If comments are open or we have at least one comment, load up the comment template.
+                                    if ( comments_open() || get_comments_number() ) :
+                                        comments_template();
+                                    endif;
+
+                                    the_post_navigation(
+                                        array(
+                                            'prev_text' => '<span class="screen-reader-text">' . __( 'Previous Post', 'learncardano' ) . '</span><span aria-hidden="true" class="nav-subtitle">' . __( 'Previous', 'learncardano' ) . '</span> <span class="nav-title"><span class="nav-title-icon-wrapper"> <<< </span>%title</span>',
+                                            'next_text' => '<span class="screen-reader-text">' . __( 'Next Post', 'learncardano' ) . '</span><span aria-hidden="true" class="nav-subtitle">' . __( 'Next', 'learncardano' ) . '</span> <span class="nav-title">%title<span class="nav-title-icon-wrapper"> >>> </span></span>',
+                                        )
+                                    );
+
+                                    ?>
                                 </div>
                             </div>
                         </div>
@@ -84,6 +92,6 @@ get_header(); ?>
 
     </div><!-- .content-sidebar.container -->
 
-    <script async src="https://widget.spreaker.com/widgets.js"></script>
+    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-62ba9bd8af362b8a"></script>
 
 <?php get_footer();
