@@ -204,8 +204,9 @@ li.nav-item{
 }
 
 .episode-image img {
-	width: 242px;
+	width: 100%;
 	height: auto;
+	margin-bottom: 1em;
 }
 .episode-tags .rounded-pill{
 	background: white;
@@ -231,8 +232,8 @@ li.nav-item{
 
 .about-home{
 	background: rgba(227,235,241,.6);
-	padding-top: 8em;
-	padding-bottom: 8em;
+	padding-top: 5rem;
+	padding-bottom: 5rem;
 }
 .about-home h2{
 	font-size: 1.5em;
@@ -243,6 +244,7 @@ li.nav-item{
 .about-image{
 	border: 5px white solid;
 	box-shadow: 0 8px 18px 0 rgb(0 0 0 / 3%);
+	width: 100%;
 }
 
 /* Mega footer block */
@@ -283,7 +285,10 @@ li.nav-item{
 }
 
 .platform-button {
-	width: 250px;
+	width: 240px;
+	height: 65px;
+	float:left;
+	margin-right:1em;
 	margin-bottom: 1em;
 	display: -webkit-box;
 	display: -webkit-flex;
@@ -330,14 +335,11 @@ a.navbar-brand{
 
 .socials ul{
 	list-style: none;
-	float: right;
 }
 .socials li{
-	list-style: none;
-	float: left;
 }
 .socials a{
-
+	float: left;
 }
 .socials a:hover{
 	color: #ccc !important;

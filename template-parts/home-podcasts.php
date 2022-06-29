@@ -8,10 +8,9 @@
  */
 
 $id = get_option( 'page_on_front' );
-//$title = get_post_meta( $id, 'dc_home_dreams_title', TRUE );
 $args = array (
     'post_type' => 'podcasts',
-    'posts_per_page' => 5
+    'posts_per_page' => 3
 );
 $query = new WP_Query( $args );
 

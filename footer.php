@@ -15,13 +15,15 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
         <div class="about-home">
             <div class="container col-10">
                 <div class="row">
-                    <div class="col align-self-center ">
+                    <div class="col align-self-center mb-3">
                         <h2>About Learn Cardano Podcast</h2>
                         <h3>Hi, I'm Peter, I've been podcasting since 2013</h3>
                         <p>After years of trading and learning about crypto, I decided that Cardano was my chain of choice
                             and put all my efforts into understanding everything about Cardano. Learn Cardano is where I share
                             all that I learn with you.</p>
-                        <a href="/about/" class="btn btn-primary">Learn more</a>
+                        <div class="text-center text-md-start">
+                            <a href="/about/" class="btn btn-primary">Learn more</a>
+                        </div>
                     </div>
                     <div class="col-md-5 offset-md-1 text-center">
                         <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/peter-bui-250x250.jpg"  alt="Peter Bui Cover" class="about-image" width="250">
@@ -46,35 +48,32 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
                         <?php if ( !function_exists('dynamic_sidebar') || !dynamic_sidebar("Footer Col 2") ) : ?>
                         <?php endif;?>
                     </div>
-                    <div class="col-md-5 row">
+                    <div class="col">
                         <h3>Subscribe</h3>
-                        <div class="col-md-6">
-                            <a href="https://youtube.com/learncardano/" title="Watch Learn Cardano Podcast on YouTube" class="platform-button" target="_blank" rel="noreferrer">
+                            <a href="https://youtube.com/learncardano/" title="Watch Learn Cardano Podcast on YouTube" class="platform-button float-start mr-1" target="_blank" rel="noreferrer">
                                 <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/youtube-watch.png" title="Watch on YouTube"  alt="Apple Podcasts">
                             </a>
 
-                            <a href="https://podcasts.apple.com/podcast/learn-cardano-podcast/id1560654454" title="Listen to the Learn Cardano Podcast on Apple Podcasts" class="platform-button" target="_blank" rel="noreferrer">
+                            <a href="https://podcasts.apple.com/podcast/learn-cardano-podcast/id1560654454" title="Listen to the Learn Cardano Podcast on Apple Podcasts" class="platform-button float-start mr-1" target="_blank" rel="noreferrer">
                                 <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/apple-podcasts.svg" title="Listen on Apple Podcasts"  alt="Apple Podcasts">
                             </a>
 
 
-                            <a href="https://open.spotify.com/show/11FpPiHPzivZoSOTgVcfgT" title="Listen to the Learn Cardano Podcast on Spotify" class="platform-button" target="_blank" rel="noreferrer">
+                            <a href="https://open.spotify.com/show/11FpPiHPzivZoSOTgVcfgT" title="Listen to the Learn Cardano Podcast on Spotify" class="platform-button  float-start mr-1" target="_blank" rel="noreferrer">
                                 <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/spotify.svg" title="Listen on Spotify"  alt="Spotify">
                             </a>
-                        </div>
-                        <div class="col-md-6">
-                            <a href="https://podcasts.google.com/feed/aHR0cHM6Ly93d3cuc3ByZWFrZXIuY29tL3Nob3cvNDg1NjIwNy9lcGlzb2Rlcy9mZWVk" title="Listen to the Learn Cardano Podcast on Google Podcasts" class="platform-button" target="_blank" rel="noreferrer">
+
+                            <a href="https://podcasts.google.com/feed/aHR0cHM6Ly93d3cuc3ByZWFrZXIuY29tL3Nob3cvNDg1NjIwNy9lcGlzb2Rlcy9mZWVk" title="Listen to the Learn Cardano Podcast on Google Podcasts" class="platform-button  float-start mr-1" target="_blank" rel="noreferrer">
                                 <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/google-podcasts.svg" title="Listen on Google Podcasts"  alt="Google Podcasts">
                             </a>
 
-                            <a href="https://www.iheart.com/podcast/53-learn-cardano-podcast-80684119/" title="Listen to the Learn Cardano Podcast on iHeart Radio" class="platform-button" target="_blank" rel="noreferrer">
+                            <a href="https://www.iheart.com/podcast/53-learn-cardano-podcast-80684119/" title="Listen to the Learn Cardano Podcast on iHeart Radio" class="platform-button  float-start mr-1" target="_blank" rel="noreferrer">
                                 <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/iheart.png" title="Listen on iHeart Radio"  alt="Google Podcasts">
                             </a>
 
-                            <a href="https://www.spreaker.com/show/learn-cardano-podcast" title="Listen to the Learn Cardano Podcast on Spreaker" class="platform-button" target="_blank" rel="noreferrer">
+                            <a href="https://www.spreaker.com/show/learn-cardano-podcast" title="Listen to the Learn Cardano Podcast on Spreaker" class="platform-button  float-start mr-1" target="_blank" rel="noreferrer">
                                 <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/spreaker.png" title="Listen on Google Podcasts"  alt="Google Podcasts">
                             </a>
-                        </div>
 
                     </div>
                 </div>
@@ -84,29 +83,31 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
 		<footer class="site-footer py-2 bg-dark text-light">
 			<div class="container">
 				<div class="row">
-                    <div class="col-3 logo"><img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/microphone-white.png" title="Learn Cardano" alt="Learn Cardano" width="20" class="mx-1" > Learn Cardano</div>
-                    <div class="col-6 copyright text-center">
+                    <div class="col-sm-3 d-none d-sm-none d-md-none d-lg-block logo mb-2">
+                        <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/microphone-white.png" title="Learn Cardano" alt="Learn Cardano" width="20" class="mx-1" > Learn Cardano
+                    </div>
+                    <div class="col-md-6 copyright text-center mb-2">
                         <small>Copyright &copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="text-light"><?php bloginfo( 'name' ); ?></a></small> -
                         <span class="small">Powered by <a href="<?php echo esc_url( $theme->get( 'AuthorURI' ) ); ?>" class="text-light"><?php echo esc_html( $theme->get( 'Author' ) ); ?></a>.</span>
                     </div>
-                    <div class="col-3 socials">
+                    <div class="col-md-6 col-lg-3 socials mb-2 text-md-end">
                         <ul>
-                            <li class="mx-1"><a href="https://www.facebook.com/LearnCardano" title="Learn Cardano on Facebook" target="_blank" rel="noreferrer"><span class="fa-brands fa-facebook fa-xl"></span> </a></li>
-                            <li class="mx-1"><a href="https://twitter.com/LearnCardano" title="Learn Cardano on Twitter" target="_blank" rel="noreferrer"><span class="fa-brands fa-twitter fa-xl"></span> </a></li>
-                            <li class="mx-1"><a href="https://www.youtube.com/learncardano" title="Learn Cardano on YouTube" target="_blank" rel="noreferrer"><span class="fa-brands fa-youtube fa-xl"></span> </a></li>
-                            <li class="mx-1"><a href="https://open.spotify.com/show/11FpPiHPzivZoSOTgVcfgT" title="Learn Cardano on Spotify" target="_blank" rel="noreferrer"><span class="fa-brands fa-spotify fa-xl"></span> </a></li>
-                            <li class="mx-1"><a href="https://discord.gg/V6mZGYUPNW" title="Learn Cardano Discord Community" target="_blank" rel="noreferrer"><span class="fa-brands fa-discord fa-xl"></span> </a></li>
+                            <li><a class="pe-1"  href="https://www.facebook.com/LearnCardano" title="Learn Cardano on Facebook" target="_blank" rel="noreferrer"><span class="fa-brands fa-facebook fa-xl"></span> </a></li>
+                            <li><a class="pe-1"  href="https://twitter.com/LearnCardano" title="Learn Cardano on Twitter" target="_blank" rel="noreferrer"><span class="fa-brands fa-twitter fa-xl"></span> </a></li>
+                            <li><a class="pe-1"  href="https://www.youtube.com/learncardano" title="Learn Cardano on YouTube" target="_blank" rel="noreferrer"><span class="fa-brands fa-youtube fa-xl"></span> </a></li>
+                            <li><a class="pe-1"  href="https://open.spotify.com/show/11FpPiHPzivZoSOTgVcfgT" title="Learn Cardano on Spotify" target="_blank" rel="noreferrer"><span class="fa-brands fa-spotify fa-xl"></span> </a></li>
+                            <li><a class="pe-1" href="https://discord.gg/V6mZGYUPNW" title="Learn Cardano Discord Community" target="_blank" rel="noreferrer"><span class="fa-brands fa-discord fa-xl"></span> </a></li>
                         </ul>
                     </div>
                 </div>
 			</div>
-		</footer><!-- .site-footer -->
+		</footer>
+<!-- .site-footer -->
 
 		<?php wp_footer(); ?>
 
-<!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">-->
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/fontawesome.min.css" integrity="sha384-zIaWifL2YFF1qaDiAo0JFgsmasocJ/rqu7LKYH8CoBEXqGbb9eO+Xi3s6fQhgFWM" crossorigin="anonymous">
-<!--<link rel="stylesheet" href="/wp-content/themes/cardanopress-bootstrap-theme/assets/css/cardanopress-bootstrap.css">-->
 <link rel='stylesheet' id='cardanopress-bootstrap-child-theme'  href='/wp-content/themes/learncardano-cardanopress-theme-child/style.css' media='all' />
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js" integrity="sha512-6PM0qYu5KExuNcKt5bURAoT6KCThUmHRewN3zUFNaoI6Di7XJPTMoT6K0nsagZKk2OB4L7E3q1uQKHNHd4stIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
