@@ -285,10 +285,10 @@ li.nav-item{
 }
 
 .platform-button {
-	width: 240px;
+	width: 230px;
 	height: 65px;
 	float:left;
-	margin-right:1em;
+	margin-right:0.5em;
 	margin-bottom: 1em;
 	display: -webkit-box;
 	display: -webkit-flex;

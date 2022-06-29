@@ -11,7 +11,6 @@ get_header();
 
 ?>
     <main class="<?php echo cardanopress_bootstrap_class( 'content-full' ); ?>">
-
         <div class="section hero-v2 wf-section">
             <div class="container col-10-md">
                 <div class="hero-wrapper">
@@ -35,9 +34,7 @@ get_header();
                 </div>
                 <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/ellipses-background-hero-01.svg" alt="" class="bg-hero-ellipses-01">
             </div>
-
         </div>
-
         <div class="latest section">
             <div class="container">
                 <div class="row latest-intro justify-content-md-center">
@@ -57,24 +54,16 @@ get_header();
                         </div>
                     </div>
                 </div>
-
                 <div class="episode-list ">
-
                     <div class="row  justify-content-md-center">
                         <div class="col-md-10">
-
                             <?php get_template_part( 'template-parts/home', 'podcasts' ); ?>
-
                         </div>
                     </div>
-
                 </div>
-
-
                 <div class="episode-cta  text-center">
                     <a href="/podcasts/" class="btn-secondary btn">All episodes</a>
                 </div>
-
             </div>
         </div>
 
