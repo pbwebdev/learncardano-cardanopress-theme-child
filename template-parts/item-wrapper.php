@@ -24,14 +24,8 @@ $tags     = get_the_term_list( false, ( 'podcasts' === $post_type ? 'ptag' : 'po
             <div class="row">
                 <div class="col-md-3 episode-image align-self-start">
                     <?php if ( has_post_thumbnail() ) : ?>
-                        <?php the_post_thumbnail(); ?>
+                        <?php the_post_thumbnail('thumbnail', ['class' => 'img-responsive responsive--full', 'title' => 'Podcast cover image']);; ?>
                     <?php endif; ?>
-
-<!--                    --><?php //if (get_the_post_thumbnail_url()) : ?>
-<!--                        <img src="--><?php //echo get_the_post_thumbnail_url( $the_query->ID, array( 488, 488) ); ?><!--"  alt="Podcast Cover" class="episode-image float-start">-->
-<!--                    --><?php //else: ?>
-<!--                        <img src="--><?php //echo get_theme_root_uri(); ?><!--/learncardano-cardanopress-theme-child/images/learn-cardano-founders-cover-488x488.jpg"  alt="Radio Podcast Cover - Radio Webflow Template" class="episode-image float-start">-->
-<!--                    --><?php //endif; ?>
                 </div>
                 <div class="col-md-8 offset-md-1 episode-details">
 
@@ -42,7 +36,6 @@ $tags     = get_the_term_list( false, ( 'podcasts' === $post_type ? 'ptag' : 'po
 
                         <div class="episode-date col text-end"> <?php the_time('F jS, Y') ?></div>
                     </div>
-
 
                     <div class="episode-title">
                         <h3 id="post-<?php the_ID(); ?>">
@@ -55,14 +48,12 @@ $tags     = get_the_term_list( false, ( 'podcasts' === $post_type ? 'ptag' : 'po
                     </div>
                     <a href="<?php the_permalink() ?>" class="btn btn-primary"  rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>">
                         <span class="fa fa-play"></span> Play episode
-                    </a> <span class="btn-secondary btn"><span class="fa fa-comment"></span> <?php printf( _n( '%d comment', '%d comments', get_comments_number(), 'learncardano' ), get_comments_number() ); ?></span>
+                    </a>
 
                 </div>
             </div>
 
         </div>
 
-<!--            <div class="author">--><?php //printf( '<a href="%s">%s %s</a>', get_author_posts_url( get_the_author_meta( 'ID' ) ), wp_get_attachment_image( $image_id, array( 48, 48 ) ), get_the_author() ); ?><!--</div>-->
-<!--            <div class="category">--><?php //printf( '<a href="%s">%s</a>', get_term_link( $category[0]->term_id ), $category[0]->name ); ?><!--</div>-->
-
-</article><!-- #single-<?php the_ID(); ?> -->
+</article>
+<!-- #single-<?php the_ID(); ?> -->
