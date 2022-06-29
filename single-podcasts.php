@@ -40,7 +40,7 @@ get_header(); ?>
                         </div>
                     </div>
 
-                    <div class="content-body pb-5">
+                    <div class="content-body py-4">
                         <div class="container">
                             <div class="row justify-content-md-center">
                                 <div class="col-lg-8 col-md-12">
