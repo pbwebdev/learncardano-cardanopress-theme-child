@@ -29,7 +29,7 @@ h1,  .navbar-brand{
 	-webkit-text-fill-color: transparent;
 }
 h1{
-	font-size: 60px;
+	font-size: 2.5em;
 	line-height: 1em;
 }
 a {
@@ -359,6 +359,19 @@ a.navbar-brand{
 }
 .addthis_inline_share_toolbox{
 	float: left;
+}
+
+.podcast-episode{
+
+}
+.podcast-episode h2,
+.podcast-episode h3{
+	margin-top:2em;
+	margin-bottom: 0.5em;
+}
+.podcast-episode img.cover{
+	width: 100%;
+	height: auto;
 }
 
 /* COMMENTS */

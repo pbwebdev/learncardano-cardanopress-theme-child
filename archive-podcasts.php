@@ -35,10 +35,6 @@ get_header();
 
                             <?php if ( have_posts() ) : ?>
                                 <?php while ( have_posts() ) : the_post(); ?>
-
-
-
-
                                     <article id="<?php echo $post_type . '-' . get_the_ID(); ?>" class="">
 
                                         <div class="episode-card">

@@ -10,7 +10,7 @@
 
 get_header(); ?>
 
-    <div class="content-sidebar">
+    <div class="podcast-episode">
         <main class="content" role="main">
 
             <?php while ( have_posts() ) : the_post(); ?>
@@ -19,26 +19,28 @@ get_header(); ?>
 
                     <div class="content-header py-5">
                         <div class="container">
-                            <div class="row px-4">
-                                <div class="col-md-4 col-sm-12">
-                                    <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/learn-cardano-podcast-cover-360x360.jpg">
+                            <div class="row">
+                                <div class="col-md-3 text-center d-none d-sm-none d-md-block">
+                                    <?php if ( has_post_thumbnail() ) : ?>
+                                        <?php the_post_thumbnail('medium', ['class' => 'cover img-responsive responsive--full', 'title' => 'Podcast cover image']);; ?>
+                                    <?php endif; ?>
                                 </div>
-                                <div class="col-md-8 col-sm-12  align-self-center">
+                                <div class="offset-md-1 col-md-8 col-sm-12  align-self-center">
                                     <h1 class="entry-title"><?php the_title(); ?></h1>
                                     <div class="hero-host">
                                             <div class="hosted-wrapper">
-                                                <img src="https://pbs.twimg.com/profile_images/1524504182149234689/jZ-c0Dlq_400x400.jpg" alt="Peter Bui - Learn Cardano Podcast" class="hosted-picture float-start">
-                                                <span class="hosted-text">Episode by Peter Bui</span> <span> on </span> <span class="episode-date"> <?php the_time('F jS, Y') ?></span>
+                                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/peter-bui-55x55.jpg" alt="Peter Bui - Learn Cardano Podcast" class="hosted-picture float-start">
+                                                <p class="hosted-text">Episode by Peter Bui on <span class="episode-date"> <?php the_time('F jS, Y') ?></span></p>
                                             </div>
                                     </div>
                                     <?php the_field('spreaker_code'); ?>
-                                    <span class="float-start share-title">Share</span> <div class="addthis_inline_share_toolbox"></div>
+                                    <p class="float-start share-title">Share <div class="addthis_inline_share_toolbox"></div></p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="content-body py-5">
+                    <div class="content-body pb-5">
                         <div class="container">
                             <div class="row justify-content-md-center">
                                 <div class="col-lg-8 col-md-12">
