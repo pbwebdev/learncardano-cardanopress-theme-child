@@ -47,7 +47,9 @@ h2{
 .primary{
 	color: #0070ff;
 }
-
+.btn{
+	padding: 0.75rem 1rem
+}
 .btn-primary{
 	background: rgb(220,16,255);
 	background: linear-gradient(90deg, rgba(220,16,255,1) 0%, rgba(0,112,255,1) 100%);
@@ -218,6 +220,11 @@ li.nav-item{
 	color: white !important;
 	border: 2px solid #dc10ff;
 }
+.episode-tags .rounded-pill:hover a{
+	background: #dc10ff;
+	color: white !important;
+	/*border: 2px solid #dc10ff;*/
+}
 .episode-tags a{
 	text-decoration: none;
 	color: #dc10ff;
@@ -244,7 +251,7 @@ li.nav-item{
 .about-image{
 	border: 5px white solid;
 	box-shadow: 0 8px 18px 0 rgb(0 0 0 / 3%);
-	width: 100%;
+	max-width: 100%;
 }
 
 /* Mega footer block */
@@ -343,6 +350,11 @@ a.navbar-brand{
 }
 .socials a:hover{
 	color: #ccc !important;
+}
+
+
+.podcast-category .latest {
+	padding-top:1em;
 }
 
 
