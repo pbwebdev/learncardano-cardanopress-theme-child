@@ -52,7 +52,7 @@ ThemePlate()->post_type(
             'menu_icon'       => 'dashicons-controls-play',
             'capability_type' => 'post',
             'hierarchical'    => false,
-            'supports'        => array( 'title', 'editor', 'thumbnail' ),
+            'supports'        => array( 'title', 'editor', 'thumbnail', 'excerpt', 'comments', 'author' ),
             'has_archive'     => true,
             'rewrite'         => array(
                 'slug'       => 'podcasts',
@@ -106,3 +106,72 @@ if ( ! function_exists( 'lc_page_tags' ) ) {
     }
     add_action( 'init', 'lc_page_tags' );
 }
+
+
+
+if( function_exists('acf_add_local_field_group') ):
+
+    acf_add_local_field_group(array(
+        'key' => 'group_62ba92870d1cc',
+        'title' => 'Podcast Episode Meta',
+        'fields' => array(
+            array(
+                'key' => 'field_62ba92a41d393',
+                'label' => 'Spreaker Code',
+                'name' => 'spreaker_code',
+                'type' => 'text',
+                'instructions' => 'Single line Spreaker JS code',
+                'required' => 0,
+                'conditional_logic' => 0,
+                'wrapper' => array(
+                    'width' => '',
+                    'class' => '',
+                    'id' => '',
+                ),
+                'default_value' => '',
+                'placeholder' => '',
+                'prepend' => '',
+                'append' => '',
+                'maxlength' => '',
+            ),
+            array(
+                'key' => 'field_62ba92de1d394',
+                'label' => 'YouTube Video',
+                'name' => 'youtube_video',
+                'type' => 'text',
+                'instructions' => 'Just the video ID',
+                'required' => 0,
+                'conditional_logic' => 0,
+                'wrapper' => array(
+                    'width' => '',
+                    'class' => '',
+                    'id' => '',
+                ),
+                'default_value' => '',
+                'placeholder' => '',
+                'prepend' => '',
+                'append' => '',
+                'maxlength' => '',
+            ),
+        ),
+        'location' => array(
+            array(
+                array(
+                    'param' => 'post_type',
+                    'operator' => '==',
+                    'value' => 'podcasts',
+                ),
+            ),
+        ),
+        'menu_order' => 0,
+        'position' => 'normal',
+        'style' => 'default',
+        'label_placement' => 'top',
+        'instruction_placement' => 'label',
+        'hide_on_screen' => '',
+        'active' => true,
+        'description' => '',
+        'show_in_rest' => 0,
+    ));
+
+endif;
