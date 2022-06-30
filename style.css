@@ -168,10 +168,15 @@ li.nav-item{
 }
 .hero-host{
 	margin-bottom: 1em;
+	margin-right: 0.5em;
 }
 
+.hero-cta img{
+	max-width: 40px;
+}
 .hero-cta .fa-youtube{
 	color: #c4302b;
+	width: 40px;
 }
 .hero-cta .fa-spotify{
 	color: #1DB954;
