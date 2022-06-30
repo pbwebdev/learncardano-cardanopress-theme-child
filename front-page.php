@@ -28,7 +28,35 @@ get_header();
                             <p>Keep up to date with core Cardano news, projects, development and ideas coming from the Cardano Community. For beginners to experts wanting to know more about Cardano & blockchain technology.</p>
                         </div>
                         <div class="hero-cta">
-                            <a class="btn btn-primary" href="#footer-links">Subscribe</a>
+                            <a class="btn btn-primary  dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                Subscribe
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <li>
+                                    <span class="fa-brands fa-youtube fa-xl"></span>
+                                    <a class="dropdown-item" href="https://youtube.com/learncardano/" target="_blank">
+                                        YouTube
+                                    </a>
+                                </li>
+                                <li>
+                                    <span class="fa-brands fa-spotify fa-xl"></span>
+                                    <a class="dropdown-item" href="https://open.spotify.com/show/11FpPiHPzivZoSOTgVcfgT" target="_blank">
+                                        Spotify
+                                    </a>
+                                </li>
+                                <li>
+                                    <span class="fa-brands fa-apple fa-xl"></span>
+                                    <a class="dropdown-item" href="https://podcasts.apple.com/podcast/learn-cardano-podcast/id1560654454" target="_blank">
+                                        Apple Podcasts
+                                    </a>
+                                </li>
+                                <li>
+                                    <span class="fa-brands fa-google fa-xl"></span>
+                                    <a class="dropdown-item" href="https://podcasts.google.com/feed/aHR0cHM6Ly93d3cuc3ByZWFrZXIuY29tL3Nob3cvNDg1NjIwNy9lcGlzb2Rlcy9mZWVk" target="_blank">
+                                        Google Podcasts
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
