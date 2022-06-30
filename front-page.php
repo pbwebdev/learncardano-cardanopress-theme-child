@@ -28,7 +28,7 @@ get_header();
                             <p>Keep up to date with core Cardano news, projects, development and ideas coming from the Cardano Community. For beginners to experts wanting to know more about Cardano & blockchain technology.</p>
                         </div>
                         <div class="hero-cta">
-                            <a class="btn btn-primary  dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                            <a class="btn btn-primary  dropdown-toggle" href="#" role="button" id="dropdownMenuLink">
                                 Subscribe
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
