@@ -23,9 +23,11 @@ $tags     = get_the_term_list( false, ( 'podcasts' === $post_type ? 'ptag' : 'po
 
             <div class="row">
                 <div class="col-md-3 episode-image align-self-start d-none d-xs-none d-sm-none d-md-block">
-                    <?php if ( has_post_thumbnail() ) : ?>
+                    <?php if ( has_post_thumbnail() ) { ?>
                         <?php the_post_thumbnail('medium', ['class' => 'img-responsive responsive--full', 'title' => 'Podcast cover image']);; ?>
-                    <?php endif; ?>
+                    <?php } else { ?>
+                        <img src="<?php echo CARDANOPRESS_BOOTSTRAP_THEME_URL; ?>assets/images/learn-cardano-podcast-cover.jpg" class="img-responsive responsive--full" title="Podcast cover image">
+                    <?php } ?>
                 </div>
                 <div class="col-md-8 offset-md-1 episode-details">
 
