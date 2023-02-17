@@ -117,30 +117,34 @@ if( function_exists('acf_add_local_field_group') ):
         'fields' => array(
             array(
                 'key' => 'field_62ba92a41d393',
-                'label' => 'Spreaker Code',
+                'label' => 'Embed Code',
                 'name' => 'spreaker_code',
+                'aria-label' => '',
                 'type' => 'text',
-                'instructions' => 'Single line Spreaker JS code',
-                'required' => 0,
+                'instructions' => 'Inline code for embed
+    
+    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/episode/3Qf2wWqpPwecaiCNOQYxwH?utm_source=generator" width="100%" height="100" frameBorder="0" allowfullscreen="" allow="clipboard-write; encrypted-media; fullscreen" loading="lazy"></iframe>',
+                'required' => 1,
                 'conditional_logic' => 0,
                 'wrapper' => array(
                     'width' => '',
                     'class' => '',
                     'id' => '',
                 ),
-                'default_value' => '',
+                'default_value' => '<iframe style="border-radius:12px" src="https://open.spotify.com/embed/episode/3Qf2wWqpPwecaiCNOQYxwH?utm_source=generator" width="100%" height="100" frameBorder="0" allowfullscreen="" allow="clipboard-write; encrypted-media; fullscreen" loading="lazy"></iframe>',
+                'maxlength' => '',
                 'placeholder' => '',
                 'prepend' => '',
                 'append' => '',
-                'maxlength' => '',
             ),
             array(
                 'key' => 'field_62ba92de1d394',
                 'label' => 'YouTube Video',
                 'name' => 'youtube_video',
+                'aria-label' => '',
                 'type' => 'text',
                 'instructions' => 'Just the video ID',
-                'required' => 0,
+                'required' => 1,
                 'conditional_logic' => 0,
                 'wrapper' => array(
                     'width' => '',
@@ -148,10 +152,10 @@ if( function_exists('acf_add_local_field_group') ):
                     'id' => '',
                 ),
                 'default_value' => '',
+                'maxlength' => '',
                 'placeholder' => '',
                 'prepend' => '',
                 'append' => '',
-                'maxlength' => '',
             ),
         ),
         'location' => array(
@@ -173,8 +177,8 @@ if( function_exists('acf_add_local_field_group') ):
         'description' => '',
         'show_in_rest' => 0,
     ));
-
-endif;
+    
+    endif;		
 
 
 function cardanopress_child_bootstrap_class( string $key ): string {
