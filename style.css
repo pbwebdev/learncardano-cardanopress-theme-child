@@ -443,6 +443,17 @@ a.navbar-brand{
 	transition: all linear .3s;
 }
 
+.rank-math-block{
+	background: rgba(227,235,241,.6);
+	margin: 2em 0;
+	padding: 1em;
+}
+
+.rank-math-block h2, .rank-math-block h3{
+	margin: 2em 0 1em;
+}
+
+
 .rank-math-howto-description img, .rank-math-step-content img{
 	width: 100%;
 	height: auto;
