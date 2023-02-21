@@ -459,3 +459,19 @@ a.navbar-brand{
 	height: auto;
 	margin:0 0 1em;
 }
+
+.gform_button{
+	background: rgb(220,16,255);
+	background: linear-gradient(90deg, rgba(220,16,255,1) 0%, rgba(0,112,255,1) 100%);
+	color: white;
+	border: 2px solid #fff;
+	-webkit-transition: all linear .3s;
+	-o-transition: all linear .3s;
+	transition: all linear .3s;
+	padding: 0.75rem 1rem;
+}
+.gform_button:hover{
+	background: white;
+	border: rgb(220,16,255) 2px solid;
+	color: rgb(220,16,255);
+}
