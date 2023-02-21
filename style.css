@@ -442,3 +442,8 @@ a.navbar-brand{
 	-o-transition: all linear .3s;
 	transition: all linear .3s;
 }
+
+.rank-math-howto-description image{
+	width: 100%;
+	height: auto;
+}
