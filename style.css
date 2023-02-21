@@ -443,7 +443,8 @@ a.navbar-brand{
 	transition: all linear .3s;
 }
 
-.rank-math-howto-description img{
+.rank-math-howto-description img, .rank-math-step-content img{
 	width: 100%;
 	height: auto;
+	margin:0 0 1em;
 }
