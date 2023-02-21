@@ -474,4 +474,10 @@ a.navbar-brand{
 	background: white;
 	border: rgb(220,16,255) 2px solid;
 	color: rgb(220,16,255);
+	-webkit-transition: all linear .3s;
+	-o-transition: all linear .3s;
+	transition: all linear .3s;
+	-webkit-transform: translate(0px, -3px);
+	-ms-transform: translate(0px, -3px);
+	transform: translate(0px, -3px);
 }
