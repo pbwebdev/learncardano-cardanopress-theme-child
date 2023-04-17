@@ -13,7 +13,6 @@
 
 <div x-data="poolDelegation">
 
-    <div class="py-6">
     <div class="entry-wrap">
         <header class="entry-header">
             <h1 class="entry-title"><?php the_title(); ?></h1>
