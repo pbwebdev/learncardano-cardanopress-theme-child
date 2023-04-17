@@ -21,9 +21,11 @@ get_header(); ?>
                         <div class="container">
                             <div class="row">
                                 <div class="col-md-3 text-center d-none d-sm-none d-md-block">
-                                    <?php if ( has_post_thumbnail() ) : ?>
+                                    <?php if ( has_post_thumbnail() ) { ?>
                                         <?php the_post_thumbnail('medium', ['class' => 'cover img-responsive responsive--full', 'title' => 'Podcast cover image']);; ?>
-                                    <?php endif; ?>
+                                    <?php } else { ?>
+                                        <img src="https://learncardano.io/wp-content/uploads/2022/06/learn-cardano-podcast-cover-360x360-1-242x242.jpg" alt="Peter Bui Cover" class="about-image" width="250">
+                                    <?php }  ?>
                                 </div>
                                 <div class="offset-md-1 col-md-8 col-sm-12  align-self-center">
                                     <h1 class="entry-title"><?php the_title(); ?></h1>
