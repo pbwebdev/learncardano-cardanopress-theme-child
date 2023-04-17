@@ -18,13 +18,7 @@ get_header();
 			<?php while ( have_posts() ) : ?>
 				<?php the_post(); ?>
 
-				<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-
-					<?php if ( has_post_thumbnail() ) : ?>
-						<div class="entry-featured">
-							<?php the_post_thumbnail(); ?>
-						</div>
-					<?php endif; ?>
+				<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>					
 
 					<div class="entry-wrap">
 						<header class="entry-header">
