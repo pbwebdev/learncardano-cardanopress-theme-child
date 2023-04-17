@@ -16,7 +16,7 @@ get_header();
     <div class="container">
         <div class="row justify-content-md-center">
             <div class="col-md-8 text-center">
-                <h1>Tutorials & Articles</h1>
+                <h1>Courses</h1>
                 <p></p>
             </div>
         </div>
@@ -30,22 +30,23 @@ get_header();
 
                 <div class="episode-list ">
 
-                    <div class="row  justify-content-md-center">
-                        <div class="col-md-10">
+                    <div class="row  justify-content-md-start">                        
 
                             <?php if ( have_posts() ) : ?>
                                 <?php while ( have_posts() ) : the_post(); ?>
-                                    <article id="<?php echo $post_type . '-' . get_the_ID(); ?>" class="">
+                                    <article id="<?php echo $post_type . '-' . get_the_ID(); ?>" class="col-md-4">
 
                                         <div class="episode-card">
 
                                             <div class="row">
-                                                <div class="col-md-3 episode-image align-self-start">
+                                                <div class="col-md-12 episode-image align-self-start">
+                                                <a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>">
                                                     <?php if ( has_post_thumbnail() ) : ?>
                                                         <?php the_post_thumbnail(); ?>
                                                     <?php endif; ?>
+                                                    </a>
                                                 </div>
-                                                <div class="col-md-8 offset-md-1 episode-details">
+                                                <div class="col-md-12 episode-details">
 
                                                     <div class="row metadata">
                                                         <div class="episode-tags col">
@@ -65,10 +66,7 @@ get_header();
                                                     <div class="episode-excerpt">
                                                         <?php the_excerpt(); ?>
                                                     </div>
-                                                    <a href="<?php the_permalink() ?>" class="btn btn-primary"  rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>">
-                                                        <span class="fa fa-play"></span> Play episode
-                                                    </a> <a  href="<?php the_permalink() ?>#comments"  class="btn-secondary btn"><span class="fa fa-comment"></span> <?php printf( _n( '%d comment', '%d comments', get_comments_number(), 'learncardano' ), get_comments_number() ); ?></a>
-
+                                                    
                                                 </div>
                                             </div>
 
@@ -84,8 +82,7 @@ get_header();
                                 <?php the_posts_pagination(); ?>
 
                             <?php endif; ?>
-
-                        </div>
+                        
                     </div>
 
                 </div>
