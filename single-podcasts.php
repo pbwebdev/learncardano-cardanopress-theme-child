@@ -56,7 +56,16 @@ get_header(); ?>
                                         </div>
                                     <?php endif; ?>
                                     <?php the_content(); ?>
+									
+									<?php if (get_field('text_transcript')) : ?>
+										<h2>Text Transcript</h2>
+										<div id="text_transcript" style="width: 100%; display: block; height: 250px; overflow:auto;">
+											<?php the_field('text_transcript'); ?>
+										</div>
+									<?php endif; ?>
+									
                                 </div>
+								
                             </div>
                         </div>
                     </div>
