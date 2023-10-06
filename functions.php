@@ -188,3 +188,16 @@ function cardanopress_child_bootstrap_class( string $key ): string {
 
     return $class_string;
 }
+
+add_filter( 'comment_form_defaults', function( $fields ) {
+	
+	if ( !is_user_logged_in() ) :
+	
+    $fields['must_log_in'] = sprintf( 
+            __(do_shortcode('[learndash_login login_label=" You must be logged in to post a comment."]')), wp_registration_url(), wp_login_url( apply_filters( 'the_permalink', get_permalink() ) )   
+    );
+
+    return $fields;
+	
+	endif;
+});
