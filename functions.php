@@ -201,3 +201,38 @@ add_filter( 'comment_form_defaults', function( $fields ) {
 	
 	endif;
 });
+
+add_filter( 'get_comment_author', function (  $author, $comment_ID, $comment )
+{
+    // Get the current post object
+    $post = get_post();
+
+    // The user ids are the same, lets append our extra text
+	if(strlen($author) >= 10) {
+		$author = substr($author, 0, 5)."...";
+	} else {
+		$author = $author;
+	}
+    
+    return $author;
+}, 10, 3 );
+
+add_action('init', 'enable_proposal_comments');
+function enable_proposal_comments() {
+	add_post_type_support( 'proposal', 'comments' );
+}
+
+
+function wpb_modify_jquery() {
+    // Check if front-end is being viewed
+    if (!is_admin()) {
+        // Remove default WordPress jQuery
+        wp_deregister_script('jquery');
+        // Register new jQuery script via Google Library
+        wp_register_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js', false, '3.6.0');
+        // Enqueue the script
+        wp_enqueue_script('jquery');
+    }
+}
+// Execute the action when WordPress is initialized
+add_action('init', 'wpb_modify_jquery');

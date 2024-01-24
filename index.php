@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The main template file
+ * The template for displaying pages
  *
  * @package CardanoPress Bootstrap
  * @since 0.1.0
@@ -10,58 +10,89 @@
 get_header();
 
 ?>
-<?php get_template_part( 'template-parts/global', 'banner' ); ?>
 
-<div class="container">
-	<div class="content-sidebar row">
-		<main class="<?php echo cardanopress_child_bootstrap_class( 'content' ); ?> py-5">
 
-			<?php if ( have_posts() ) : ?>
-				<?php while ( have_posts() ) : ?>
-					<?php the_post(); ?>
+<div class="archive-header py-5">
+    <div class="container">
+        <div class="row justify-content-md-center">
+            <div class="col-md-8 text-center">
+                <h1>Cardano Resources & Tutorials</h1>
+            </div>
+        </div>
+    </div>
+</div>
 
-					<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+    <main class="podcast-category <?php echo cardanopress_bootstrap_class( 'content-full' ); ?>">
 
-						<?php if ( has_post_thumbnail() ) : ?>
-							<div class="entry-featured">
-								<?php the_post_thumbnail(); ?>
-							</div>
-						<?php endif; ?>
+        <div class="latest section">
+            <div class="container">
 
-						<div class="entry-wrap">
-							<header class="entry-header">
-								<h2 class="entry-title"><a href="<?php the_permalink(); ?>">
-									<?php the_title(); ?>
-								</a></h2>
+                <div class="episode-list ">
 
-<!--								<div class="entry-meta">-->
-<!--									<time>--><?php //the_date(); ?><!--</time>-->
-<!--									<span>--><?php //the_author(); ?><!--</span>-->
-<!--								</div>-->
-							</header>
+                    <div class="row  justify-content-md-center">
+                        <div class="col-md-10">
 
-							<div class="entry-content">
-								<?php the_excerpt(); ?>
-							</div>
+                            <?php if ( have_posts() ) : ?>
+                                <?php while ( have_posts() ) : the_post(); ?>
+                                    <article id="<?php echo $post_type . '-' . get_the_ID(); ?>" class="">
 
-							<footer class="entry-footer">
-								<?php the_tags(); ?>
-							</footer>
-						</div>
-					</article><!-- #post-<?php the_ID(); ?> -->
+                                        <div class="episode-card">
 
-				<?php endwhile; ?>
+                                            <div class="row">
+                                                <div class="col-md-3 episode-image align-self-start">
+                                                    <?php if ( has_post_thumbnail() ) : ?>
+                                                        <?php the_post_thumbnail(); ?>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <div class="col-md-8 offset-md-1 episode-details">
 
-				<?php the_posts_pagination(); ?>
+                                                    <div class="row metadata">
+                                                        <div class="episode-tags col">
+    <?php echo get_the_term_list( $post->ID, 'ptag', '<span class="badge rounded-pill text-bg-primary">', ',</span> <span class="badge rounded-pill text-bg-primary">', '</span>' );
+        ?></span>
+                                                        </div>
+                                                        <div class="episode-date col text-end"> <?php the_time('d M, Y') ?></div>
+                                                    </div>
 
-			<?php endif; ?>
 
-		</main><!-- .content -->
+                                                    <div class="episode-title">
+                                                        <h3 id="post-<?php the_ID(); ?>">
+                                                            <a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>">
+                                                                <?php the_title(); ?></a>
+                                                        </h3>
+                                                    </div>
+                                                    <div class="episode-excerpt">
+                                                        <?php the_excerpt(); ?>
+                                                    </div>
+                                                    <a href="<?php the_permalink() ?>" class="btn btn-primary"  rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>">
+                                                    	Read more
+                                                    </a> <a  href="<?php the_permalink() ?>#comments"  class="btn-secondary btn"><span class="fa fa-comment"></span> <?php printf( _n( '%d comment', '%d comments', get_comments_number(), 'learncardano' ), get_comments_number() ); ?></a>
 
-		<?php get_sidebar(); ?>
+                                                </div>
+                                            </div>
 
-	</div><!-- .content-sidebar -->
-</div><!-- .container -->
+                                        </div>
+
+
+                                    </article><!-- #single-<?php the_ID(); ?> -->
+
+
+
+                                <?php endwhile; ?>
+
+                                <?php the_posts_pagination(); ?>
+
+                            <?php endif; ?>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </main><!-- .content -->
 
 <?php
 

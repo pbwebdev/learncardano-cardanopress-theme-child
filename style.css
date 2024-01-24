@@ -21,25 +21,8 @@ body{
 h1, h2, h3, .navbar-brand {
 	font-family: 'Rubik', sans-serif;
 }
-.h1, 
-.h2, 
-.h3, 
-.h4, 
-.h5, 
-.h6, 
-h1, 
-h2, 
-h3, 
-h4, 
-h5,
-h6 {
-	color: #47525e;	
-	font-weight: 700;	
-	line-height: 1.2;
-	margin-bottom: 0em;
-	margin-top: 1em;	
-}
-h1,  .navbar-brand {
+h1,  .navbar-brand{
+	/*color: #0070ff;*/
 	background: rgb(220,16,255);
 	background: linear-gradient(90deg, rgba(220,16,255,1) 0%, rgba(0,112,255,1) 100%);
 	-webkit-background-clip: text;
@@ -47,7 +30,7 @@ h1,  .navbar-brand {
 }
 h1{
 	font-size: 2.5em;
-	line-height: 1.2em;
+	line-height: 1em;
 }
 a {
 	color: #0070ff;
@@ -89,6 +72,7 @@ h2{
 }
 
 .btn-secondary {
+
 	-webkit-transition: all linear .3s;
 	-o-transition: all linear .3s;
 	transition: all linear .3s;

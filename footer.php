@@ -126,8 +126,6 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
     gtag('config', 'G-X7VNV35VXF');
 </script>
 
-<script src="/wp-content/themes/learncardano-cardanopress-theme-child/script.js"></script>
-
 	</body>
 <!--<?php echo $post_type; ?>-->
 </html>
