@@ -15,14 +15,6 @@ get_header();
             <div class="container col-10-md">
                 <div class="hero-wrapper">
                     <div class="split-content hero">
-                        <div class="hero-host d-none d-xs-none d-sm-none d-md-block">
-                            <a href="/about/" class="host-link-container w-inline-block">
-                                <div class="hosted-wrapper">
-                                    <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/peter-bui-55x55.jpg" alt="Peter Bui - Learn Cardano Podcast" class="hosted-picture float-start">
-                                    <div class="hosted-text float-start">Hosted by Peter Bui </div>
-                                </div>
-                            </a>
-                        </div>
                         <div class="hero-description">
                             <h1 class="float-none">Cardano Podcast for You</h1>
                             <p>Keep up to date with core Cardano news, projects, development and ideas coming from the Cardano Community. For beginners to experts wanting to know more about Cardano & blockchain technology.</p>
