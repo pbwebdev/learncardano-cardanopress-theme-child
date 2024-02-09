@@ -26,7 +26,11 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
                         </div>
                     </div>
                     <div class="col-md-5 offset-md-1 text-center">
-                        <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/peter-bui-250x250.jpg"  alt="Peter Bui Cover" class="about-image" width="250">
+                        <picture>
+                            <source srcset="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/peter-bui.webp" alt="Peter Bui" class="about-image" width="250" height="250" type="image/webp">
+                            <source srcset="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/peter-bui.jpg" alt="Peter Bui" class="about-image" width="250" height="250" type="image/jpeg">
+                            <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/peter-bui.jpg" alt="Peter Bui" class="about-image" width="250" height="250">
+                        </picture>
                     </div>
                 </div>
             </div>
@@ -51,28 +55,28 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
                     <div class="col">
                         <h3>Subscribe</h3>
                             <a href="https://youtube.com/learncardano/" title="Watch Learn Cardano Podcast on YouTube" class="platform-button float-start mr-1" target="_blank" rel="noreferrer">
-                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/youtube-watch.png" title="Watch on YouTube"  alt="Apple Podcasts">
+                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/youtube-watch.png" width="122" height="35" title="Watch on YouTube"  alt="Apple Podcasts">
                             </a>
 
                             <a href="https://podcasts.apple.com/podcast/learn-cardano-podcast/id1560654454" title="Listen to the Learn Cardano Podcast on Apple Podcasts" class="platform-button float-start mr-1" target="_blank" rel="noreferrer">
-                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/apple-podcasts.svg" title="Listen on Apple Podcasts"  alt="Apple Podcasts">
+                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/apple-podcasts.svg" width="174" height="35" title="Listen on Apple Podcasts"  alt="Apple Podcasts">
                             </a>
 
 
                             <a href="https://open.spotify.com/show/11FpPiHPzivZoSOTgVcfgT" title="Listen to the Learn Cardano Podcast on Spotify" class="platform-button  float-start mr-1" target="_blank" rel="noreferrer">
-                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/spotify.svg" title="Listen on Spotify"  alt="Spotify">
+                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/spotify.svg" width="122" height="35" title="Listen on Spotify"  alt="Spotify">
                             </a>
 
                             <a href="https://podcasts.google.com/feed/aHR0cHM6Ly93d3cuc3ByZWFrZXIuY29tL3Nob3cvNDg1NjIwNy9lcGlzb2Rlcy9mZWVk" title="Listen to the Learn Cardano Podcast on Google Podcasts" class="platform-button  float-start mr-1" target="_blank" rel="noreferrer">
-                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/google-podcasts.svg" title="Listen on Google Podcasts"  alt="Google Podcasts">
+                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/google-podcasts.svg" width="170" height="35" title="Listen on Google Podcasts"  alt="Google Podcasts">
                             </a>
 
                             <a href="https://www.iheart.com/podcast/53-learn-cardano-podcast-80684119/" title="Listen to the Learn Cardano Podcast on iHeart Radio" class="platform-button  float-start mr-1" target="_blank" rel="noreferrer">
-                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/iheart.png" title="Listen on iHeart Radio"  alt="Google Podcasts">
+                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/iheart.png" width="122" height="35" title="Listen on iHeart Radio"  alt="Google Podcasts">
                             </a>
 
                             <a href="https://www.spreaker.com/show/learn-cardano-podcast" title="Listen to the Learn Cardano Podcast on Spreaker" class="platform-button  float-start mr-1" target="_blank" rel="noreferrer">
-                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/spreaker.png" title="Listen on Google Podcasts"  alt="Google Podcasts">
+                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/spreaker.png" width="122" height="35" title="Listen on Google Podcasts"  alt="Google Podcasts">
                             </a>
 
                     </div>
@@ -84,7 +88,7 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
 			<div class="container">
 				<div class="row">
                     <div class="col-sm-3 d-none d-sm-none d-md-none d-lg-block logo mb-2">
-                        <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/microphone-white.png" title="Learn Cardano" alt="Learn Cardano" width="20" class="mx-1" > Learn Cardano
+                        <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/microphone-white.png" title="Learn Cardano" alt="Learn Cardano icon" width="20" height="33" class="mx-1" > Learn Cardano
                     </div>
                     <div class="col-md-6 copyright text-center mb-2">
                         <small>Copyright &copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="text-light"><?php bloginfo( 'name' ); ?></a></small> -
