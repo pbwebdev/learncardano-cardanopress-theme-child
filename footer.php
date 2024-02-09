@@ -84,21 +84,9 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
 		<footer class="site-footer py-2 bg-dark text-light">
 			<div class="container">
 				<div class="row">
-                    <div class="col-sm-3 d-none d-sm-none d-md-none d-lg-block logo mb-2">
-                        <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/microphone-white.png" title="Learn Cardano" alt="Learn Cardano icon" width="20" height="33" class="mx-1" > Learn Cardano
-                    </div>
-                    <div class="col-md-6 copyright text-center mb-2">
+                   <div class="col-md-6 copyright text-center">
                         <small>Copyright &copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="text-light"><?php bloginfo( 'name' ); ?></a></small> -
                         <span class="small">Powered by <a href="<?php echo esc_url( $theme->get( 'AuthorURI' ) ); ?>" class="text-light"><?php echo esc_html( $theme->get( 'Author' ) ); ?></a>.</span>
-                    </div>
-                    <div class="col-md-6 col-lg-3 socials mb-2 text-md-end">
-                        <ul>
-                            <li><a class="pe-1"  href="https://www.facebook.com/LearnCardano" title="Learn Cardano on Facebook" target="_blank" rel="noreferrer"><span class="fa-brands fa-facebook fa-xl"></span> </a></li>
-                            <li><a class="pe-1"  href="https://twitter.com/LearnCardano" title="Learn Cardano on Twitter" target="_blank" rel="noreferrer"><span class="fa-brands fa-twitter fa-xl"></span> </a></li>
-                            <li><a class="pe-1"  href="https://www.youtube.com/learncardano" title="Learn Cardano on YouTube" target="_blank" rel="noreferrer"><span class="fa-brands fa-youtube fa-xl"></span> </a></li>
-                            <li><a class="pe-1"  href="https://open.spotify.com/show/11FpPiHPzivZoSOTgVcfgT" title="Learn Cardano on Spotify" target="_blank" rel="noreferrer"><span class="fa-brands fa-spotify fa-xl"></span> </a></li>
-                            <li><a class="pe-1" href="https://discord.gg/V6mZGYUPNW" title="Learn Cardano Discord Community" target="_blank" rel="noreferrer"><span class="fa-brands fa-discord fa-xl"></span> </a></li>
-                        </ul>
                     </div>
                 </div>
 			</div>
