@@ -10,6 +10,38 @@
 get_header();
 
 ?>
+
+<style>
+    .navbar {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding-bottom: 0.75rem;
+        padding-top: 0.75rem;
+        position: relative;
+    }
+    .dropdown-item {
+        background-color: transparent;
+        border: 0;
+        clear: both;
+        color: #212529;
+        display: block;
+        font-weight: 400;
+        padding: 0.375rem 1.5rem;
+        text-align: inherit;
+        text-decoration: none;
+        white-space: nowrap;
+        width: 100%;
+    }
+    h1, .navbar-brand {
+         background: #dc10ff;
+         background: linear-gradient(90deg,rgba(220,16,255,1) 0%,rgba(0,112,255,1) 100%);
+         -webkit-background-clip: text;
+         -webkit-text-fill-color: transparent;
+     }
+
+</style>
     <main class="content pt-5 w-100">
         <div class="section hero-v2 wf-section">
             <div class="container col-10">
