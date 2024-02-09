@@ -11,19 +11,22 @@ get_header();
 
 ?>
 
+<style>
 
-<div class="archive-header py-5">
+</style>
+
+<div class="archive-header pt-5">
     <div class="container">
         <div class="row justify-content-md-center">
             <div class="col-md-8 text-center">
                 <h1>Learn Cardano Courses</h1>
-                <p>View all of the latest episodes produced by the Learn Cardano Podcast.</p>
+                <p>If you ever wanted to learn about Cardano and it's decentralised finance ecosystem, this is the place to do it.</p>
             </div>
         </div>
     </div>
 </div>
 
-    <main class="podcast-category <?php echo cardanopress_bootstrap_class( 'content-full' ); ?>">
+    <main class="podcast-category content pt-5 w-100">
 
         <div class="latest section">
             <div class="container">
