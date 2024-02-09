@@ -12,7 +12,7 @@ get_header();
 ?>
     <main class="content pt-5 w-100">
         <div class="section hero-v2 wf-section">
-            <div class="container col-10-md">
+            <div class="container col-10">
                 <div class="hero-wrapper">
                     <div class="split-content hero">
                         <div class="hero-description">
