@@ -34,20 +34,12 @@
 
 		<a class="screen-reader-text" href="#site-content"><?php esc_html_e( 'Skip to content', 'cardanopress-bootstrap' ); ?></a>
 
-		<section id="hellobar" style="height:50px;padding:10px;background: #dc10ff; color:white; text-align:center; position: sticky; top: 0;z-index:9999;">
-			<div class="hellobar" style="color:white;" >
-				<a style="color:white;text-decoration:underline;" target="_blank" href="https://cardano.ideascale.com/c/idea/112111">Support us and vote for our Fund 11 Proposals</a>
-			</div>
-		</section>
-
 		<header class="site-header navbar navbar-expand-xl navbar-light">
 			<nav class="container flex-wrap flex-xl-nowrap">
 				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="navbar-brand fs-1 fw-bold">
 					<?php bloginfo( 'name' ); ?>
 				</a>
-
-			
-
+                
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
