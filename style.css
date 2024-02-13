@@ -242,9 +242,11 @@ li.nav-item{
 }
 .about-home h2{
 	font-size: 1.5em;
+	margin-top:0;
 }
 .about-home h3{
 	font-size: 2.5em;
+	margin-top:0;
 }
 .about-image {
 	border: 5px #fff solid;
