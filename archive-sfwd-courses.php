@@ -20,7 +20,7 @@ get_header();
         <div class="row justify-content-md-center">
             <div class="col-md-8 text-center">
                 <h1>Learn Cardano Courses</h1>
-                <p>If you ever wanted to learn about Cardano and it's decentralised finance ecosystem, this is the place to do it.</p>
+                <p>If you ever wanted to learn about Cardano and it's decentralised finance ecosystem, <br>this is the place to do it.</p>
             </div>
         </div>
     </div>
