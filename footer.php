@@ -100,16 +100,7 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
 
         <link rel='stylesheet' id='cardanopress-bootstrap-child-theme'  href='/wp-content/themes/learncardano-cardanopress-theme-child/style.css' media='all' />
         <link rel='stylesheet' id='cardanopress-bootstrap-child-theme-fonts'  href='/wp-content/themes/learncardano-cardanopress-theme-child/fonts.css' media='all' />
-
-
-<?php $post_type = get_post_type( $post->ID ); ?>
-<?php if ($post_type=='sfwd-courses') :?>
-    <link rel="stylesheet" href="/wp-content/themes/learncardano-cardanopress-theme-child/learndash.css"  >
-<?php endif; ?>
-
-<?php if ( get_post_type( get_the_ID() ) == 'sfwd-courses' ) { ?>
-    <link rel="stylesheet" href="/wp-content/themes/learncardano-cardanopress-theme-child/learndash.css"  >
-<?php } ?>
+        <link rel="stylesheet" href="/wp-content/themes/learncardano-cardanopress-theme-child/learndash.css"  >
 
 <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/fontawesome.min.css" integrity="sha384-zIaWifL2YFF1qaDiAo0JFgsmasocJ/rqu7LKYH8CoBEXqGbb9eO+Xi3s6fQhgFWM" crossorigin="anonymous">-->
 
@@ -123,6 +114,5 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
 
     gtag('config', 'G-X7VNV35VXF');
 </script>
-<!--<?php echo $post_type; ?>-->
 </html>
 
