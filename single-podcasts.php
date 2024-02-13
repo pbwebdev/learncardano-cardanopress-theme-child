@@ -38,7 +38,7 @@ get_header(); ?>
                                                 <p class="hosted-text">Episode by Peter Bui on <span class="episode-date"> <?php the_time('F jS, Y') ?></span></p>
                                             </div>
                                     </div>
-                                    <?php the_field('spreaker_code'); ?>
+                                    <?php //the_field('spreaker_code'); ?>
                                 </div>
                             </div>
                         </div>
@@ -98,7 +98,5 @@ get_header(); ?>
         </main><!-- .content -->
 
     </div><!-- .content-sidebar.container -->
-
-    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-62ba9bd8af362b8a"></script>
 
 <?php get_footer();
