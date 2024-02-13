@@ -66,13 +66,6 @@
                 position: absolute;
                 width: 1px;
             }
-            a, a:visited {
-                color: #004DB3 !important;
-                text-decoration: underline;
-            }
-
-
-
             .row {
                 --bs-gutter-x: 1.5rem;
                 --bs-gutter-y: 0;

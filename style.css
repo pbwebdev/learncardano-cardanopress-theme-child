@@ -35,10 +35,6 @@ h1{
 h2, h3{
 	margin-top:1em;
 }
-a, a:visited {
-	color: #004DB3;
-	text-decoration: underline;
-}
 a:hover{
 	color: #dc10ff;
 	text-decoration: underline;
