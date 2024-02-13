@@ -13,7 +13,7 @@ get_header();
 
 <div class="container">
 	<div class="content-sidebar row">
-		<main class="<?php echo cardanopress_child_bootstrap_class( 'content' ); ?> py-5">
+		<main class="<?php echo cardanopress_child_bootstrap_class( 'content' ); ?> py-3">
 
 			<?php while ( have_posts() ) : ?>
 				<?php the_post(); ?>
