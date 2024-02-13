@@ -79,31 +79,11 @@
             .site-header {
                 box-shadow: 0px 0px 13px 1px #ddd;
             }
-            .screen-reader-text {
-                clip: rect(1px,1px,1px,1px);
-                word-wrap: normal!important;
-                border: 0;
-                -webkit-clip-path: inset(50%);
-                clip-path: inset(50%);
-                height: 1px;
-                margin: -1px;
-                overflow: hidden;
-                padding: 0;
-                position: absolute;
-                width: 1px;
-            }
+
             a, a:visited {
                 color: #004DB3;
                 text-decoration: underline;
             }
-
-
-            @media (min-width: 1200px){
-                .flex-xl-nowrap {
-                    flex-wrap: nowrap!important;
-                }
-            }
-
             .row {
                 --bs-gutter-x: 1.5rem;
                 --bs-gutter-y: 0;
@@ -156,16 +136,6 @@
                 transition: box-shadow .15s ease-in-out;
             }
 
-            @media (min-width: 1200px){
-                .navbar-expand-xl .navbar-nav {
-                    flex-direction: row;
-                }
-            }
-            @media (min-width: 1200px){
-                .navbar-expand-xl .navbar-collapse {
-                    display: flex!important;
-                    flex-basis: auto;
-                }}
             .navbar-nav {
                 display: flex;
                 flex-direction: column;
@@ -183,12 +153,6 @@
             .navbar-light .navbar-nav .nav-link {
                 color: #222;
                 font-weight: bold;
-            }
-            @media (min-width: 1200px) {
-                .navbar-expand-xl .navbar-nav .nav-link {
-                    padding-left: 0.5rem;
-                    padding-right: 0.5rem;
-                }
             }
 
         </style>
