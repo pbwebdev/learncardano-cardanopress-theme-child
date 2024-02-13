@@ -257,7 +257,7 @@ li.nav-item{
 #footer-links{
 
 }
-#footer-links h2{
+#footer-links h2, #footer-links h3{
 	margin-top:0;
 }
 #footer-links .widget{
