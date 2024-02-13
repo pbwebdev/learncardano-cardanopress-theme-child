@@ -34,7 +34,7 @@ get_header();
                 <div class="episode-list ">
 
                     <div class="row  justify-content-md-center">
-                        <div class="col-md-10">
+                        <div class="col-12">
 
                         <div class="row">
 
