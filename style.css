@@ -20,7 +20,6 @@ body{
 h1, h2, h3, .navbar-brand {
 	font-family: 'Rubik', sans-serif;
 	color: #222;
-	margin-top:1em;
 }
 h1,  .navbar-brand{
 	/*color: #0070ff;*/
@@ -32,6 +31,9 @@ h1,  .navbar-brand{
 h1{
 	font-size: 2.5em;
 	line-height: 1em;
+}
+h2, h3{
+	margin-top:1em;
 }
 a, a:visited {
 	color: #0070ff;
