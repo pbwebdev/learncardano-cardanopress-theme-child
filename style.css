@@ -257,10 +257,14 @@ li.nav-item{
 #footer-links{
 
 }
+#footer-links h2{
+	margin-top:0;
+}
 #footer-links .widget{
 	margin-bottom: 1em;
 }
 #footer-links a{
+	color: #222;
 	text-decoration: underline;
 }
 #footer-links a:hover{
