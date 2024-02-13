@@ -8,7 +8,16 @@
  */
 
 
-get_header(); ?>
+get_header();
+
+
+
+?>
+<?php if(the_field('youtube_video')) { ?>
+    <div id="preloader" style="visibility: hidden; display: none;">
+        <img src="https://i.ytimg.com/vi/<?php the_field('youtube_video'); ?>/hqdefault.jpg" height="1" width="1" style="visibility: hidden; display: none;" alt="" >
+    </div>
+<?php } ?>
 
     <div class="podcast-episode">
         <main class="content" role="main">
