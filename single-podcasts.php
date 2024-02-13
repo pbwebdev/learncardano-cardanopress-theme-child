@@ -39,7 +39,6 @@ get_header(); ?>
                                             </div>
                                     </div>
                                     <?php the_field('spreaker_code'); ?>
-                                    <p class="float-start share-title">Share <div class="addthis_inline_share_toolbox"></div></p>
                                 </div>
                             </div>
                         </div>

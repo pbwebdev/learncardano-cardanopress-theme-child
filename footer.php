@@ -115,4 +115,3 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
     gtag('config', 'G-X7VNV35VXF');
 </script>
 </html>
-
