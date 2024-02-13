@@ -56,7 +56,7 @@
                 line-height: 1em;
             }
             h1, .navbar-brand {
-                /* color: #0070ff; */
+                /* color: #004DB3; */
                 background: rgb(220,16,255);
                 background: linear-gradient(90deg, rgba(220,16,255,1) 0%, rgba(0,112,255,1) 100%);
                 -webkit-background-clip: text;
@@ -93,7 +93,7 @@
                 width: 1px;
             }
             a, a:visited {
-                color: #0070ff;
+                color: #004DB3;
                 text-decoration: underline;
             }
 

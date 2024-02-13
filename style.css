@@ -22,7 +22,7 @@ h1, h2, h3, .navbar-brand {
 	color: #222;
 }
 h1,  .navbar-brand{
-	/*color: #0070ff;*/
+	/*color: #004DB3;*/
 	background: rgb(220,16,255);
 	background: linear-gradient(90deg, rgba(220,16,255,1) 0%, rgba(0,112,255,1) 100%);
 	-webkit-background-clip: text;
@@ -36,7 +36,7 @@ h2, h3{
 	margin-top:1em;
 }
 a, a:visited {
-	color: #0070ff;
+	color: #004DB3;
 	text-decoration: underline;
 }
 a:hover{
@@ -44,7 +44,7 @@ a:hover{
 	text-decoration: underline;
 }
 .primary{
-	color: #0070ff;
+	color: #004DB3;
 }
 .btn{
 	padding: 0.75rem 1rem
@@ -88,7 +88,7 @@ a.navbar-brand{
 }
 .wp-block-button__link:hover{
 	color: #fff;
-	background: #0070ff;
+	background: #004DB3;
 }
 .site-header{
 	box-shadow: 0px 0px 13px 1px #ddd;
@@ -291,7 +291,7 @@ li.nav-item{
 	color:white;
 }
 .site-footer a:hover{
-	color: #0070ff !important;
+	color: #004DB3 !important;
 }
 
 .card{
@@ -324,7 +324,7 @@ li.nav-item{
 }
 .platform-button:hover {
 	/*border-color: #c6d2f0;*/
-	border-color: #0070ff;
+	border-color: #004DB3;
 	box-shadow: 0 6px 11px 0 rgba(86, 124, 221, 0.11);
 	-webkit-transform: translate(0px, -3px);
 	-ms-transform: translate(0px, -3px);
@@ -336,7 +336,7 @@ a.navbar-brand{
 }
 .wp-block-button__link:hover{
 	color: #fff;
-	background: #0070ff;
+	background: #004DB3;
 }
 
 .site-footer a{
