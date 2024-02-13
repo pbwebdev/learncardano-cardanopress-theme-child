@@ -3,26 +3,6 @@ body {
     color: #222 !important;
 }
 
-@media (min-width: 1200px) {
-    .container, .container-lg, .container-md, .container-sm, .container-xl {
-        max-width: 1140px;
-    }
-}
-@media (min-width: 992px){
-    .container, .container-lg, .container-md, .container-sm {
-        max-width: 960px;
-    }
-}
-@media (min-width: 768px){
-    .container, .container-md, .container-sm {
-        max-width: 720px;
-    }
-}
-@media (min-width: 576px) {
-    .container, .container-sm {
-        max-width: 540px;
-    }
-}
 .container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
     margin-left: auto;
     margin-right: auto;
@@ -45,12 +25,6 @@ h1, .navbar-brand {
     background: linear-gradient(90deg, rgba(220,16,255,1) 0%, rgba(0,112,255,1) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-}
-@media (min-width: 1200px){}
-    .navbar-expand-xl {
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-    }
 }
 .navbar-brand {
     font-size: calc(1.26563rem + .1875vw);
@@ -77,16 +51,11 @@ h1, .navbar-brand {
     width: 1px;
 }
 a, a:visited {
-    color: #004DB3;
+    color: #004DB3 !important;
     text-decoration: underline;
 }
 
 
-@media (min-width: 1200px){
-    .flex-xl-nowrap {
-        flex-wrap: nowrap!important;
-    }
-}
 
 .row {
     --bs-gutter-x: 1.5rem;
@@ -103,32 +72,9 @@ a, a:visited {
     padding-top: 1.5rem!important;
 }
 
-@media (min-width: 992px){
-    .col-lg-8 {
-        flex: 0 0 auto;
-        width: 66.66666667%;
-    }
-}
-@media (min-width: 768px){
-    .col-md-7 {
-        flex: 0 0 auto;
-        width: 58.33333333%;
-    }
-}
-@media (min-width: 576px){
-    .col-sm-12 {
-        flex: 0 0 auto;
-        width: 100%;
-    }
-}
 .navbar-light .navbar-toggler {
     border-color: rgba(0,0,0,.1);
     color: rgba(0,0,0,.55);
-}
-@media (min-width: 1200px){
-    .navbar-expand-xl .navbar-toggler, .navbar-expand-xl .offcanvas-header {
-        display: none;
-    }
 }
 .navbar-toggler {
     background-color: transparent;
@@ -140,16 +86,6 @@ a, a:visited {
     transition: box-shadow .15s ease-in-out;
 }
 
-@media (min-width: 1200px){
-    .navbar-expand-xl .navbar-nav {
-        flex-direction: row;
-    }
-}
-@media (min-width: 1200px){
-    .navbar-expand-xl .navbar-collapse {
-        display: flex!important;
-        flex-basis: auto;
-    }}
 .navbar-nav {
     display: flex;
     flex-direction: column;
@@ -167,10 +103,4 @@ li.nav-item {
 .navbar-light .navbar-nav .nav-link {
     color: #222;
     font-weight: bold;
-}
-@media (min-width: 1200px) {
-    .navbar-expand-xl .navbar-nav .nav-link {
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-    }
 }
