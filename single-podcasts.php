@@ -17,18 +17,21 @@ get_header(); ?>
 
                 <article id="podcast-<?php the_ID(); ?>" class="entry-wrapper">
 
-                    <div class="content-header py-5">
+                    <div class="content-header py-3">
                         <div class="container">
                             <div class="row">
-                                <div class="col-md-3 text-center d-none d-sm-none d-md-block">
-                                    <?php if ( has_post_thumbnail() ) { ?>
-                                        <?php the_post_thumbnail('medium', ['class' => 'cover img-responsive responsive--full', 'title' => 'Podcast cover image']);; ?>
-                                    <?php } else { ?>
-                                        <img src="https://learncardano.io/wp-content/uploads/2022/06/learn-cardano-podcast-cover-360x360-1-242x242.jpg" alt="Peter Bui Cover" class="about-image" width="250">
-                                    <?php }  ?>
-                                </div>
-                                <div class="offset-md-1 col-md-8 col-sm-12  align-self-center">
+                                <div class="offset-md-1 col-md-10 col-sm-12  align-self-center">
                                     <h1 class="entry-title"><?php the_title(); ?></h1>
+
+                                    <?php if( get_field('youtube_video') ): ?>
+                                        <div class="youtube-embed mb-2">
+                                            <style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
+                                            <div class='embed-container'>
+                                                <iframe src='https://www.youtube.com/embed/<?php the_field('youtube_video'); ?>' frameborder='0' allowfullscreen></iframe>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+
                                     <div class="hero-host">
                                             <div class="hosted-wrapper">
                                                 <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/peter-bui-55x55.jpg" alt="Peter Bui - Learn Cardano Podcast" class="hosted-picture float-start">
@@ -46,15 +49,7 @@ get_header(); ?>
                         <div class="container">
                             <div class="row justify-content-md-center">
                                 <div class="col-lg-8 col-md-12">
-                                    <?php if( get_field('youtube_video') ): ?>
-                                        <div class="youtube-embed mb-2">
-                                            <h2>Watch on YouTube</h2>
-                                            <style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
-                                            <div class='embed-container'>
-                                                <iframe src='https://www.youtube.com/embed/<?php the_field('youtube_video'); ?>' frameborder='0' allowfullscreen></iframe>
-                                            </div>
-                                        </div>
-                                    <?php endif; ?>
+
                                     <?php the_content(); ?>
 									
 									<?php if (get_field('text_transcript')) : ?>
