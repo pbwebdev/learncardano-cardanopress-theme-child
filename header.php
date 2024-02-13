@@ -22,6 +22,7 @@
         <link rel="icon" href="/wp-content/themes/learncardano-cardanopress-theme-child/images/android-chrome-192x192.png" sizes="192x192" />
         <link rel="apple-touch-icon" href="/wp-content/themes/learncardano-cardanopress-theme-child/images/apple-touch-icon.png" />
         <meta name="msapplication-TileImage" content="/wp-content/themes/learncardano-cardanopress-theme-child/android-chrome-192x192.png" />
+        <link rel='stylesheet' id='cardanopress-bootstrap-child-theme-lcp'  href='/wp-content/themes/learncardano-cardanopress-theme-child/lcp.css' media='all' />
 
 		<?php wp_head(); ?>
 
