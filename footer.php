@@ -103,7 +103,6 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
 
 
 <?php $post_type = get_post_type( $post->ID ); ?>
-
 <?php if ($post_type=='sfwd-courses') :?>
     <link rel="stylesheet" href="/wp-content/themes/learncardano-cardanopress-theme-child/learndash.css"  >
 <?php endif; ?>
