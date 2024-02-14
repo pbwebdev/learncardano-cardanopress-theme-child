@@ -487,3 +487,8 @@ a.navbar-brand{
 	-ms-transform: translate(0px, -3px);
 	transform: translate(0px, -3px);
 }
+
+.wp-block-media-text {
+	margin-bottom: 2em;
+}
+
