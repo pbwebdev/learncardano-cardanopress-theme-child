@@ -440,6 +440,9 @@ a.navbar-brand{
 	-o-transition: all linear .3s;
 	transition: all linear .3s;
 }
+#comments .learndash-wrapper .ld-button, #comments .learndash-wrapper .ld-button a {
+	color: #222!important;
+}
 
 .rank-math-block{
 	background: rgba(227,235,241,.6);
