@@ -33,21 +33,22 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
             </div>
         </div>
 
-        <div class="section hero-v2 wf-section">
+        <div class="section delegation">
             <div class="container col-10">
                 <div class="row">
-                    <div class="col-md-5">
-                        <picture class="about-image">
+                    <div class="col-md-4 text-center">
+                        <picture class="delegation-image">
                             <source srcset="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/adaoz-kangaroo.webp" alt="ADAOZ Stake Pool"  width="250" height="250" type="image/webp">
                             <source srcset="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/adaoz-kangaroo.jpg" alt="ADAOZ Stake Pool"  width="250" height="250" type="image/jpeg">
                             <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/adaoz-kangaroo.jpg" alt="ADAOZ Stake Pool" width="250" height="250">
                         </picture>
                     </div>
-                    <div class="col align-self-center mb-3">
-                        <h2>Delegate to Our Stake Pool ADAOZ</h2>
-                        <h3>Support Our Content</h3>
+                    <div class="col-md-7 align-self-center mb-3">
+                        <h2>Support Our Content</h2>
+                        <h3>Delegate to Our Stake Pool ADAOZ</h3>
                         <p>Delegate to our stake pool and help us continue to create content for the
                         Cardano ecosystem.</p>
+                        <p style="font-size: 14px;">Pool ID: 6658713e2cbfa4e347691a0435953f5acbe9f03d330e94caa3a0cfb4</p>
                         <a href="/delegate" title="Delegate & stake your ADA" class="btn btn-primary">Stake Your ADA</a>
                     </div>
                 </div>

@@ -233,24 +233,29 @@ li.nav-item{
 
 /* About home page*/
 
-.about-home{
-	background: rgba(227,235,241,.6);
+.about-home, .delegation{
 	padding-top: 5rem;
 	padding-bottom: 5rem;
 }
-.about-home h2{
+.about-home{
+	background: rgba(227,235,241,.6);
+}
+.about-home h2, .delegation h2{
 	font-size: 1.5em;
 	margin-top:0;
 }
-.about-home h3{
+.about-home h3, .delegation h3{
 	font-size: 2.5em;
 	margin-top:0;
 }
-.about-image {
+.about-image, .delegation-image {
 	border: 5px #fff solid;
 	box-shadow: 0 8px 18px 0 rgb(0 0 0/3%);
 	max-width: 100%;
 	display: inline-flex;
+}
+.delegation{
+	background: #d2dee7;
 }
 
 /* Mega footer block */
