@@ -33,6 +33,28 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
             </div>
         </div>
 
+        <div class="section hero-v2 wf-section">
+            <div class="container col-10">
+                <div class="row">
+                    <div class="col-md-5 offset-md-1 text-center">
+                        <picture class="about-image">
+                            <source srcset="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/adaoz-kangaroo.webp" alt="ADAOZ Stake Pool"  width="250" height="250" type="image/webp">
+                            <source srcset="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/adaoz-kangaroo.jpg" alt="ADAOZ Stake Pool"  width="250" height="250" type="image/jpeg">
+                            <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/adaoz-kangaroo.jpg" alt="ADAOZ Stake Pool" width="250" height="250">
+                        </picture>
+                    </div>
+                    <div class="col align-self-center mb-3">
+                        <h2>Delegate to Our Stake Pool ADAOZ</h2>
+                        <h3>Support Our Content</h3>
+                        <p>Delegate to our stake pool and help us continue to create content for the
+                        Cardano ecosystem.</p>
+                        <a href="/delegate" title="Delegate & stake your ADA">Stake Your ADA</a>
+                    </div>
+                </div>
+                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/ellipses-background-hero-01.svg" alt="" class="bg-hero-ellipses-01">
+            </div>
+        </div>
+
 		</div><!-- .site-content -->
 
 		<div id="footer-links">
