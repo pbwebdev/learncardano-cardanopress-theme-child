@@ -22,6 +22,8 @@ if ( ! is_active_sidebar( 'sidebar' ) ) {
 
 
     <div class="dexhunter-side">
+        <h3>Start Trading</h3>
+        <p>Connect and start trading, powered by DexHunter.</p>
         <div id="dexhunter-root"></div>
         <script type="module">
             ReactDOM.render(
