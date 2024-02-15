@@ -491,4 +491,9 @@ a.navbar-brand{
 .wp-block-media-text {
 	margin-bottom: 2em;
 }
+.wp-element-caption{
+	text-align: center;
+	font-style: italic;
+	font-size: 0.83em;
+}
 
