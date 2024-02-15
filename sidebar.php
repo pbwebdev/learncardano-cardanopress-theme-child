@@ -27,7 +27,7 @@ if ( ! is_active_sidebar( 'sidebar' ) ) {
             ReactDOM.render(
                 React.createElement(
                     dexhunterSwap,
-                    {"orderTypes":["SWAP","LIMIT"],"supportedTokens":["95a427e384527065f2f8946f5e86320d0117839a5e98ea2c0b55fb0048554e54"],"colors":{"background":"#FFFFFF","containers":"#D9E3F0","subText":"#555555","mainText":"#0E0F12","buttonText":"#FFFFFF","accent":"#007DFF"},"theme":"light","width":100%,"partnerCode":"learncardano616464723171786d6b393439323730327138683630756466383067786e716d6a336a64757a32767235796532757470667038677634387576687a7168383077347135636d776535753570746c796a74756a6a38386875363675616c70656a663373743564743978da39a3ee5e6b4b0d3255bfef95601890afd80709","partnerName":"LearnCardano"}
+                    {"orderTypes":["SWAP","LIMIT"],"supportedTokens":["95a427e384527065f2f8946f5e86320d0117839a5e98ea2c0b55fb0048554e54"],"colors":{"background":"#FFFFFF","containers":"#D9E3F0","subText":"#555555","mainText":"#0E0F12","buttonText":"#FFFFFF","accent":"#007DFF"},"theme":"light","width":400,"partnerCode":"learncardano616464723171786d6b393439323730327138683630756466383067786e716d6a336a64757a32767235796532757470667038677634387576687a7168383077347135636d776535753570746c796a74756a6a38386875363675616c70656a663373743564743978da39a3ee5e6b4b0d3255bfef95601890afd80709","partnerName":"LearnCardano"}
                 ),
                 document.getElementById('dexhunter-root')
             );
