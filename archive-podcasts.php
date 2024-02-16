@@ -12,16 +12,16 @@ get_header();
 ?>
 
 
-<div class="archive-header py-5">
-    <div class="container">
-        <div class="row justify-content-md-center">
-            <div class="col-md-8 text-center">
-                <h1>Learn Cardano Podcast Episode Archives</h1>
-                <p>View all of the latest episodes produced by the Learn Cardano Podcast.</p>
+    <div class="archive-header pt-5">
+        <div class="container">
+            <div class="row justify-content-md-center">
+                <div class="col-md-8 text-center">
+                    <h1>Learn Cardano Podcast Episode Archives</h1>
+                    <p>View all of the latest episodes produced by the Learn Cardano Podcast.</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <main class="podcast-category <?php echo cardanopress_bootstrap_class( 'content-full' ); ?>">
 
