@@ -497,3 +497,12 @@ a.navbar-brand{
 	font-size: 0.83em;
 }
 
+.entry-meta{
+	font-size: 0.83em;
+}
+.entry-meta time{
+	float: left;
+}
+.entry-meta span{
+	float: right;
+}

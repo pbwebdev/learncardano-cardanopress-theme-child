@@ -22,11 +22,11 @@ get_header();
 
 					<div class="entry-wrap">
 						<header class="entry-header">
+                            <div class="entry-meta">
+                                <time>Updated: <?php the_date(); ?></time>
+                                <span>Written by <?php the_author(); ?></span>
+                            </div>
 							<h1 class="entry-title"><?php the_title(); ?></h1>
-							<div class="entry-meta">
-								<time><?php the_date(); ?></time>
-								<span><?php the_author(); ?></span>
-							</div>
 						</header>
 
 						<div class="entry-content">
