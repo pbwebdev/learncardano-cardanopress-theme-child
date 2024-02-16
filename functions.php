@@ -154,21 +154,22 @@ function cardanopress_child_bootstrap_class( string $key ): string {
 
         'content-active-sidebar' => array(
             'col-sm-12',
-            'col-md-7',
-            'col-lg-8',
+            'col-lg-7',
+            'py-3',
         ),
 
         'content-inactive-sidebar' => array(
             'inactive-sidebar',
             'w-100',
+            'py-3',
         ),
 
         'sidebar' => array(
             'sidebar',
-            'py-5',
+            'py-3',
             'col-sm-12',
-            'col-md-5',
             'col-lg-4',
+            'offset-lg-1',
         ),
     );
 

@@ -13,7 +13,7 @@ get_header();
 
 <div class="container">
 	<div class="content-sidebar row">
-		<main class="<?php echo cardanopress_child_bootstrap_class( 'content' ); ?> py-3">
+		<main class="<?php echo cardanopress_child_bootstrap_class( 'content' ); ?> ">
 
 			<?php while ( have_posts() ) : ?>
 				<?php the_post(); ?>
@@ -23,10 +23,10 @@ get_header();
 					<div class="entry-wrap">
 						<header class="entry-header">
 							<h1 class="entry-title"><?php the_title(); ?></h1>
-<!--							<div class="entry-meta">-->
-<!--								<time>--><?php //the_date(); ?><!--</time>-->
-<!--								<span>--><?php //the_author(); ?><!--</span>-->
-<!--							</div>-->
+							<div class="entry-meta">
+								<time><?php the_date(); ?></time>
+								<span><?php the_author(); ?></span>
+							</div>
 						</header>
 
 						<div class="entry-content">
@@ -47,29 +47,19 @@ get_header();
 
 		
                        
-                                    <?php
+        <?php
+        // If comments are open or we have at least one comment, load up the comment template.
+        if ( comments_open() || get_comments_number() ) : ?>
 
-                                    // If comments are open or we have at least one comment, load up the comment template.
-                                    if ( comments_open() || get_comments_number() ) :
-										?>
+        <div class="container">
+            <div class="row justify-content-md-left">
+                <div class="col-lg-8 col-md-8">
+                        <?php comments_template(); ?>
+                </div>
+            </div>
+        </div>
 
-										 <div class="container">
-                            <div class="row justify-content-md-left">
-                                <div class="col-lg-8 col-md-8">
-									
-                                        <?php comments_template(); ?>
-										</div>
-                            </div>
-                        </div>
-
-									<?php
-                                    endif;
-
-                                 
-                                    ?>
-        
-		
-
+        <?php endif; ?>
 	</div><!-- .content-sidebar -->
 </div><!-- .container -->
 
