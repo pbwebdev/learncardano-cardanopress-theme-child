@@ -22,10 +22,6 @@ get_header();
 
 					<div class="entry-wrap">
 						<header class="entry-header">
-                            <div class="entry-meta">
-                                <time>Posted: <?php the_date(); ?></time>
-                                <span class="float-end">Written by <?php the_author(); ?></span>
-                            </div>
 							<h1 class="entry-title clearfix"><?php the_title(); ?></h1>
 						</header>
 
@@ -36,6 +32,10 @@ get_header();
 						<footer class="entry-footer">
 							<?php the_tags(); ?>
 						</footer>
+                        <div class="entry-meta">
+                            <time>Posted: <?php the_date(); ?></time>
+                            <span class="float-end">Written by <?php the_author(); ?></span>
+                        </div>
 					</div>
 				</article><!-- #post-<?php the_ID(); ?> -->
 
