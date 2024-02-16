@@ -50,7 +50,7 @@
 
 		<header class="site-header navbar navbar-expand-xl navbar-light">
 			<nav class="container flex-wrap flex-xl-nowrap">
-				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="navbar-brand fs-1 fw-bold">
+				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="navbar-brand fs-3 fw-bold">
 					<?php bloginfo( 'name' ); ?>
 				</a>
 
