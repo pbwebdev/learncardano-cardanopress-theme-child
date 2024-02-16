@@ -23,7 +23,7 @@ get_header();
 					<div class="entry-wrap">
 						<header class="entry-header">
                             <div class="entry-meta">
-                                <time>Updated: <?php //show_last_updated(); ?></time>
+                                <time>Posted: the_date(); ?></time>
                                 <span class="float-end">Written by <?php the_author(); ?></span>
                             </div>
 							<h1 class="entry-title clearfix"><?php the_title(); ?></h1>
