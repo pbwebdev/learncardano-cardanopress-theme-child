@@ -30,13 +30,6 @@ get_header();
                         <div class="container">
                             <div class="row">
                                 <div class="offset-md-1 col-md-10 col-sm-12  align-self-center">
-                                    <h1 class="entry-title"><?php the_title(); ?></h1>
-                                    <div class="hero-host">
-                                        <div class="hosted-wrapper">
-                                            <!-- <img src="--><?php //echo get_theme_root_uri(); ?><!--/learncardano-cardanopress-theme-child/images/peter-bui-55x55.jpg" alt="Peter Bui - Learn Cardano Podcast" class="hosted-picture float-start">-->
-                                            <p class="hosted-text">Episode by Peter Bui on <span class="episode-date"> <?php the_time('F jS, Y') ?></span></p>
-                                        </div>
-                                    </div>
                                     <?php if( get_field('youtube_video') ): ?>
                                         <div class="youtube-embed mb-2">
                                             <style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
@@ -45,7 +38,13 @@ get_header();
                                             </div>
                                         </div>
                                     <?php endif; ?>
-
+                                    <h1 class="entry-title"><?php the_title(); ?></h1>
+                                    <div class="hero-host">
+                                        <div class="hosted-wrapper">
+                                            <!-- <img src="--><?php //echo get_theme_root_uri(); ?><!--/learncardano-cardanopress-theme-child/images/peter-bui-55x55.jpg" alt="Peter Bui - Learn Cardano Podcast" class="hosted-picture float-start">-->
+                                            <p class="hosted-text">Episode by Peter Bui on <span class="episode-date"> <?php the_time('F jS, Y') ?></span></p>
+                                        </div>
+                                    </div>
                                     <?php //the_field('spreaker_code'); ?>
                                 </div>
                             </div>
