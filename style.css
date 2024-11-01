@@ -1,4 +1,3 @@
-
 /*
  Theme Name:   CardanoPress Child Theme
  Theme URI:    https://cardanopress.io
@@ -501,4 +500,7 @@ a.navbar-brand{
 
 .entry-meta{
 	font-size: 0.83em;
+}
+.entry-footer{
+	margin-top: 4em;
 }
