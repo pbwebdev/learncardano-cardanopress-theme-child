@@ -21,6 +21,11 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
                         <p>After years of trading and learning about crypto, I decided that Cardano was my chain of choice
                             and put all my efforts into understanding everything about Cardano. Learn Cardano is where I share
                             all that I learn with you.</p>
+			<p>DRep ID</p>
+			<ul style="text-wrap: wrap; word-wrap:break-word; font-size: 14px;">
+				<li>CIP-105: drep127pc58jyky40fvess0c4tjxkrnkf8ta3sfltvm4ptypqc5fgav3</li>
+				<li>CIP-129: drep1yftc8zs7gjcj4a9nxzplz4wg6cwweya0kxp8adnw59vsyrqvrysud</li>
+			</ul>
                     </div>
                     <div class="col-md-5 offset-md-1 text-center">
                         <picture class="about-image">
