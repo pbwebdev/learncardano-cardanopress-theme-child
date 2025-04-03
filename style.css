@@ -504,3 +504,35 @@ a.navbar-brand{
 .entry-footer{
 	margin-top: 4em;
 }
+
+/*lock page*/
+.subscriber-lock-box {
+    background-color: #2a5bd7;
+    color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 1.1rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.subscriber-lock-box strong {
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.sub-btn {
+    background: #fff;
+    color: #2a5bd7;
+    padding: 0.6rem 1.2rem;
+    margin: 0.5rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.sub-btn:hover {
+    background: #e5ecfa;
+}
