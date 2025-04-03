@@ -82,9 +82,7 @@ get_header();
                                     <h2>Text Transcript</h2>
                                     <div id="text_transcript" style="width: 100%; display: block; height: 250px; overflow:auto;">
                                         <?php
-                                            cardano_acf_locked_field('text_transcript', [
-                                                'title' => 'Transcript is for subscribers only.',
-                                            ]);
+                                            the_field('text_transcript');
                                         ?>
                                     </div>
                                 <?php endif; ?>
