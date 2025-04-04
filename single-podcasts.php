@@ -65,7 +65,7 @@ get_header();
                                     </div>
                                 </div>
 
-                                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/episode/<?php the_field('spotify_id'); ?>?utm_source=generator&amp;theme=0" width="100%" height="100" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" data-ruffle-polyfilled=""></iframe>
+                                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/episode/<?php the_field('spotify_id'); ?>?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 
                             </div>
                         </div>
@@ -103,7 +103,9 @@ get_header();
                                         <p><strong>Full show notes are for Members only.</strong></p>
                                         <p>Log in with your wallet that is holding a CardanoPress Wapuu NFT
                                             to continue reading or access exclusive media.</p>
-                                        <a href="#navbarSupportedContent" class="sub-btn">Log in</a>
+                                        <a href="#navbarSupportedContent" class="sub-btn">Log in</a> Get a
+                                        <a href="https://www.jpg.store/collection/cardanopresswapuus?tab=items"
+                                           target="_blank">Wapuu NFT on JPG.store</a>.
                                     </div>
                                     <?php
                                 }
