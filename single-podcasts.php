@@ -102,10 +102,11 @@ get_header();
                                     <div class="subscriber-lock-box py-3">
                                         <p><strong>Full show notes are for Members only.</strong></p>
                                         <p>Log in with your wallet that is holding a CardanoPress Wapuu NFT
-                                            to continue reading or access exclusive media.</p>
-                                        <a href="#navbarSupportedContent" class="sub-btn">Log in</a> Get a
+                                            to continue reading and access exclusive resources.</p>
+                                        <p><a href="#navbarSupportedContent" class="sub-btn">Log in</a> Get a
                                         <a href="https://www.jpg.store/collection/cardanopresswapuus?tab=items"
                                            target="_blank">Wapuu NFT on JPG.store</a>.
+                                        </p>
                                     </div>
                                     <?php
                                 }
