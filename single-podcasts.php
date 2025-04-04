@@ -103,9 +103,9 @@ get_header();
                                         <p><strong>Full show notes are for Members only.</strong></p>
                                         <p>Log in with your wallet that is holding a CardanoPress Wapuu NFT
                                             to continue reading and access exclusive resources.</p>
-                                        <p>						<?php echo do_shortcode('[cardanopress_template name="part/modal-trigger" if="!isConnected"]'); ?>
-                                            Get a
-                                        <a href="https://www.jpg.store/collection/cardanopresswapuus?tab=items"
+                                        <p>
+                                            <?php echo do_shortcode('[cardanopress_template name="part/modal-trigger" if="!isConnected"]'); ?>
+                                            Get a <a href="https://www.jpg.store/collection/cardanopresswapuus?tab=items"
                                            target="_blank">Wapuu NFT on JPG.store</a>.
                                         </p>
                                     </div>
