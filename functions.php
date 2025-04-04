@@ -280,37 +280,50 @@ add_filter('the_content', 'cardano_restrict_selected_content');
 
 function cardano_acf_locked_field($field_name, $args = [])
 {
-	$defaults = [
-		'post_id'        => get_the_ID(),
-		'more_tag'       => '<!--more-->',
-		'word_limit'     => 50,
-		'css_class'      => 'subscriber-lock-box',
-		'login_url'      => '#navbarSupportedContent',
-		'subscribe_url'  => '/subscribe',
-		'title'          => 'This content is for subscribers only.',
-	];
-	$args = wp_parse_args($args, $defaults);
+    $defaults = [
+        'post_id'        => get_the_ID(),
+        'more_tag'       => '<!--more-->',
+        'word_limit'     => 50,
+        'css_class'      => 'subscriber-lock-box',
+        'login_url'      => '#navbarSupportedContent',
+        'subscribe_url'  => '/subscribe',
+        'title'          => 'This content is for subscribers only.',
+    ];
+    $args = wp_parse_args($args, $defaults);
 
-	$field_value = apply_filters('olrak_acf_locked_field_value', get_field($field_name, $args['post_id']), $field_name, $args);
+    $field_value = apply_filters('olrak_acf_locked_field_value', get_field($field_name, $args['post_id']), $field_name, $args);
 
-	if (!$field_value) return;
+    if (!$field_value) return;
 
-	if (is_user_logged_in()) {
-		echo '<div>' . wp_kses_post($field_value) . '</div>';
-		return;
-	}
+    // If logged in, show full content
+    if (is_user_logged_in()) {
+        echo '<div>' . wp_kses_post($field_value) . '</div>';
+        return;
+    }
 
-	if (strpos($field_value, $args['more_tag']) !== false) {
-		list($teaser, $rest) = explode($args['more_tag'], $field_value, 2);
-	} else {
-		$teaser = wp_trim_words(strip_tags($field_value), $args['word_limit'], '...');
-	}
+    // Handle non-logged-in users
+    if (strpos($field_value, $args['more_tag']) !== false) {
+        // Split at <!--more-->
+        list($teaser, $rest) = explode($args['more_tag'], $field_value, 2);
 
-	echo '<div class="' . esc_attr($args['css_class']) . '">' . wp_kses_post($teaser) . '</div>';
+        // Show teaser normally
+        echo '<div class="' . esc_attr($args['css_class']) . '">' . wp_kses_post($teaser) . '</div>';
 
-	echo '
-        <div class="subscriber-lock-box">
-            <strong>' . esc_html($args['title']) . '</strong><br>
-            <a href="' . esc_url($args['login_url']) . '" class="sub-btn">Log in</a>
-        </div>';
+        // Then show locked content message
+        echo '
+			<div class="subscriber-lock-box">
+				<strong>' . esc_html($args['title']) . '</strong><br>
+				<a href="' . esc_url($args['login_url']) . '" class="sub-btn">Log in</a>
+			</div>';
+    } else {
+        // Fallback if no <!--more-->, show trimmed teaser
+        $teaser = wp_trim_words(strip_tags($field_value), $args['word_limit'], '...');
+        echo '<div class="' . esc_attr($args['css_class']) . '">' . wp_kses_post($teaser) . '</div>';
+
+        echo '
+			<div class="subscriber-lock-box">
+				<strong>' . esc_html($args['title']) . '</strong><br>
+				<a href="' . esc_url($args['login_url']) . '" class="sub-btn">Log in</a>
+			</div>';
+    }
 }
