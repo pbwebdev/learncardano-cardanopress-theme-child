@@ -16,12 +16,10 @@ jobs:
       - name: SSH and run git pull
         uses: appleboy/ssh-action@v1.0.0
         with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          user: ${{ secrets.SSH_USER }}
           host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          directory: ${{ secrets.WORK_DIR }}
-          # Add your deployment commands here (e.g., rsync, scp)
           script: |
             cd ${{ secrets.WORK_DIR }}
             git pull
