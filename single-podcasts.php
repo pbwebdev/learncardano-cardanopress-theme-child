@@ -64,8 +64,9 @@ get_header();
                                         <p class="hosted-text">Episode by Peter Bui on <span class="episode-date"> <?php the_time('F jS, Y') ?></span></p>
                                     </div>
                                 </div>
-                                <?php //the_field('spreaker_code'); 
-                                ?>
+
+                                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/episode/<?php the_field('spotify_id'); ?>?utm_source=generator&amp;theme=0" width="100%" height="100" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" data-ruffle-polyfilled=""></iframe>
+
                             </div>
                         </div>
                     </div>
@@ -91,6 +92,13 @@ get_header();
 
                                 } else {
                                     ?>
+
+                                    <div class="excerpt">
+                                        <?php
+                                            the_excerpt();
+                                        ?>
+                                    </div>
+
                                     <div class="subscriber-lock-box py-3">
                                         <p><strong>This content is for subscribers only.</strong></p>
                                         <p>Log in to continue reading or access exclusive media.</p>
