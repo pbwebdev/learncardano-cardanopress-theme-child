@@ -23,3 +23,5 @@ jobs:
           script: |
             cd ${{ secrets.WORK_DIR }}
             git pull
+            rm -rf ${{ secrets.CACHE_DIR }}asset-cleanup
+            rm -rf ${{ secrets.CACHE_DIR }}sgo-cache
