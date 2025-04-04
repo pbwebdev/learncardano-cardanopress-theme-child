@@ -13,8 +13,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy to Server
-        uses: actions/ssh-key@v1
+      - name: SSH and run git pull
+        uses: appleboy/ssh-action@v1.0.0
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           user: ${{ secrets.SSH_USER }}
