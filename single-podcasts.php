@@ -76,7 +76,29 @@ get_header();
                         <div class="row justify-content-md-center">
                             <div class="col-lg-8 col-md-12">
 
-                                <?php the_content(); ?>
+                                <?php
+                                $post_filter = get_field('post_type', 'option') ?: [];
+                                $post_type = get_post_type();
+
+                                // Skip if post type is not filtered, or in admin, or user is logged in
+                                if (!in_array($post_type, $post_filter) || is_admin() || is_user_logged_in()) {
+                                    $user = wp_get_current_user();
+                                    $roles = (array) $user->roles;
+
+                                    if (in_array('student', $roles)) {
+                                        the_content();
+                                    }
+
+                                } else {
+                                    ?>
+                                    <div class="subscriber-lock-box py-3">
+                                        <p><strong>This content is for subscribers only.</strong></p>
+                                        <p>Log in to continue reading or access exclusive media.</p>
+                                        <a href="#navbarSupportedContent" class="sub-btn">Log in</a>
+                                    </div>
+                                    <?php
+                                }
+                                ?>
 
                                 <?php if (get_field('text_transcript')) : ?>
                                     <h2>Text Transcript</h2>
