@@ -283,11 +283,11 @@ function cardano_acf_locked_field($field_name, $args = [])
 	$defaults = [
 		'post_id'        => get_the_ID(),
 		'more_tag'       => '<!--more-->',
-		'word_limit'     => 50,
+		'word_limit'     => 25,
 		'css_class'      => 'subscriber-lock-box',
-		'login_url'      => '#navbarSupportedContent',
-		'subscribe_url'  => '/subscribe',
-		'title'          => 'This content is for subscribers only.',
+		'login_url'      => '/login',
+		'subscribe_url'  => '/members',
+		'title'          => 'This content is for members only. Get a Wapuu NFT to become a member.',
 	];
 	$args = wp_parse_args($args, $defaults);
 
@@ -301,7 +301,7 @@ function cardano_acf_locked_field($field_name, $args = [])
         $user = wp_get_current_user();
 
         echo 'user role' . $roles = ( array ) $user->roles;
-
+die();
 		return;
 	}
 
