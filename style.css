@@ -507,14 +507,18 @@ a.navbar-brand{
 
 /*lock page*/
 .subscriber-lock-box {
-    background-color: #2a5bd7;
-    color: #fff;
+    background-color: rgba(0,112,255,1);
+	background: linear-gradient(90deg, rgba(220,16,255,1) 0%, rgba(0,112,255,1) 100%);
+	color: #fff;
     padding: 2rem;
     border-radius: 8px;
     margin-top: 2rem;
+	margin-right: auto;
+	margin-left: auto;
     text-align: center;
     font-size: 1.1rem;
 	box-shadow: 0 8px 16px rgba(0, 0, 0, .32), 0 -48px 48px 32px #fff;
+	max-width: 600px;
 }
 
 .subscriber-lock-box strong {
@@ -523,9 +527,15 @@ a.navbar-brand{
     margin-bottom: 0.5rem;
 }
 
+.subscriber-lock-box a, .subscriber-lock-box a:visited {
+	color: white;
+}
+.subscriber-lock-box a:hover{
+	text-decoration: none;
+}
 .sub-btn {
     background: #fff;
-    color: #2a5bd7;
+    color: #2a5bd7 !important;;
     padding: 0.6rem 1.2rem;
     margin: 0.5rem;
     border-radius: 5px;
@@ -534,5 +544,5 @@ a.navbar-brand{
 }
 
 .sub-btn:hover {
-    background: #e5ecfa;
+	background: #e5ecfa;
 }
