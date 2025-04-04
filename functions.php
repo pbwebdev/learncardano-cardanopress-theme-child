@@ -300,7 +300,7 @@ function cardano_acf_locked_field($field_name, $args = [])
 
         $user = wp_get_current_user();
 
-        echo $roles = ( array ) $user->roles;
+        echo 'user role' . $roles = ( array ) $user->roles;
 
 		return;
 	}
