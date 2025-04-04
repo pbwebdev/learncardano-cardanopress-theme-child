@@ -22,4 +22,6 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           directory: ${{ secrets.WORK_DIR }}
           # Add your deployment commands here (e.g., rsync, scp)
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} -p ${{ secrets.SSH_PORT }} 'cd ${{ secrets.WORK_DIR }} && git pull'
+          script: |
+            cd ${{ secrets.WORK_DIR }}
+            git pull
