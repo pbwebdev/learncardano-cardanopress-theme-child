@@ -100,8 +100,9 @@ get_header();
                                     </div>
 
                                     <div class="subscriber-lock-box py-3">
-                                        <p><strong>This content is for subscribers only.</strong></p>
-                                        <p>Log in to continue reading or access exclusive media.</p>
+                                        <p><strong>Full show notes are for Members only.</strong></p>
+                                        <p>Log in with your wallet that is holding a CardanoPress Wapuu NFT
+                                            to continue reading or access exclusive media.</p>
                                         <a href="#navbarSupportedContent" class="sub-btn">Log in</a>
                                     </div>
                                     <?php
