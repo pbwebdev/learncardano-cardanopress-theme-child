@@ -645,10 +645,12 @@ a.navbar-brand {
 }
 
 .nav-links div a .nav-title {
-  text-decoration: none;
-  font-size: 0.8em;
-  border-radius: 30px;
+  text-decoration: underline;
+  border-radius: none;
   color: #000;
+  font-size: 1.5em;
+  font-weight: 700;
+  font-family: Rubik, sans-serif;
 }
 
 .nav-links div a {
