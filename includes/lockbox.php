@@ -5,21 +5,20 @@
  */
 
 function lc_lockbox() {
-	$post_filter = get_field('post_type', 'option') ?: [];
-	$post_type = get_post_type();
+	$post_filter = get_field( 'post_type', 'option' );
+	$allowed_roles = array( 'administrator', 'editor', 'author', 'student' );
 
-	// Skip if post type is not filtered, or in admin, or user is logged in
-	if (!in_array($post_type, $post_filter) || is_admin() || is_user_logged_in()) {
-		$user = wp_get_current_user();
-		$roles = (array) $user->roles;
+	if (
+		is_admin() ||
+		! in_array( get_post_type(), (array) $post_filter, true ) ||
+		( is_user_logged_in() && array() !== array_intersect( $allowed_roles, wp_get_current_user()->roles ) )
+	) {
+		// In admin or post type is not filtered or user is logged in and has allowed role
+		the_content();
+		return;
+	}
 
-		if (in_array('student', $roles)) {
-			the_content();
-		}
-
-	} else {
-		?>
-
+	?>
 		<div class="excerpt">
 			<?php
 				the_excerpt();
@@ -36,6 +35,5 @@ function lc_lockbox() {
 				target="_blank">Wapuu NFT on JPG.store</a>.
 			</p>
 		</div>
-		<?php
-	}
+	<?php
 }
