@@ -3,7 +3,7 @@
     "title": "Tags",
     "menu_order": 0,
     "active": true,
-    "taxonomy": "ptags",
+    "taxonomy": "ptag",
     "object_type": [
         "podcasts"
     ],
