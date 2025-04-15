@@ -1,0 +1,51 @@
+{
+    "key": "group_67ee3ccc7d6d2",
+    "title": "Content Settings",
+    "fields": [
+        {
+            "key": "field_67ee3d233600f",
+            "label": "Post Type",
+            "name": "post_type",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "This setup restricts full content visibility on selected post types (podcast, events, etc.) using the <!--more--> tag. Visitors must log in or subscribe to access the full content.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "podcasts": "Podcasts",
+                "page": "Page"
+            },
+            "default_value": [],
+            "return_format": "value",
+            "multiple": 1,
+            "allow_null": 0,
+            "ui": 0,
+            "ajax": 0,
+            "placeholder": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "options_page",
+                "operator": "==",
+                "value": "content-settings"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "modified": 1744707027
+}
