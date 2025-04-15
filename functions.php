@@ -1,5 +1,7 @@
 <?php
 
+require_once 'includes/lockbox.php';
+
 add_theme_support('responsive-embeds');
 
 if (class_exists('ThemePlate')) :
