@@ -2,16 +2,6 @@
 
 add_theme_support('responsive-embeds');
 
-if (class_exists('ThemePlate')) :
-	ThemePlate(array(
-		'title' => 'Learn Cardano',
-		'key'   => 'lc',
-	));
-
-
-	require_once 'setup/post-types.php';
-endif;
-
 
 if (! function_exists('lc_widgets_init')) {
 	function lc_widgets_init()
