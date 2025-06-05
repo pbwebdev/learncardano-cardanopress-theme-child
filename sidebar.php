@@ -14,6 +14,9 @@ if ( ! is_active_sidebar( 'sidebar' ) ) {
 ?>
 
 <aside class="<?php echo cardanopress_child_bootstrap_class( 'sidebar' ); ?>">
-	<?php get_search_form(); ?>
+	<div class="text-center">
+		<?php get_search_form(); ?>
+	</div>
+
 	<?php dynamic_sidebar( 'sidebar' ); ?>
 </aside><!-- .sidebar -->

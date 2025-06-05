@@ -18,7 +18,7 @@
         <input type="search" class="form-control" placeholder="<?php echo esc_attr_x( 'Search &hellip;', 'placeholder' ); ?>" value="<?php echo get_search_query(); ?>" name="s" />
     </label>
 
-    <div class="col-auto">
+    <div class="col-sm-auto">
         <button type="submit" class="btn btn-secondary">
             <?php echo esc_attr_x( 'Search', 'submit button' ); ?>
         </button>
