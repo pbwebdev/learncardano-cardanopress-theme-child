@@ -18,6 +18,7 @@ get_header();
                 <div class="col-md-8 text-center">
                     <h1>Learn Cardano Podcast Episode Archives</h1>
                     <p>View all of the latest episodes produced by the Learn Cardano Podcast.</p>
+                    <?php get_search_form(); ?>
                 </div>
             </div>
         </div>
