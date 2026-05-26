@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   deploy:
-    name: rsync to learncardano.io
+    name: rsync + clear caches
     runs-on: ubuntu-latest
     environment: production
 
@@ -48,3 +48,20 @@ jobs:
             --exclude='README.md' \
             -e "ssh -i ~/.ssh/id_ed25519 -p ${SSH_PORT} -o UserKnownHostsFile=~/.ssh/known_hosts" \
             ./ "${SSH_USER}@${SSH_HOST}:${REMOTE_PATH}/"
+
+      - name: Clear WordPress caches on server
+        env:
+          SSH_HOST: ${{ secrets.SITEGROUND_SSH_HOST }}
+          SSH_USER: ${{ secrets.SITEGROUND_SSH_USER }}
+          SSH_PORT: ${{ secrets.SITEGROUND_SSH_PORT }}
+          CACHE_DIR: ${{ secrets.CACHE_DIR }}
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -p "${SSH_PORT}" -o UserKnownHostsFile=~/.ssh/known_hosts \
+            "${SSH_USER}@${SSH_HOST}" \
+            "rm -rf '${CACHE_DIR}asset-cleanup' '${CACHE_DIR}sgo-cache' && echo 'Caches cleared.'"
+
+      - name: Purge Cloudflare cache
+        uses: jakejarvis/cloudflare-purge-action@master
+        env:
+          CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
