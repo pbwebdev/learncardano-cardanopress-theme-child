@@ -135,26 +135,12 @@ add_action( 'wp_enqueue_scripts', function () {
 		return;
 	}
 
-	// get_queried_object() is set even when LearnDash intercepts a restricted
-	// course/lesson page to render a login form — at which point is_singular()
-	// returns false and get_post() can be null, but the queried object is still
-	// the sfwd-courses post. Use it as the source of truth for post type.
 	$queried        = get_queried_object();
-	$post_type      = '';
-	$post_content   = '';
-	if ( $queried instanceof WP_Post ) {
-		$post_type    = $queried->post_type;
-		$post_content = $queried->post_content;
-	} elseif ( $queried instanceof WP_Post_Type ) {
-		$post_type    = $queried->name;
-	}
-	$ld_post_types  = array( 'sfwd-courses', 'sfwd-lessons', 'sfwd-topic', 'sfwd-quiz', 'sfwd-assignment', 'sfwd-certificates', 'groups' );
-	$is_learndash   = in_array( $post_type, $ld_post_types, true )
-		|| ( function_exists( 'is_post_type_archive' ) && is_post_type_archive( $ld_post_types ) );
+	$post_content   = ( $queried instanceof WP_Post ) ? $queried->post_content : '';
 	$has_gform      = $post_content && (
 		has_shortcode( $post_content, 'gravityform' )
 		|| has_shortcode( $post_content, 'gravityforms' )
-		|| ( function_exists( 'has_block' ) && has_block( 'gravityforms/form', $post ) )
+		|| ( function_exists( 'has_block' ) && $queried instanceof WP_Post && has_block( 'gravityforms/form', $queried ) )
 	);
 	$has_popup      = $post_content && (
 		has_shortcode( $post_content, 'wppopup' )
@@ -167,29 +153,10 @@ add_action( 'wp_enqueue_scripts', function () {
 		wp_deregister_style( 'dashicons' );
 	}
 
-	// LearnDash CSS + JS bundle. Keep on LearnDash post types/archives only.
-	if ( ! $is_learndash ) {
-		$learndash_handles = array(
-			'learndash-css',
-			'learndash_quiz_front_css',
-			'learndash_lesson_video',
-			'learndash-admin-bar',
-			'learndash-course-grid-skin-grid',
-			'learndash-course-grid-pagination',
-			'learndash-course-grid-filter',
-			'learndash-course-grid-card-grid-1',
-			'learndash-front',
-			'jquery-dropdown-css',
-			'wpProQuiz_front_style',
-			'wpProQuiz_front_javascript',
-			'learndash-front-js',
-			'learndash-course-grid-skin-grid-js',
-		);
-		foreach ( $learndash_handles as $h ) {
-			wp_dequeue_style( $h );
-			wp_dequeue_script( $h );
-		}
-	}
+	// Note: LearnDash dequeue was tried and backed out — LearnDash routes
+	// some URLs in ways that make the post-type detection unreliable, and
+	// breaking course pages isn't worth the saving. Asset CleanUp can be
+	// configured per-page in the WP admin if surgical LD dequeuing is needed.
 
 	// GravityForms only needed on pages that embed a form.
 	if ( ! $has_gform ) {
