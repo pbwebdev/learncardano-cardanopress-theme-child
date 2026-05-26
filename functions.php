@@ -135,11 +135,22 @@ add_action( 'wp_enqueue_scripts', function () {
 		return;
 	}
 
-	$post           = is_singular() ? get_post() : null;
-	$post_content   = $post ? $post->post_content : '';
-	$post_type      = $post ? $post->post_type : '';
-	$is_learndash   = in_array( $post_type, array( 'sfwd-courses', 'sfwd-lessons', 'sfwd-topic', 'sfwd-quiz', 'sfwd-assignment', 'sfwd-certificates', 'groups' ), true )
-		|| ( function_exists( 'is_post_type_archive' ) && is_post_type_archive( array( 'sfwd-courses', 'sfwd-lessons', 'sfwd-topic', 'sfwd-quiz' ) ) );
+	// get_queried_object() is set even when LearnDash intercepts a restricted
+	// course/lesson page to render a login form — at which point is_singular()
+	// returns false and get_post() can be null, but the queried object is still
+	// the sfwd-courses post. Use it as the source of truth for post type.
+	$queried        = get_queried_object();
+	$post_type      = '';
+	$post_content   = '';
+	if ( $queried instanceof WP_Post ) {
+		$post_type    = $queried->post_type;
+		$post_content = $queried->post_content;
+	} elseif ( $queried instanceof WP_Post_Type ) {
+		$post_type    = $queried->name;
+	}
+	$ld_post_types  = array( 'sfwd-courses', 'sfwd-lessons', 'sfwd-topic', 'sfwd-quiz', 'sfwd-assignment', 'sfwd-certificates', 'groups' );
+	$is_learndash   = in_array( $post_type, $ld_post_types, true )
+		|| ( function_exists( 'is_post_type_archive' ) && is_post_type_archive( $ld_post_types ) );
 	$has_gform      = $post_content && (
 		has_shortcode( $post_content, 'gravityform' )
 		|| has_shortcode( $post_content, 'gravityforms' )
