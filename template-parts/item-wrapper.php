@@ -26,7 +26,10 @@ $tags     = get_the_term_list( false, ( 'podcasts' === $post_type ? 'ptag' : 'po
                     <?php if ( has_post_thumbnail() ) { ?>
                         <?php the_post_thumbnail('medium', ['class' => 'img-responsive responsive--full', 'title' => 'Podcast cover image']);; ?>
                     <?php } else { ?>
-                        <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/learn-cardano-podcast-cover.jpg" class="img-responsive responsive--full" title="Podcast cover image" loading="lazy" decoding="async" alt="Podcast cover image">
+                        <picture>
+                            <source srcset="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/learn-cardano-podcast-cover.webp" type="image/webp">
+                            <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/learn-cardano-podcast-cover.jpg" class="img-responsive responsive--full" title="Podcast cover image" loading="lazy" decoding="async" alt="Podcast cover image">
+                        </picture>
                     <?php } ?>
                 </div>
                 <div class="col-md-8 offset-md-1 episode-details">
