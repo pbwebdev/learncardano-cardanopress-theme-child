@@ -77,7 +77,7 @@ get_header();
                         <div class="row justify-content-md-center">
                             <div class="col-lg-8 col-md-12">
 
-                                <?php lc_lockbox(); ?>
+                                <?php the_content(); ?>
 
                                 <?php if (get_field('text_transcript')) : ?>
                                     <h2>Text Transcript</h2>
