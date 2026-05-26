@@ -120,6 +120,25 @@ function enable_proposal_comments()
 	add_post_type_support('proposal', 'comments');
 }
 
+/**
+ * Add preconnect / dns-prefetch hints for the third-party origins the
+ * site loads on every page (analytics, embedded media). Lets the browser
+ * warm DNS + TLS in parallel with HTML parsing instead of waiting until
+ * it sees the <script>/<iframe>.
+ */
+add_filter( 'wp_resource_hints', function ( $urls, $relation_type ) {
+	if ( 'preconnect' === $relation_type ) {
+		$urls[] = array( 'href' => 'https://www.googletagmanager.com', 'crossorigin' );
+		$urls[] = array( 'href' => 'https://widget.spreaker.com', 'crossorigin' );
+		$urls[] = array( 'href' => 'https://cdn.jsdelivr.net', 'crossorigin' );
+	}
+	if ( 'dns-prefetch' === $relation_type ) {
+		$urls[] = 'https://i.ytimg.com';
+		$urls[] = 'https://www.youtube.com';
+	}
+	return $urls;
+}, 10, 2 );
+
 
 // jQuery is intentionally left at WordPress's bundled version so it can be
 // served from the site's own origin (cacheable by Cloudflare) instead of
