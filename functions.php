@@ -154,36 +154,22 @@ function lc_enqueue_prism() {
     if ( ! lc_post_has_code_block() ) {
         return;
     }
-    wp_enqueue_style(
-        'prismjs',
-        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css'
-    );
-    // Copy button plugin CSS
-    wp_enqueue_style(
-        'prismjs-toolbar',
-        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css'
-    );
-    wp_enqueue_script(
-        'prismjs',
-        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js',
-        [], null, true
-    );
-    wp_enqueue_script(
+    $base = get_stylesheet_directory_uri() . '/assets/prism/';
+    $ver  = '1.29.0';
+
+    wp_enqueue_style( 'prismjs', $base . 'prism-tomorrow.min.css', array(), $ver );
+    wp_enqueue_style( 'prismjs-toolbar', $base . 'prism-toolbar.min.css', array(), $ver );
+
+    wp_enqueue_script( 'prismjs', $base . 'prism-core.min.js', array(), $ver, true );
+    wp_enqueue_script( 'prismjs-autoloader', $base . 'prism-autoloader.min.js', array( 'prismjs' ), $ver, true );
+    wp_enqueue_script( 'prismjs-toolbar', $base . 'prism-toolbar.min.js', array( 'prismjs' ), $ver, true );
+    wp_enqueue_script( 'prismjs-copy', $base . 'prism-copy-to-clipboard.min.js', array( 'prismjs-toolbar' ), $ver, true );
+
+    // Point the autoloader at our locally bundled language components.
+    wp_add_inline_script(
         'prismjs-autoloader',
-        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js',
-        ['prismjs'], null, true
-    );
-    // Toolbar (required by copy button)
-    wp_enqueue_script(
-        'prismjs-toolbar',
-        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js',
-        ['prismjs'], null, true
-    );
-    // Copy to clipboard plugin
-    wp_enqueue_script(
-        'prismjs-copy',
-        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js',
-        ['prismjs-toolbar'], null, true
+        'Prism.plugins.autoloader.languages_path = ' . wp_json_encode( $base . 'components/' ) . ';',
+        'before'
     );
 
     foreach ( array( 'prismjs', 'prismjs-autoloader', 'prismjs-toolbar', 'prismjs-copy' ) as $handle ) {
