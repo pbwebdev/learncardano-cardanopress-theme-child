@@ -54,11 +54,23 @@ jobs:
           SSH_HOST: ${{ secrets.SITEGROUND_SSH_HOST }}
           SSH_USER: ${{ secrets.SITEGROUND_SSH_USER }}
           SSH_PORT: ${{ secrets.SITEGROUND_SSH_PORT }}
+          REMOTE_PATH: ${{ secrets.SITEGROUND_REMOTE_PATH }}
           CACHE_DIR: ${{ secrets.CACHE_DIR }}
         run: |
+          # WP root is REMOTE_PATH with the /wp-content/... suffix stripped.
+          WP_ROOT="${REMOTE_PATH%/wp-content/*}"
           ssh -i ~/.ssh/id_ed25519 -p "${SSH_PORT}" -o UserKnownHostsFile=~/.ssh/known_hosts \
-            "${SSH_USER}@${SSH_HOST}" \
-            "rm -rf '${CACHE_DIR}asset-cleanup' '${CACHE_DIR}sgo-cache' && echo 'Caches cleared.'"
+            "${SSH_USER}@${SSH_HOST}" "bash -s" <<EOSSH
+          set -e
+          export TERM=dumb
+          # Asset CleanUp + SG Optimizer disk caches (covers regenerated bundles
+          # and any leftover files SG's wp-cli command misses).
+          rm -rf "${CACHE_DIR}asset-cleanup" "${CACHE_DIR}sgo-cache" 2>/dev/null || true
+          # SG Optimizer one-shot: clears its assets folder, file cache, dynamic
+          # cache, memcached, and PHP opcache in one call.
+          cd "${WP_ROOT}"
+          wp sg purge 2>&1 | sed 's/^/[wp sg purge] /'
+          EOSSH
 
       - name: Purge Cloudflare cache
         uses: jakejarvis/cloudflare-purge-action@master
