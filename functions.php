@@ -120,62 +120,83 @@ function enable_proposal_comments()
 	add_post_type_support('proposal', 'comments');
 }
 
-
-function wpb_modify_jquery()
-{
-	// Check if front-end is being viewed
-	if (!is_admin()) {
-		// Remove default WordPress jQuery
-		wp_deregister_script('jquery');
-		// Register new jQuery script via Google Library
-		wp_register_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js', false, '3.6.0');
-		// Enqueue the script
-		wp_enqueue_script('jquery');
+/**
+ * Add preconnect / dns-prefetch hints for the third-party origins the
+ * site loads on every page (analytics, embedded media). Lets the browser
+ * warm DNS + TLS in parallel with HTML parsing instead of waiting until
+ * it sees the <script>/<iframe>.
+ */
+add_filter( 'wp_resource_hints', function ( $urls, $relation_type ) {
+	if ( 'preconnect' === $relation_type ) {
+		$urls[] = array( 'href' => 'https://www.googletagmanager.com', 'crossorigin' );
+		$urls[] = array( 'href' => 'https://widget.spreaker.com', 'crossorigin' );
+		$urls[] = array( 'href' => 'https://cdn.jsdelivr.net', 'crossorigin' );
 	}
+	if ( 'dns-prefetch' === $relation_type ) {
+		$urls[] = 'https://i.ytimg.com';
+		$urls[] = 'https://www.youtube.com';
+	}
+	return $urls;
+}, 10, 2 );
+
+
+// jQuery is intentionally left at WordPress's bundled version so it can be
+// served from the site's own origin (cacheable by Cloudflare) instead of
+// ajax.googleapis.com. The previous Google-CDN swap added a third-party DNS
+// hop with no benefit on a Cloudflare-fronted site.
+
+function lc_post_has_code_block() {
+    if ( ! is_singular() ) {
+        return false;
+    }
+    $post = get_post();
+    if ( ! $post ) {
+        return false;
+    }
+    if ( function_exists( 'has_block' ) && has_block( 'code', $post ) ) {
+        return true;
+    }
+    return ( false !== stripos( $post->post_content, '<pre' ) && false !== stripos( $post->post_content, '<code' ) );
 }
-// Execute the action when WordPress is initialized
-add_action('init', 'wpb_modify_jquery');
 
 function lc_enqueue_prism() {
-    wp_enqueue_style(
-        'prismjs',
-        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css'
-    );
-    // Copy button plugin CSS
-    wp_enqueue_style(
-        'prismjs-toolbar',
-        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css'
-    );
-    wp_enqueue_script(
-        'prismjs',
-        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js',
-        [], null, true
-    );
-    wp_enqueue_script(
+    if ( ! lc_post_has_code_block() ) {
+        return;
+    }
+    $base = get_stylesheet_directory_uri() . '/assets/prism/';
+    $ver  = '1.29.0';
+
+    wp_enqueue_style( 'prismjs', $base . 'prism-tomorrow.min.css', array(), $ver );
+    wp_enqueue_style( 'prismjs-toolbar', $base . 'prism-toolbar.min.css', array(), $ver );
+
+    wp_enqueue_script( 'prismjs', $base . 'prism-core.min.js', array(), $ver, true );
+    wp_enqueue_script( 'prismjs-autoloader', $base . 'prism-autoloader.min.js', array( 'prismjs' ), $ver, true );
+    wp_enqueue_script( 'prismjs-toolbar', $base . 'prism-toolbar.min.js', array( 'prismjs' ), $ver, true );
+    wp_enqueue_script( 'prismjs-copy', $base . 'prism-copy-to-clipboard.min.js', array( 'prismjs-toolbar' ), $ver, true );
+
+    // Point the autoloader at our locally bundled language components.
+    wp_add_inline_script(
         'prismjs-autoloader',
-        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js',
-        ['prismjs'], null, true
+        'Prism.plugins.autoloader.languages_path = ' . wp_json_encode( $base . 'components/' ) . ';',
+        'before'
     );
-    // Toolbar (required by copy button)
-    wp_enqueue_script(
-        'prismjs-toolbar',
-        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js',
-        ['prismjs'], null, true
-    );
-    // Copy to clipboard plugin
-    wp_enqueue_script(
-        'prismjs-copy',
-        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js',
-        ['prismjs-toolbar'], null, true
-    );
+
+    foreach ( array( 'prismjs', 'prismjs-autoloader', 'prismjs-toolbar', 'prismjs-copy' ) as $handle ) {
+        wp_script_add_data( $handle, 'strategy', 'defer' );
+    }
 }
 add_action('wp_enqueue_scripts', 'lc_enqueue_prism');
 
 function lc_prism_autodetect() {
+    if ( ! lc_post_has_code_block() ) {
+        return;
+    }
     ?>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.wp-block-code code').forEach(function(block) {
+        var blocks = document.querySelectorAll('.wp-block-code code');
+        if (!blocks.length) { return; }
+        blocks.forEach(function(block) {
             if (!block.className.includes('language-')) {
                 var text = block.textContent;
                 if (text.includes('import {') || text.includes('async function') || 
