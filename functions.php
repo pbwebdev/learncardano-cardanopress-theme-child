@@ -154,10 +154,38 @@ add_action( 'wp_enqueue_scripts', function () {
 	// and the LearnDash login modal rendered as raw HTML above the layout.
 	// Saving was tiny; the breakage was not.
 
-	// Note: LearnDash dequeue was tried and backed out — LearnDash routes
-	// some URLs in ways that make the post-type detection unreliable, and
-	// breaking course pages isn't worth the saving. Asset CleanUp can be
-	// configured per-page in the WP admin if surgical LD dequeuing is needed.
+	// LearnDash CSS + JS bundle: only safe to strip on the homepage, which
+	// uses front-page.php (verified to contain no LD shortcodes/blocks/queries).
+	// Going broader was tried in PR #9 and broke course pages — restricted to
+	// is_front_page() only this time. Verified via wp_styles->registered that
+	// nothing else in the registered styles list depends on these handles,
+	// so dequeuing them here doesn't cascade.
+	if ( is_front_page() ) {
+		$front_page_ld_handles = array(
+			// styles
+			'learndash',
+			'learndash-front',
+			'learndash-admin-bar',
+			'learndash-course-grid-skin-grid',
+			'learndash-course-grid-pagination',
+			'learndash-course-grid-filter',
+			'learndash-course-grid-card-grid-1',
+			'jquery-dropdown-css',
+			'learndash_lesson_video',
+			'learndash_quiz_front_css',
+			// scripts (SG-Optimizer-combined variants share the same handles)
+			'learndash-front',
+			'learndash-main',
+			'learndash-breakpoints',
+			'learndash-course-grid-skin-grid',
+			'learndash-course-grid-elementor',
+			'jquery-dropdown',
+		);
+		foreach ( $front_page_ld_handles as $h ) {
+			wp_dequeue_style( $h );
+			wp_dequeue_script( $h );
+		}
+	}
 
 	// GravityForms only needed on pages that embed a form.
 	if ( ! $has_gform ) {
