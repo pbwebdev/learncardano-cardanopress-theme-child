@@ -1,0 +1,385 @@
+{
+    "key": "group_lc_recipe",
+    "title": "Recipe details",
+    "fields": [
+        {
+            "key": "field_lc_0001_est_time_minutes",
+            "label": "Estimated time (minutes)",
+            "name": "est_time_minutes",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "How long should this recipe take a dev to complete?",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 25,
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_lc_0002_last_verified",
+            "label": "Last verified",
+            "name": "last_verified",
+            "aria-label": "",
+            "type": "date_picker",
+            "instructions": "Last date the code was tested against the current SDK \/ era.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 25,
+                "class": "",
+                "id": ""
+            },
+            "display_format": "Y-m-d",
+            "return_format": "Y-m-d",
+            "first_day": 1,
+            "default_to_current_date": 0
+        },
+        {
+            "key": "field_lc_0003_severity_of_drift",
+            "label": "Risk if outdated",
+            "name": "severity_of_drift",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "How risky is it if this recipe goes stale?",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 25,
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "low": "Low — minor API changes",
+                "medium": "Medium — likely to break",
+                "high": "High — fund loss possible"
+            },
+            "default_value": "medium",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "ui": 1,
+            "ajax": 0,
+            "placeholder": "",
+            "create_options": 0,
+            "save_options": 0
+        },
+        {
+            "key": "field_lc_0004_ai_ready",
+            "label": "AI-ready",
+            "name": "ai_ready",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Has a complete prompt bundle attached.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 25,
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 1,
+            "ui": 1,
+            "ui_on_text": "Yes",
+            "ui_off_text": "No"
+        },
+        {
+            "key": "field_lc_0005_video_url",
+            "label": "Video URL",
+            "name": "video_url",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "Linked Learn Cardano video.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 50,
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "https:\/\/youtu.be\/..."
+        },
+        {
+            "key": "field_lc_0006_github_url",
+            "label": "GitHub URL",
+            "name": "github_url",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "Source code repo for this recipe.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 50,
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "https:\/\/github.com\/learncardano\/..."
+        },
+        {
+            "key": "field_lc_0007_sandbox_url",
+            "label": "Sandbox URL",
+            "name": "sandbox_url",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 50,
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "StackBlitz \/ Demeter Run \/ CodeSandbox"
+        },
+        {
+            "key": "field_lc_0008_demo_url",
+            "label": "Live demo URL",
+            "name": "demo_url",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 50,
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "Optional. Live testnet demo."
+        },
+        {
+            "key": "field_lc_0009_tldr",
+            "label": "TLDR",
+            "name": "tldr",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "One-paragraph summary used for the MCP and search results.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "rows": 3,
+            "new_lines": ""
+        },
+        {
+            "key": "field_lc_000a_prerequisites",
+            "label": "Prerequisites",
+            "name": "prerequisites",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "What does the dev need to know \/ have installed before starting? One per line.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "rows": 3,
+            "new_lines": ""
+        },
+        {
+            "key": "field_lc_000b_learning_outcomes",
+            "label": "Learning outcomes",
+            "name": "learning_outcomes",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "What will the dev be able to do after this recipe? One per line.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "rows": 3,
+            "new_lines": ""
+        },
+        {
+            "key": "field_lc_000c_ai_system_prompt",
+            "label": "AI system prompt",
+            "name": "ai_system_prompt",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "System prompt to drop into Cursor \/ Claude Code when working with this recipe.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "rows": 4,
+            "new_lines": ""
+        },
+        {
+            "key": "field_lc_000d_ai_starter_prompt",
+            "label": "AI starter prompt",
+            "name": "ai_starter_prompt",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "First prompt the dev sends to the AI after loading the bundle.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "rows": 3,
+            "new_lines": ""
+        },
+        {
+            "key": "field_lc_000e_ai_context_files",
+            "label": "AI context files",
+            "name": "ai_context_files",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "Filenames in the GitHub repo to include as AI context. One per line.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "rows": 3,
+            "new_lines": ""
+        },
+        {
+            "key": "field_lc_000f_related_pitfalls",
+            "label": "Related pitfalls",
+            "name": "related_pitfalls",
+            "aria-label": "",
+            "type": "post_object",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "pitfall"
+            ],
+            "post_status": "",
+            "taxonomy": "",
+            "return_format": "id",
+            "multiple": 1,
+            "allow_null": 1,
+            "allow_in_bindings": 1,
+            "bidirectional": 0,
+            "ui": 1,
+            "bidirectional_target": []
+        },
+        {
+            "key": "field_lc_000g_related_concepts",
+            "label": "Related concepts",
+            "name": "related_concepts",
+            "aria-label": "",
+            "type": "post_object",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "concept"
+            ],
+            "post_status": "",
+            "taxonomy": "",
+            "return_format": "id",
+            "multiple": 1,
+            "allow_null": 1,
+            "allow_in_bindings": 1,
+            "bidirectional": 0,
+            "ui": 1,
+            "bidirectional_target": []
+        },
+        {
+            "key": "field_lc_000h_related_recipes",
+            "label": "Related recipes",
+            "name": "related_recipes",
+            "aria-label": "",
+            "type": "post_object",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "recipe"
+            ],
+            "post_status": "",
+            "taxonomy": "",
+            "return_format": "id",
+            "multiple": 1,
+            "allow_null": 1,
+            "allow_in_bindings": 1,
+            "bidirectional": 0,
+            "ui": 1,
+            "bidirectional_target": []
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "recipe"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 1,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1778222850
+}

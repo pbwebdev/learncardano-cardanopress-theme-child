@@ -3,6 +3,8 @@
 require_once 'includes/lockbox.php';
 
 add_theme_support('responsive-embeds');
+add_filter('rest_enabled', '__return_false');
+add_filter( 'wp_is_application_passwords_available', '__return_true' ); 
 
 
 if (! function_exists('lc_widgets_init')) {
@@ -133,3 +135,68 @@ function wpb_modify_jquery()
 }
 // Execute the action when WordPress is initialized
 add_action('init', 'wpb_modify_jquery');
+
+function lc_enqueue_prism() {
+    wp_enqueue_style(
+        'prismjs',
+        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css'
+    );
+    // Copy button plugin CSS
+    wp_enqueue_style(
+        'prismjs-toolbar',
+        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css'
+    );
+    wp_enqueue_script(
+        'prismjs',
+        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js',
+        [], null, true
+    );
+    wp_enqueue_script(
+        'prismjs-autoloader',
+        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js',
+        ['prismjs'], null, true
+    );
+    // Toolbar (required by copy button)
+    wp_enqueue_script(
+        'prismjs-toolbar',
+        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js',
+        ['prismjs'], null, true
+    );
+    // Copy to clipboard plugin
+    wp_enqueue_script(
+        'prismjs-copy',
+        'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js',
+        ['prismjs-toolbar'], null, true
+    );
+}
+add_action('wp_enqueue_scripts', 'lc_enqueue_prism');
+
+function lc_prism_autodetect() {
+    ?>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.wp-block-code code').forEach(function(block) {
+            if (!block.className.includes('language-')) {
+                var text = block.textContent;
+                if (text.includes('import {') || text.includes('async function') || 
+                    text.includes(': string') || text.includes(': number')) {
+                    block.classList.add('language-typescript');
+                } else if (text.includes('npm install') || text.includes('aiken ') || 
+                           text.startsWith('aiken') || text.startsWith('node ')) {
+                    block.classList.add('language-bash');
+                } else if (text.includes('use aiken') || text.includes('validator ') || 
+                           text.includes('pub type')) {
+                    block.classList.add('language-haskell'); // closest to Aiken
+                } else {
+                    block.classList.add('language-javascript');
+                }
+            }
+        });
+        Prism.highlightAll();
+    });
+    </script>
+    <?php
+}
+add_action('wp_footer', 'lc_prism_autodetect');
+
+

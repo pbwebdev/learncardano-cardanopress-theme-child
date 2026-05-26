@@ -1,0 +1,348 @@
+{
+    "key": "group_lc_comparison",
+    "title": "Comparison details",
+    "fields": [
+        {
+            "key": "field_lc_001h_question",
+            "label": "Comparison question",
+            "name": "question",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "e.g. \"Aiken vs Plutus for production validators?\"",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "rows": 2,
+            "new_lines": ""
+        },
+        {
+            "key": "field_lc_001i_tldr",
+            "label": "TLDR recommendation",
+            "name": "tldr",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "Your opinionated take, one paragraph.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "rows": 3,
+            "new_lines": ""
+        },
+        {
+            "key": "field_lc_001j_last_updated",
+            "label": "Last updated",
+            "name": "last_updated",
+            "aria-label": "",
+            "type": "date_picker",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 33,
+                "class": "",
+                "id": ""
+            },
+            "display_format": "Y-m-d",
+            "return_format": "Y-m-d",
+            "first_day": 1,
+            "default_to_current_date": 0
+        },
+        {
+            "key": "field_lc_001k_confidence",
+            "label": "Confidence",
+            "name": "confidence",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 67,
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "exploring": "Exploring — opinion in flux",
+                "settled": "Settled — stable view",
+                "contested": "Contested — community split"
+            },
+            "default_value": "settled",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "ui": 1,
+            "ajax": 0,
+            "placeholder": "",
+            "create_options": 0,
+            "save_options": 0
+        },
+        {
+            "key": "field_lc_001r_options",
+            "label": "Options",
+            "name": "options",
+            "aria-label": "",
+            "type": "repeater",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "collapsed": "",
+            "min": 0,
+            "max": 0,
+            "layout": "block",
+            "button_label": "Add option",
+            "rows_per_page": 20,
+            "sub_fields": [
+                {
+                    "key": "field_lc_001l_option_name",
+                    "label": "Name",
+                    "name": "option_name",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": 25,
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_lc_001r_options"
+                },
+                {
+                    "key": "field_lc_001m_option_summary",
+                    "label": "Summary",
+                    "name": "option_summary",
+                    "aria-label": "",
+                    "type": "textarea",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "rows": 2,
+                    "new_lines": "",
+                    "parent_repeater": "field_lc_001r_options"
+                },
+                {
+                    "key": "field_lc_001n_option_pros",
+                    "label": "Pros (one per line)",
+                    "name": "option_pros",
+                    "aria-label": "",
+                    "type": "textarea",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "rows": 3,
+                    "new_lines": "",
+                    "parent_repeater": "field_lc_001r_options"
+                },
+                {
+                    "key": "field_lc_001o_option_cons",
+                    "label": "Cons (one per line)",
+                    "name": "option_cons",
+                    "aria-label": "",
+                    "type": "textarea",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "rows": 3,
+                    "new_lines": "",
+                    "parent_repeater": "field_lc_001r_options"
+                },
+                {
+                    "key": "field_lc_001p_option_pick_when",
+                    "label": "Pick when",
+                    "name": "option_pick_when",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "One-line: when is this the right choice?",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_lc_001r_options"
+                },
+                {
+                    "key": "field_lc_001q_option_url",
+                    "label": "Reference URL",
+                    "name": "option_url",
+                    "aria-label": "",
+                    "type": "url",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": 50,
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "placeholder": "",
+                    "parent_repeater": "field_lc_001r_options"
+                }
+            ]
+        },
+        {
+            "key": "field_lc_001v_use_case_matrix",
+            "label": "Use case matrix",
+            "name": "use_case_matrix",
+            "aria-label": "",
+            "type": "repeater",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "collapsed": "",
+            "min": 0,
+            "max": 0,
+            "layout": "table",
+            "button_label": "Add use case",
+            "rows_per_page": 20,
+            "sub_fields": [
+                {
+                    "key": "field_lc_001s_use_case",
+                    "label": "Use case",
+                    "name": "use_case",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": 40,
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_lc_001v_use_case_matrix"
+                },
+                {
+                    "key": "field_lc_001t_recommended_option",
+                    "label": "Recommended option",
+                    "name": "recommended_option",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": 30,
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_lc_001v_use_case_matrix"
+                },
+                {
+                    "key": "field_lc_001u_why",
+                    "label": "Why (short)",
+                    "name": "why",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": 30,
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_lc_001v_use_case_matrix"
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "comparison"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 1,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1778222328
+}

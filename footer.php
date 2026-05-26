@@ -114,7 +114,9 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
 			<div class="row">
         		        <div class="copyright text-center">
                 			<small>Copyright &copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="text-light"><?php bloginfo( 'name' ); ?></a></small> -
-                        		<span class="small">Powered by <a href="<?php echo esc_url( $theme->get( 'AuthorURI' ) ); ?>" class="text-light"><?php echo esc_html( $theme->get( 'Author' ) ); ?></a>.</span>
+                        		<span class="small">Powered by <a href="<?php echo esc_url( $theme->get( 'AuthorURI' ) ); ?>" class="text-light"><?php echo esc_html( $theme->get( 'Author' ) ); ?></a></span>
+							-
+							<span class="small"><a href="https://meshwithus.com.au" target="_blank" title="WordPress design and development, Gold Coast">WordPress Design &amp; Development</a> by Mesh with Us</span>
                     		</div>
                 	</div>
 		</div>

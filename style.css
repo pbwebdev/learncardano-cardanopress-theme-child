@@ -774,3 +774,135 @@ a.navbar-brand {
   }
 }
 /*End*/
+
+/* IDE-style code blocks */
+pre[class*="language-"],
+.wp-block-code {
+    background: #1e1e1e !important;  /* VS Code dark background */
+    border-radius: 8px !important;
+    border: 1px solid #333 !important;
+    padding: 1.5rem !important;
+    overflow-x: auto;
+    font-family: 'Fira Code', 'Consolas', 'Monaco', monospace !important;
+    font-size: 0.875rem !important;
+    line-height: 1.6 !important;
+    position: relative;
+}
+
+/* Language badge in top-right corner */
+pre[class*="language-"]::before {
+    content: attr(data-language);
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 0.7rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-family: sans-serif;
+}
+
+/* Inline code */
+.entry-content code:not(pre code) {
+    background: #2d2d2d;
+    color: #e06c75;
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.875em;
+    font-family: 'Fira Code', 'Consolas', monospace;
+}
+
+/* Fix: ensure Prism tokens are visible regardless of theme text colour */
+.wp-block-code,
+pre[class*="language-"],
+pre.wp-block-code {
+    background: #1e1e1e !important;
+    color: #cdd3de !important; /* light fallback for unthemed code */
+    border-radius: 8px !important;
+    padding: 1.25rem 1.5rem !important;
+    overflow-x: auto;
+    font-size: 0.85rem !important;
+    line-height: 1.6 !important;
+    font-family: 'Consolas', 'Monaco', 'Fira Code', monospace !important;
+    margin-bottom: 1.5rem !important;
+}
+
+/* Prism tomorrow theme token fixes — force colours through */
+.wp-block-code .token.keyword,
+pre.wp-block-code .token.keyword { color: #cc99cd !important; }
+
+.wp-block-code .token.string,
+pre.wp-block-code .token.string { color: #7ec699 !important; }
+
+.wp-block-code .token.comment,
+pre.wp-block-code .token.comment { color: #6a9955 !important; font-style: italic; }
+
+.wp-block-code .token.function,
+pre.wp-block-code .token.function { color: #dcdcaa !important; }
+
+.wp-block-code .token.number,
+pre.wp-block-code .token.number { color: #b5cea8 !important; }
+
+.wp-block-code .token.operator,
+pre.wp-block-code .token.operator { color: #d4d4d4 !important; }
+
+.wp-block-code .token.punctuation,
+pre.wp-block-code .token.punctuation { color: #808080 !important; }
+
+.wp-block-code .token.class-name,
+pre.wp-block-code .token.class-name { color: #4ec9b0 !important; }
+
+/* Inline code — matching style */
+.entry-content code:not(pre code) {
+    background: #1e1e1e !important;
+    color: #ce9178 !important;
+    padding: 0.15em 0.45em !important;
+    border-radius: 4px !important;
+    font-size: 0.875em !important;
+    font-family: 'Consolas', 'Monaco', monospace !important;
+    -webkit-text-fill-color: #ce9178 !important; /* override gradient text-fill */
+}
+
+/* Copy button container */
+div.code-toolbar {
+    position: relative;
+}
+
+div.code-toolbar > .toolbar {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.75rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+div.code-toolbar:hover > .toolbar {
+    opacity: 1;
+}
+
+/* The button itself */
+div.code-toolbar > .toolbar > .toolbar-item > button {
+    background: #333 !important;
+    color: #cdd3de !important;
+    border: 1px solid #555 !important;
+    border-radius: 4px !important;
+    padding: 3px 10px !important;
+    font-size: 0.7rem !important;
+    font-family: 'Consolas', monospace !important;
+    cursor: pointer !important;
+    letter-spacing: 0.05em;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+div.code-toolbar > .toolbar > .toolbar-item > button:hover {
+    background: #dc10ff !important;  /* matches your Learn Cardano brand purple */
+    color: #fff !important;
+    border-color: #dc10ff !important;
+}
+
+/* "Copied!" confirmation state */
+div.code-toolbar > .toolbar > .toolbar-item > button.copy-to-clipboard-button[data-copy-state="copy-success"] {
+    background: #0070ff !important;  /* brand blue */
+    color: #fff !important;
+    border-color: #0070ff !important;
+}

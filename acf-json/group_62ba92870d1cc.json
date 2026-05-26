@@ -36,8 +36,9 @@
                 "class": "",
                 "id": ""
             },
-            "default_value": "",
+            "default_value": "6qexEXBnUwca0zAzWlURSu",
             "maxlength": "",
+            "allow_in_bindings": 1,
             "placeholder": "",
             "prepend": "",
             "append": ""
@@ -101,5 +102,8 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1744707028
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1778152347
 }

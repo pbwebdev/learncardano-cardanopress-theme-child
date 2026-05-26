@@ -1,0 +1,414 @@
+{
+    "key": "group_lc_minidapp",
+    "title": "Mini-DApp details",
+    "fields": [
+        {
+            "key": "field_lc_000i_dapp_status",
+            "label": "Status",
+            "name": "dapp_status",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 33,
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "preview-testnet": "Preview testnet",
+                "preprod": "Preprod",
+                "mainnet": "Mainnet",
+                "draft": "Draft \/ WIP"
+            },
+            "default_value": "preview-testnet",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "ui": 1,
+            "ajax": 0,
+            "placeholder": "",
+            "create_options": 0,
+            "save_options": 0
+        },
+        {
+            "key": "field_lc_000j_last_verified",
+            "label": "Last verified",
+            "name": "last_verified",
+            "aria-label": "",
+            "type": "date_picker",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 33,
+                "class": "",
+                "id": ""
+            },
+            "display_format": "Y-m-d",
+            "return_format": "Y-m-d",
+            "first_day": 1,
+            "default_to_current_date": 0
+        },
+        {
+            "key": "field_lc_000k_version",
+            "label": "Version",
+            "name": "version",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 33,
+                "class": "",
+                "id": ""
+            },
+            "default_value": "0.1.0",
+            "maxlength": "",
+            "placeholder": "0.1.0",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_lc_000l_github_url",
+            "label": "GitHub URL",
+            "name": "github_url",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 50,
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "https:\/\/github.com\/learncardano\/..."
+        },
+        {
+            "key": "field_lc_000m_demo_url",
+            "label": "Live demo URL",
+            "name": "demo_url",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 50,
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "Hosted testnet demo"
+        },
+        {
+            "key": "field_lc_000n_sandbox_url",
+            "label": "Sandbox URL",
+            "name": "sandbox_url",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 50,
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "StackBlitz \/ Demeter Run"
+        },
+        {
+            "key": "field_lc_000o_video_series_url",
+            "label": "Video series URL",
+            "name": "video_series_url",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 50,
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "YouTube playlist"
+        },
+        {
+            "key": "field_lc_000p_tldr",
+            "label": "TLDR",
+            "name": "tldr",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "rows": 3,
+            "new_lines": ""
+        },
+        {
+            "key": "field_lc_000q_architecture_summary",
+            "label": "Architecture summary",
+            "name": "architecture_summary",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "Plain-English description of validator + off-chain + frontend pieces.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "rows": 5,
+            "new_lines": ""
+        },
+        {
+            "key": "field_lc_000r_on_chain_lang",
+            "label": "On-chain language(s)",
+            "name": "on_chain_lang",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "e.g. Aiken, Plutus, Plutarch",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "rows": 1,
+            "new_lines": ""
+        },
+        {
+            "key": "field_lc_000s_off_chain_stack",
+            "label": "Off-chain stack",
+            "name": "off_chain_stack",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "e.g. Mesh, Evolution SDK, PyCardano",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "rows": 1,
+            "new_lines": ""
+        },
+        {
+            "key": "field_lc_000t_frontend_stack",
+            "label": "Frontend stack",
+            "name": "frontend_stack",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "e.g. Next.js, SvelteKit, vanilla HTML",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "rows": 1,
+            "new_lines": ""
+        },
+        {
+            "key": "field_lc_000x_tx_examples",
+            "label": "Example transactions",
+            "name": "tx_examples",
+            "aria-label": "",
+            "type": "repeater",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "collapsed": "",
+            "min": 0,
+            "max": 0,
+            "layout": "table",
+            "button_label": "Add transaction",
+            "rows_per_page": 20,
+            "sub_fields": [
+                {
+                    "key": "field_lc_000u_tx_label",
+                    "label": "Label",
+                    "name": "tx_label",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": 30,
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_lc_000x_tx_examples"
+                },
+                {
+                    "key": "field_lc_000v_tx_hash",
+                    "label": "Tx hash",
+                    "name": "tx_hash",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": 50,
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_lc_000x_tx_examples"
+                },
+                {
+                    "key": "field_lc_000w_tx_network",
+                    "label": "Network",
+                    "name": "tx_network",
+                    "aria-label": "",
+                    "type": "select",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": 20,
+                        "class": "",
+                        "id": ""
+                    },
+                    "choices": {
+                        "preview": "Preview",
+                        "preprod": "Preprod",
+                        "mainnet": "Mainnet"
+                    },
+                    "default_value": false,
+                    "return_format": "value",
+                    "multiple": 0,
+                    "allow_null": 0,
+                    "ui": 1,
+                    "ajax": 0,
+                    "placeholder": "",
+                    "create_options": 0,
+                    "save_options": 0,
+                    "parent_repeater": "field_lc_000x_tx_examples"
+                }
+            ]
+        },
+        {
+            "key": "field_lc_000y_composed_of_recipes",
+            "label": "Composed of recipes",
+            "name": "composed_of_recipes",
+            "aria-label": "",
+            "type": "post_object",
+            "instructions": "Recipes that explain parts of this DApp.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "recipe"
+            ],
+            "post_status": "",
+            "taxonomy": "",
+            "return_format": "id",
+            "multiple": 1,
+            "allow_null": 1,
+            "allow_in_bindings": 1,
+            "bidirectional": 0,
+            "ui": 1,
+            "bidirectional_target": []
+        },
+        {
+            "key": "field_lc_000z_related_pitfalls",
+            "label": "Related pitfalls",
+            "name": "related_pitfalls",
+            "aria-label": "",
+            "type": "post_object",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "pitfall"
+            ],
+            "post_status": "",
+            "taxonomy": "",
+            "return_format": "id",
+            "multiple": 1,
+            "allow_null": 1,
+            "allow_in_bindings": 1,
+            "bidirectional": 0,
+            "ui": 1,
+            "bidirectional_target": []
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "minidapp"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 1,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1778234125
+}
