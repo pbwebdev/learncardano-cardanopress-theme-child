@@ -185,6 +185,10 @@ function lc_enqueue_prism() {
         'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js',
         ['prismjs-toolbar'], null, true
     );
+
+    foreach ( array( 'prismjs', 'prismjs-autoloader', 'prismjs-toolbar', 'prismjs-copy' ) as $handle ) {
+        wp_script_add_data( $handle, 'strategy', 'defer' );
+    }
 }
 add_action('wp_enqueue_scripts', 'lc_enqueue_prism');
 
