@@ -121,20 +121,10 @@ function enable_proposal_comments()
 }
 
 
-function wpb_modify_jquery()
-{
-	// Check if front-end is being viewed
-	if (!is_admin()) {
-		// Remove default WordPress jQuery
-		wp_deregister_script('jquery');
-		// Register new jQuery script via Google Library
-		wp_register_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js', false, '3.6.0');
-		// Enqueue the script
-		wp_enqueue_script('jquery');
-	}
-}
-// Execute the action when WordPress is initialized
-add_action('init', 'wpb_modify_jquery');
+// jQuery is intentionally left at WordPress's bundled version so it can be
+// served from the site's own origin (cacheable by Cloudflare) instead of
+// ajax.googleapis.com. The previous Google-CDN swap added a third-party DNS
+// hop with no benefit on a Cloudflare-fronted site.
 
 function lc_post_has_code_block() {
     if ( ! is_singular() ) {
