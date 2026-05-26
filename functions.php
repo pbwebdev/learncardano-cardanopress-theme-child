@@ -121,6 +121,89 @@ function enable_proposal_comments()
 }
 
 /**
+ * Dequeue plugin assets on pages that don't need them.
+ *
+ * The site loads ~18 render-blocking stylesheets on every page from
+ * plugins whose features aren't actually used there (LearnDash on a
+ * podcast post, GravityForms on every page, etc.). Strip those so
+ * each page only pays for what it actually renders.
+ *
+ * Runs at priority 100 so it fires after plugins have enqueued.
+ */
+add_action( 'wp_enqueue_scripts', function () {
+	if ( is_admin() ) {
+		return;
+	}
+
+	$post           = is_singular() ? get_post() : null;
+	$post_content   = $post ? $post->post_content : '';
+	$post_type      = $post ? $post->post_type : '';
+	$is_learndash   = in_array( $post_type, array( 'sfwd-courses', 'sfwd-lessons', 'sfwd-topic', 'sfwd-quiz', 'sfwd-assignment', 'sfwd-certificates', 'groups' ), true )
+		|| ( function_exists( 'is_post_type_archive' ) && is_post_type_archive( array( 'sfwd-courses', 'sfwd-lessons', 'sfwd-topic', 'sfwd-quiz' ) ) );
+	$has_gform      = $post_content && (
+		has_shortcode( $post_content, 'gravityform' )
+		|| has_shortcode( $post_content, 'gravityforms' )
+		|| ( function_exists( 'has_block' ) && has_block( 'gravityforms/form', $post ) )
+	);
+	$has_popup      = $post_content && (
+		has_shortcode( $post_content, 'wppopup' )
+		|| has_shortcode( $post_content, 'wppopups' )
+	);
+
+	// Frontend never needs dashicons unless the admin bar is showing.
+	if ( ! is_admin_bar_showing() ) {
+		wp_dequeue_style( 'dashicons' );
+		wp_deregister_style( 'dashicons' );
+	}
+
+	// LearnDash CSS + JS bundle. Keep on LearnDash post types/archives only.
+	if ( ! $is_learndash ) {
+		$learndash_handles = array(
+			'learndash-css',
+			'learndash_quiz_front_css',
+			'learndash_lesson_video',
+			'learndash-admin-bar',
+			'learndash-course-grid-skin-grid',
+			'learndash-course-grid-pagination',
+			'learndash-course-grid-filter',
+			'learndash-course-grid-card-grid-1',
+			'learndash-front',
+			'jquery-dropdown-css',
+			'wpProQuiz_front_style',
+			'wpProQuiz_front_javascript',
+			'learndash-front-js',
+			'learndash-course-grid-skin-grid-js',
+		);
+		foreach ( $learndash_handles as $h ) {
+			wp_dequeue_style( $h );
+			wp_dequeue_script( $h );
+		}
+	}
+
+	// GravityForms only needed on pages that embed a form.
+	if ( ! $has_gform ) {
+		foreach ( array( 'gform_basic', 'gform_theme_components', 'gform_theme', 'gform_legacy_multifile', 'gform_chosen' ) as $h ) {
+			wp_dequeue_style( $h );
+		}
+		foreach ( array( 'gform_gravityforms', 'gform_conditional_logic', 'gform_json', 'gform_textarea_counter', 'gform_masked_input', 'gform_chosen' ) as $h ) {
+			wp_dequeue_script( $h );
+		}
+	}
+
+	// wp-popups-lite only needed when a popup is actually triggered on the page.
+	if ( ! $has_popup ) {
+		wp_dequeue_style( 'wppopups-base' );
+		wp_dequeue_script( 'wppopups-base' );
+	}
+
+	// UserAccessManager's login-form CSS only matters on its own login form.
+	// Drop it on regular content; it'll still load if UAM injects its form.
+	if ( ! is_page( 'login' ) && ! is_page( 'register' ) ) {
+		wp_dequeue_style( 'UserAccessManagerLoginForm' );
+	}
+}, 100 );
+
+/**
  * Add preconnect / dns-prefetch hints for the third-party origins the
  * site loads on every page (analytics, embedded media). Lets the browser
  * warm DNS + TLS in parallel with HTML parsing instead of waiting until
