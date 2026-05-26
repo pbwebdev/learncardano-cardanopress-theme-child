@@ -136,7 +136,24 @@ function wpb_modify_jquery()
 // Execute the action when WordPress is initialized
 add_action('init', 'wpb_modify_jquery');
 
+function lc_post_has_code_block() {
+    if ( ! is_singular() ) {
+        return false;
+    }
+    $post = get_post();
+    if ( ! $post ) {
+        return false;
+    }
+    if ( function_exists( 'has_block' ) && has_block( 'code', $post ) ) {
+        return true;
+    }
+    return ( false !== stripos( $post->post_content, '<pre' ) && false !== stripos( $post->post_content, '<code' ) );
+}
+
 function lc_enqueue_prism() {
+    if ( ! lc_post_has_code_block() ) {
+        return;
+    }
     wp_enqueue_style(
         'prismjs',
         'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css'
