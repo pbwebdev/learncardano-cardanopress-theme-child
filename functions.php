@@ -147,11 +147,12 @@ add_action( 'wp_enqueue_scripts', function () {
 		|| has_shortcode( $post_content, 'wppopups' )
 	);
 
-	// Frontend never needs dashicons unless the admin bar is showing.
-	if ( ! is_admin_bar_showing() ) {
-		wp_dequeue_style( 'dashicons' );
-		wp_deregister_style( 'dashicons' );
-	}
+	// Note: an earlier version of this function deregistered `dashicons` for
+	// anonymous frontend visitors. Don't. LearnDash registers `learndash-front`
+	// (the entire LD30 theme stylesheet) with `dashicons` as a dependency, so
+	// dropping dashicons silently dropped LD30 from every page on the site
+	// and the LearnDash login modal rendered as raw HTML above the layout.
+	// Saving was tiny; the breakage was not.
 
 	// Note: LearnDash dequeue was tried and backed out — LearnDash routes
 	// some URLs in ways that make the post-type detection unreliable, and
