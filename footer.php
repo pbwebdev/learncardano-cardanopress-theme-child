@@ -127,10 +127,10 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
                 	</div>
 		</div>
 	</footer>
-	<iframe src='https://widget.spreaker.com/player?show_id=4856207&theme=dark&playlist=show&playlist-continuous=true&chapters-image=true' width='100%' height='50px' title='Learn Cardano Podcast' frameborder='0' class="fixed-bottom" ></iframe>
+	<iframe src='https://widget.spreaker.com/player?show_id=4856207&theme=dark&playlist=show&playlist-continuous=true&chapters-image=true' width='100%' height='50px' title='Learn Cardano Podcast' frameborder='0' loading='lazy' class="fixed-bottom" ></iframe>
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="<?php echo esc_url( get_stylesheet_directory_uri() ); ?>/assets/bootstrap/bootstrap.bundle.min.js" defer></script>
 
 		<?php wp_footer(); ?>
 
