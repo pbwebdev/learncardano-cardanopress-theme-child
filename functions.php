@@ -179,10 +179,15 @@ function lc_enqueue_prism() {
 add_action('wp_enqueue_scripts', 'lc_enqueue_prism');
 
 function lc_prism_autodetect() {
+    if ( ! lc_post_has_code_block() ) {
+        return;
+    }
     ?>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.wp-block-code code').forEach(function(block) {
+        var blocks = document.querySelectorAll('.wp-block-code code');
+        if (!blocks.length) { return; }
+        blocks.forEach(function(block) {
             if (!block.className.includes('language-')) {
                 var text = block.textContent;
                 if (text.includes('import {') || text.includes('async function') || 
