@@ -154,37 +154,13 @@ add_action( 'wp_enqueue_scripts', function () {
 	// and the LearnDash login modal rendered as raw HTML above the layout.
 	// Saving was tiny; the breakage was not.
 
-	// LearnDash CSS + JS bundle: only safe to strip on the homepage, which
-	// uses front-page.php (verified to contain no LD shortcodes/blocks/queries).
-	// Going broader was tried in PR #9 and broke course pages — restricted to
-	// is_front_page() only this time. Verified via wp_styles->registered that
-	// nothing else in the registered styles list depends on these handles,
-	// so dequeuing them here doesn't cascade.
+	// LearnDash + GravityForms dequeue on the homepage only.
+	// front-page.php is verified static HTML with no LD/GF shortcodes/blocks.
 	if ( is_front_page() ) {
-		$front_page_ld_handles = array(
-			// styles
-			'learndash',
-			'learndash-front',
-			'learndash-admin-bar',
-			'learndash-course-grid-skin-grid',
-			'learndash-course-grid-pagination',
-			'learndash-course-grid-filter',
-			'learndash-course-grid-card-grid-1',
-			'jquery-dropdown-css',
-			'learndash_lesson_video',
-			'learndash_quiz_front_css',
-			// scripts (SG-Optimizer-combined variants share the same handles)
-			'learndash-front',
-			'learndash-main',
-			'learndash-breakpoints',
-			'learndash-course-grid-skin-grid',
-			'learndash-course-grid-elementor',
-			'jquery-dropdown',
-		);
-		foreach ( $front_page_ld_handles as $h ) {
-			wp_dequeue_style( $h );
-			wp_dequeue_script( $h );
-		}
+		// Marker for the late wp_print_styles handler below — same logic
+		// but at a later hook so it catches plugins (notably GravityForms)
+		// that enqueue past priority 100 of wp_enqueue_scripts.
+		$GLOBALS['lc_front_page_dequeue'] = true;
 	}
 
 	// GravityForms only needed on pages that embed a form.
@@ -211,6 +187,110 @@ add_action( 'wp_enqueue_scripts', function () {
 }, 100 );
 
 /**
+ * Late dequeue pass on the homepage — runs at wp_print_styles / wp_print_scripts
+ * so it fires after every plugin's wp_enqueue_scripts hook, including ones that
+ * enqueue at priorities > 100 (notably GravityForms).
+ *
+ * Handle names below match what is actually present in $wp_scripts->queue and
+ * $wp_styles->queue on the live homepage, not what I inferred from CSS link
+ * IDs in the HTML (those didn't always match the underlying handle name).
+ */
+add_action( 'wp_print_styles', function () {
+	if ( empty( $GLOBALS['lc_front_page_dequeue'] ) ) {
+		return;
+	}
+	$styles = array(
+		// LearnDash bundle (homepage has no LD content).
+		'learndash',
+		'learndash-front',
+		'learndash-admin-bar',
+		'learndash-course-grid-skin-grid',
+		'learndash-course-grid-pagination',
+		'learndash-course-grid-filter',
+		'learndash-course-grid-card-grid-1',
+		'learndash-course-reviews',
+		'jquery-dropdown-css',
+		'learndash_lesson_video',
+		'learndash_quiz_front_css',
+		// GravityForms bundle (no form on the homepage).
+		'gform_basic',
+		'gform_theme',
+		'gform_theme_components',
+		'gform_legacy_multifile',
+		'gform_chosen',
+	);
+	foreach ( $styles as $h ) {
+		wp_dequeue_style( $h );
+	}
+}, 100 );
+
+add_action( 'wp_print_scripts', function () {
+	if ( empty( $GLOBALS['lc_front_page_dequeue'] ) ) {
+		return;
+	}
+	$scripts = array(
+		// LearnDash JS (verified from live queue).
+		'learndash_pager_js',
+		'learndash_template_script_js',
+		'jquery-dropdown-js',
+		'learndash-course-grid-elementor-compatibility',
+		// GravityForms JS.
+		'gform_gravityforms',
+		'gform_conditional_logic',
+		'gform_json',
+		'gform_textarea_counter',
+		'gform_masked_input',
+		'gform_chosen',
+		'gform_placeholder',
+	);
+	foreach ( $scripts as $h ) {
+		wp_dequeue_script( $h );
+	}
+}, 100 );
+
+/**
+ * Defer non-critical scripts.
+ *
+ * PSI's "render-blocking requests" audit flagged jquery, jquery-migrate,
+ * cardanopress-bootstrap-script, lazysizes, image-watermark, wppopups, and
+ * the WP @wordpress/* runtime bundles (hooks, dom-ready, i18n, a11y) as
+ * blocking. None of them need to execute before first paint:
+ *  - jQuery is still loaded for plugin compat but no inline scripts in our
+ *    header use it before footer.
+ *  - cardanopress-bootstrap-script handles wallet UI, late wiring is fine.
+ *  - lazysizes / image-watermark / wppopups are progressive enhancements.
+ *
+ * jquery-core is left as-is (the WP-bundled handle has too many ad-hoc
+ * inline-script consumers to safely defer site-wide).
+ */
+add_filter( 'script_loader_tag', function ( $tag, $handle ) {
+	if ( is_admin() ) {
+		return $tag;
+	}
+	$defer = array(
+		'jquery-migrate',
+		'cardanopress_bootstrap-script',
+		'cardanopress-script',
+		'cardanopress-notification',
+		'image-watermark-no-right-click',
+		'siteground-optimizer-lazy-sizes-js',
+		'wppopups',
+		'wp-hooks',
+		'wp-dom-ready',
+		'wp-i18n',
+		'wp-a11y',
+	);
+	if ( ! in_array( $handle, $defer, true ) ) {
+		return $tag;
+	}
+	// Don't double-add and don't break tags that already have async/module.
+	if ( false !== strpos( $tag, ' defer ' ) || false !== strpos( $tag, ' async' ) || false !== strpos( $tag, ' type=\'module\'' ) ) {
+		return $tag;
+	}
+	return preg_replace( '/(?=><\/script>)/', ' defer', $tag, 1 );
+}, 10, 2 );
+
+/**
  * Add preconnect / dns-prefetch hints for the third-party origins the
  * site loads on every page (analytics, embedded media). Lets the browser
  * warm DNS + TLS in parallel with HTML parsing instead of waiting until
@@ -220,7 +300,8 @@ add_filter( 'wp_resource_hints', function ( $urls, $relation_type ) {
 	if ( 'preconnect' === $relation_type ) {
 		$urls[] = array( 'href' => 'https://www.googletagmanager.com', 'crossorigin' );
 		$urls[] = array( 'href' => 'https://widget.spreaker.com', 'crossorigin' );
-		$urls[] = array( 'href' => 'https://cdn.jsdelivr.net', 'crossorigin' );
+		// Note: cdn.jsdelivr.net preconnect was removed once Bootstrap was
+		// self-hosted (PR #10) — PSI flagged it as an unused preconnect.
 	}
 	if ( 'dns-prefetch' === $relation_type ) {
 		$urls[] = 'https://i.ytimg.com';
