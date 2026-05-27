@@ -120,7 +120,7 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
 							<?php
 							$lc_build = @include get_stylesheet_directory() . '/build-version.php';
 							if ( is_array( $lc_build ) && ! empty( $lc_build['sha'] ) ) {
-								echo ' - <span class="small text-light-emphasis">Build ' . esc_html( $lc_build['date'] ) . ' &middot; ' . esc_html( $lc_build['sha'] ) . '</span>';
+								echo ' - <span class="small">Build ' . esc_html( $lc_build['date'] ) . ' &middot; ' . esc_html( $lc_build['sha'] ) . '</span>';
 							}
 							?>
                     		</div>

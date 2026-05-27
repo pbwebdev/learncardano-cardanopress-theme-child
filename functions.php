@@ -249,41 +249,36 @@ add_action( 'wp_print_scripts', function () {
 }, 100 );
 
 /**
- * Defer non-critical scripts.
+ * Defer non-critical scripts (safe subset only).
  *
- * PSI's "render-blocking requests" audit flagged jquery, jquery-migrate,
- * cardanopress-bootstrap-script, lazysizes, image-watermark, wppopups, and
- * the WP @wordpress/* runtime bundles (hooks, dom-ready, i18n, a11y) as
- * blocking. None of them need to execute before first paint:
- *  - jQuery is still loaded for plugin compat but no inline scripts in our
- *    header use it before footer.
- *  - cardanopress-bootstrap-script handles wallet UI, late wiring is fine.
- *  - lazysizes / image-watermark / wppopups are progressive enhancements.
+ * An earlier version of this filter also deferred cardanopress-bootstrap-script,
+ * cardanopress-script, cardanopress-notification, jquery-migrate, and the
+ * @wordpress/* runtime bundles (wp-hooks, wp-dom-ready, wp-i18n, wp-a11y).
+ * That broke the live site in two ways:
  *
- * jquery-core is left as-is (the WP-bundled handle has too many ad-hoc
- * inline-script consumers to safely defer site-wide).
+ *  1. The body element has x-data="cardanoPress" — Alpine evaluates that
+ *     expression as soon as alpinejs.min.js runs. If cardanopress-bootstrap-script
+ *     hasn't run yet (because we deferred it), the cardanoPress() function
+ *     doesn't exist and every directive that references isConnected / showModal /
+ *     supportedWallets / $store.toastNotification throws a ReferenceError.
+ *  2. wp-i18n / wp-hooks etc. emit inline-after scripts that synchronously
+ *     reference the `wp` global. Deferring the parent module breaks those
+ *     inline blocks ("wp is not defined").
+ *
+ * Reverted to a small, demonstrably safe defer list — purely progressive-
+ * enhancement assets with no inline-after / Alpine consumers.
  */
 add_filter( 'script_loader_tag', function ( $tag, $handle ) {
 	if ( is_admin() ) {
 		return $tag;
 	}
 	$defer = array(
-		'jquery-migrate',
-		'cardanopress_bootstrap-script',
-		'cardanopress-script',
-		'cardanopress-notification',
 		'image-watermark-no-right-click',
 		'siteground-optimizer-lazy-sizes-js',
-		'wppopups',
-		'wp-hooks',
-		'wp-dom-ready',
-		'wp-i18n',
-		'wp-a11y',
 	);
 	if ( ! in_array( $handle, $defer, true ) ) {
 		return $tag;
 	}
-	// Don't double-add and don't break tags that already have async/module.
 	if ( false !== strpos( $tag, ' defer ' ) || false !== strpos( $tag, ' async' ) || false !== strpos( $tag, ' type=\'module\'' ) ) {
 		return $tag;
 	}
