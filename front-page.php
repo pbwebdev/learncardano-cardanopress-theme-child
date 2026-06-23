@@ -250,7 +250,6 @@ get_header();
 
   const TAGS = [
     { text: 'Catalyst',       x: 67.6, y: 59, depth: 0.8, href: '#' },
-    { text: 'DReps',          x: 12.7, y: 27, depth: 1.4, href: '#' },
     { text: 'Midnight',       x: 49.2, y: 21, depth: 1.3, href: '#' },
     { text: 'Plutus',         x: 78,   y: 48, depth: 0.5, href: '#' },
     { text: 'Hydra',          x: 10.8, y: 70, depth: 1.7, href: '#' },
