@@ -22,18 +22,7 @@ if ( ! $query->have_posts() ) {
 	return;
 }
 
-/**
- * Resolve the episode thumbnail URL, falling back to the bundled cover art.
- */
-if ( ! function_exists( 'lc_episode_thumb_url' ) ) {
-	function lc_episode_thumb_url( $size = 'medium_large' ) {
-		$url = get_the_post_thumbnail_url( get_the_ID(), $size );
-		if ( ! $url ) {
-			$url = get_stylesheet_directory_uri() . '/images/learn-cardano-podcast-cover.jpg';
-		}
-		return $url;
-	}
-}
+// lc_episode_thumb_url() is defined in functions.php (shared with the archive).
 
 $index = 0;
 ?>

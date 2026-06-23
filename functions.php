@@ -121,6 +121,20 @@ function enable_proposal_comments()
 }
 
 /**
+ * Resolve an episode's thumbnail URL, falling back to the bundled cover art.
+ * Shared by the home Latest Episodes section and the podcast archive.
+ */
+if ( ! function_exists( 'lc_episode_thumb_url' ) ) {
+	function lc_episode_thumb_url( $size = 'medium_large' ) {
+		$url = get_the_post_thumbnail_url( get_the_ID(), $size );
+		if ( ! $url ) {
+			$url = get_stylesheet_directory_uri() . '/images/learn-cardano-podcast-cover.jpg';
+		}
+		return $url;
+	}
+}
+
+/**
  * Dequeue plugin assets on pages that don't need them.
  *
  * The site loads ~18 render-blocking stylesheets on every page from
