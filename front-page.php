@@ -411,37 +411,21 @@ get_header();
 })();
 </script>
 		
-        <div class="latest section">
-            <div class="container">
-                <div class="row latest-intro justify-content-md-center">
-                    <div class="col-md-10">
-                        <h2 class="my-1"><span class="fa-solid fa-podcast"></span> Latest Episodes</h2>
-                        <div class="row my-3 ">
-                            <div class="latest-intro col-md-6">
-                                <p class="latest-episodes ">
-                                    View all of our latest episodes anywhere you listen to your favour podcasts and on YouTube.
-                                </p>
-                            </div>
-                            <div class="col-md-6 latest-cta text-center">
-                                <a class="view-all btn btn-secondary float-md-end" href="/podcasts/">
-                                    All Episodes
-                                </a>
-                            </div>
-                        </div>
+        <section class="lep">
+            <div class="lep__inner">
+                <div class="lep__header">
+                    <div class="lep__head-text">
+                        <h2 class="lep__title">Latest Episodes</h2>
+                        <p class="lep__sub">View all of our latest episodes anywhere you listen to your favourite podcasts, and on YouTube.</p>
                     </div>
+                    <a class="lep__all" href="/podcasts/">
+                        All episodes
+                        <span class="lep__all-arrow" aria-hidden="true"></span>
+                    </a>
                 </div>
-                <div class="episode-list ">
-                    <div class="row  justify-content-md-center">
-                        <div class="col-md-10">
-                            <?php get_template_part( 'template-parts/home', 'podcasts' ); ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="episode-cta  text-center">
-                    <a href="/podcasts/" class="btn-secondary btn">All episodes</a>
-                </div>
+                <?php get_template_part( 'template-parts/home', 'podcasts' ); ?>
             </div>
-        </div>
+        </section>
 
     </main><!-- .content -->
 
