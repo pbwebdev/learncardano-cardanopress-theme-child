@@ -43,9 +43,9 @@ body{font-family:"Open Sans",sans-serif;color:#222 !important}h1,h2,h3,.navbar-b
 .lep__date{font-family:'Mulish',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#9333ea;margin-bottom:14px}
 
 /* featured card */
-.lep__featured{display:grid;grid-template-columns:1.15fr 1fr;background:#fff;border:1px solid #ececec;border-radius:18px;overflow:hidden;box-shadow:0 1px 2px rgba(20,20,30,0.04);margin-bottom:24px;transition:box-shadow .2s ease}
+.lep__featured{display:grid;grid-template-columns:1.15fr 1fr;align-items:center;background:#fff;border:1px solid #ececec;border-radius:18px;overflow:hidden;box-shadow:0 1px 2px rgba(20,20,30,0.04);margin-bottom:24px;transition:box-shadow .2s ease}
 .lep__featured:hover{box-shadow:0 20px 46px rgba(20,20,30,0.13)}
-.lep__media--featured{min-height:300px}
+.lep__media--featured{aspect-ratio:16/9}
 .lep__body{display:flex;flex-direction:column;justify-content:center;padding:40px}
 .lep__ftitle{font-family:'Chivo',sans-serif;font-weight:900;font-size:30px;line-height:1.12;letter-spacing:-0.02em;color:#15151a;margin:0 0 16px}
 .lep__excerpt{font-family:'Mulish',sans-serif;font-size:15.5px;line-height:1.6;color:#5e5e66;margin:0 0 26px}
@@ -54,9 +54,9 @@ body{font-family:"Open Sans",sans-serif;color:#222 !important}h1,h2,h3,.navbar-b
 
 /* list cards */
 .lep__list{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-.lep__card{display:grid;grid-template-columns:200px 1fr;background:#fff;border:1px solid #ececec;border-radius:14px;overflow:hidden;box-shadow:0 1px 2px rgba(20,20,30,0.04);transition:box-shadow .2s ease,transform .2s ease}
+.lep__card{display:grid;grid-template-columns:200px 1fr;align-items:center;background:#fff;border:1px solid #ececec;border-radius:14px;overflow:hidden;box-shadow:0 1px 2px rgba(20,20,30,0.04);transition:box-shadow .2s ease,transform .2s ease}
 .lep__card:hover{box-shadow:0 14px 34px rgba(20,20,30,0.11);transform:translateY(-3px)}
-.lep__media--card{min-height:130px}
+.lep__media--card{aspect-ratio:16/9}
 .lep__card-body{display:flex;flex-direction:column;justify-content:center;padding:18px 20px}
 .lep__card-body .lep__date{font-size:11.5px;letter-spacing:0.05em;margin-bottom:8px}
 .lep__card-title{font-family:'Chivo',sans-serif;font-weight:800;font-size:17px;line-height:1.2;letter-spacing:-0.01em;color:#17171c;margin:0 0 10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -112,11 +112,11 @@ body{font-family:"Open Sans",sans-serif;color:#222 !important}h1,h2,h3,.navbar-b
 /* card list */
 .pa__wrap{max-width:1080px;margin:0 auto;padding:44px 24px 8px}
 .pa__list{display:flex;flex-direction:column;gap:24px}
-.pa__card{display:grid;grid-template-columns:1.02fr 1fr;background:#fff;border-radius:18px;overflow:hidden;text-decoration:none;box-shadow:0 1px 3px rgba(20,20,30,0.06);transition:box-shadow .22s ease,transform .22s ease}
+.pa__card{display:grid;grid-template-columns:1.02fr 1fr;align-items:center;background:#fff;border-radius:18px;overflow:hidden;text-decoration:none;box-shadow:0 1px 3px rgba(20,20,30,0.06);transition:box-shadow .22s ease,transform .22s ease}
 .pa__card:hover{box-shadow:0 22px 48px rgba(20,20,30,0.14);transform:translateY(-3px)}
 
 /* media */
-.pa__media{position:relative;min-height:300px;overflow:hidden;background:#16161d}
+.pa__media{position:relative;aspect-ratio:16/9;overflow:hidden;background:#16161d}
 .pa__media-img{position:absolute;inset:0;background-size:cover;background-position:center}
 .pa__badge{position:absolute;top:18px;left:18px;z-index:2;background:#9333ea;color:#fff;font-family:'Mulish',sans-serif;font-size:11.5px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:7px 14px;border-radius:8px}
 .pa__play{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center}
