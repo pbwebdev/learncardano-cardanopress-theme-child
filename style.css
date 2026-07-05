@@ -152,3 +152,15 @@ body{font-family:"Open Sans",sans-serif;color:#222 !important}h1,h2,h3,.navbar-b
   .pa__body{padding:26px 24px 30px}
   .pa__title{font-size:22px}
 }
+
+/* podcast archive card: no hover underline + inverted play button on hover */
+.podcast-archive .pa__card,
+.podcast-archive .pa__card:hover,
+.podcast-archive .pa__card:focus,
+.podcast-archive .pa__card:hover .pa__title,
+.podcast-archive .pa__card:hover .pa__excerpt,
+.podcast-archive .pa__card:hover .pa__date,
+.podcast-archive .pa__card:hover .pa__comments{text-decoration:none}
+.pa__btn{transition:background .18s ease,color .18s ease,box-shadow .18s ease}
+.pa__card:hover .pa__btn{background:#fff;color:#9333ea;box-shadow:inset 0 0 0 2px #9333ea}
+.pa__card:hover .pa__btn-tri{border-left-color:#9333ea}
