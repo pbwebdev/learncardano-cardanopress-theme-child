@@ -24,6 +24,51 @@ get_header();
 
         <?php while (have_posts()) : the_post(); ?>
 
+            <?php
+            /**
+             * PodcastEpisode structured data (Schema.org JSON-LD).
+             * Built as a PHP array and emitted with wp_json_encode() so all
+             * escaping (quotes, newlines, unicode) is handled automatically.
+             * audio + duration are intentionally omitted — the podcast has no
+             * direct MP3/duration data source (episodes are Spotify/YouTube embeds).
+             */
+            $lc_schema = array(
+                '@context'      => 'https://schema.org',
+                '@type'         => 'PodcastEpisode',
+                'name'          => get_the_title(),
+                'url'           => get_permalink(),
+                'datePublished' => get_the_date('Y-m-d'),
+                'partOfSeries'  => array(
+                    '@type' => 'PodcastSeries',
+                    'name'  => 'Learn Cardano Podcast',
+                    'url'   => home_url('/podcasts/'),
+                ),
+            );
+
+            // Description: manual excerpt if set, else a trimmed version of the show notes.
+            $lc_desc = has_excerpt()
+                ? get_the_excerpt()
+                : wp_trim_words( wp_strip_all_tags( get_the_content() ), 60, '…' );
+            $lc_desc = trim( wp_strip_all_tags( $lc_desc ) );
+            if ( $lc_desc !== '' ) {
+                $lc_schema['description'] = $lc_desc;
+            }
+
+            // Transcript: strip markup to plain text and collapse whitespace.
+            // json_encode escapes the quotes/newlines, so the string stays valid.
+            $lc_transcript = get_field('text_transcript');
+            if ( $lc_transcript ) {
+                $lc_transcript = trim( preg_replace( '/\s+/u', ' ', wp_strip_all_tags( $lc_transcript ) ) );
+                if ( $lc_transcript !== '' ) {
+                    $lc_schema['transcript'] = $lc_transcript;
+                }
+            }
+
+            echo '<script type="application/ld+json">'
+                . wp_json_encode( $lc_schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE )
+                . '</script>' . "\n";
+            ?>
+
             <article id="podcast-<?php the_ID(); ?>" class="entry-wrapper">
 
                 <div class="content-header py-3">
