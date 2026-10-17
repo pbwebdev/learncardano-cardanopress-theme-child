@@ -1,0 +1,85 @@
+{
+    "key": "group_lcc_lesson",
+    "title": "Lesson outline",
+    "fields": [
+        {
+            "key": "field_lcc_lesson_topics",
+            "label": "Topics",
+            "name": "lesson_topics",
+            "aria-label": "",
+            "type": "relationship",
+            "instructions": "The topics in this lesson, in order.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "sfwd-topic"
+            ],
+            "post_status": "",
+            "taxonomy": "",
+            "filters": [
+                "search"
+            ],
+            "return_format": "id",
+            "min": 0,
+            "max": 0,
+            "allow_in_bindings": 0,
+            "elements": [],
+            "bidirectional": 0,
+            "bidirectional_target": []
+        },
+        {
+            "key": "field_lcc_lesson_quiz",
+            "label": "Lesson quiz",
+            "name": "lesson_quiz",
+            "aria-label": "",
+            "type": "post_object",
+            "instructions": "Optional quiz shown after this lesson's topics.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "sfwd-quiz"
+            ],
+            "post_status": "",
+            "taxonomy": "",
+            "return_format": "id",
+            "multiple": 0,
+            "allow_null": 1,
+            "allow_in_bindings": 0,
+            "bidirectional": 0,
+            "ui": 1,
+            "bidirectional_target": []
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "sfwd-lessons"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Topics and quiz for a lesson. Which course a lesson belongs to is set on the course.",
+    "show_in_rest": 0,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1792261606
+}

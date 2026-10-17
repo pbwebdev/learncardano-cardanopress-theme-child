@@ -1,0 +1,318 @@
+{
+    "key": "group_lcc_quiz",
+    "title": "Quiz",
+    "fields": [
+        {
+            "key": "field_lcc_quiz_pass_mark",
+            "label": "Pass mark",
+            "name": "quiz_pass_mark",
+            "aria-label": "",
+            "type": "number",
+            "instructions": "The score needed to pass.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 50,
+                "class": "",
+                "id": ""
+            },
+            "default_value": 80,
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "placeholder": "",
+            "prepend": "",
+            "append": "%"
+        },
+        {
+            "key": "field_lcc_quiz_randomise",
+            "label": "Randomise questions",
+            "name": "quiz_randomise",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Shuffle question order for each attempt.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 50,
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "ui": 1,
+            "ui_on_text": "Yes",
+            "ui_off_text": "No"
+        },
+        {
+            "key": "field_lcc_quiz_questions",
+            "label": "Questions",
+            "name": "quiz_questions",
+            "aria-label": "",
+            "type": "repeater",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "collapsed": "field_lcc_question",
+            "min": 0,
+            "max": 0,
+            "layout": "block",
+            "button_label": "Add question",
+            "rows_per_page": 20,
+            "sub_fields": [
+                {
+                    "key": "field_lcc_question",
+                    "label": "Question",
+                    "name": "question",
+                    "aria-label": "",
+                    "type": "wysiwyg",
+                    "instructions": "",
+                    "required": 1,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "tabs": "all",
+                    "toolbar": "basic",
+                    "media_upload": 0,
+                    "delay": 0,
+                    "parent_repeater": "field_lcc_quiz_questions"
+                },
+                {
+                    "key": "field_lcc_question_type",
+                    "label": "Question type",
+                    "name": "question_type",
+                    "aria-label": "",
+                    "type": "select",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "choices": {
+                        "single": "One correct answer",
+                        "multiple": "More than one correct answer"
+                    },
+                    "default_value": "single",
+                    "return_format": "value",
+                    "multiple": 0,
+                    "allow_null": 0,
+                    "ui": 0,
+                    "ajax": 0,
+                    "placeholder": "",
+                    "create_options": 0,
+                    "save_options": 0,
+                    "parent_repeater": "field_lcc_quiz_questions"
+                },
+                {
+                    "key": "field_lcc_answers",
+                    "label": "Answers",
+                    "name": "answers",
+                    "aria-label": "",
+                    "type": "repeater",
+                    "instructions": "Answers show in this order. Mark every correct answer.",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "collapsed": "",
+                    "min": 0,
+                    "max": 0,
+                    "layout": "table",
+                    "button_label": "Add answer",
+                    "rows_per_page": 20,
+                    "parent_repeater": "field_lcc_quiz_questions",
+                    "sub_fields": [
+                        {
+                            "key": "field_lcc_answer_text",
+                            "label": "Answer",
+                            "name": "answer_text",
+                            "aria-label": "",
+                            "type": "text",
+                            "instructions": "",
+                            "required": 1,
+                            "conditional_logic": 0,
+                            "wrapper": {
+                                "width": 80,
+                                "class": "",
+                                "id": ""
+                            },
+                            "default_value": "",
+                            "maxlength": "",
+                            "placeholder": "",
+                            "prepend": "",
+                            "append": "",
+                            "parent_repeater": "field_lcc_answers"
+                        },
+                        {
+                            "key": "field_lcc_answer_correct",
+                            "label": "Correct",
+                            "name": "answer_correct",
+                            "aria-label": "",
+                            "type": "true_false",
+                            "instructions": "",
+                            "required": 0,
+                            "conditional_logic": 0,
+                            "wrapper": {
+                                "width": 20,
+                                "class": "",
+                                "id": ""
+                            },
+                            "message": "",
+                            "default_value": 0,
+                            "ui": 1,
+                            "ui_on_text": "Yes",
+                            "ui_off_text": "No",
+                            "parent_repeater": "field_lcc_answers"
+                        }
+                    ]
+                },
+                {
+                    "key": "field_lcc_explanation_correct",
+                    "label": "Explanation if correct",
+                    "name": "explanation_correct",
+                    "aria-label": "",
+                    "type": "wysiwyg",
+                    "instructions": "Shown when answered correctly (optional).",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": 50,
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "tabs": "all",
+                    "toolbar": "basic",
+                    "media_upload": 0,
+                    "delay": 0,
+                    "parent_repeater": "field_lcc_quiz_questions"
+                },
+                {
+                    "key": "field_lcc_explanation_incorrect",
+                    "label": "Explanation if incorrect",
+                    "name": "explanation_incorrect",
+                    "aria-label": "",
+                    "type": "wysiwyg",
+                    "instructions": "Shown when answered incorrectly (optional).",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": 50,
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "tabs": "all",
+                    "toolbar": "basic",
+                    "media_upload": 0,
+                    "delay": 0,
+                    "parent_repeater": "field_lcc_quiz_questions"
+                }
+            ]
+        },
+        {
+            "key": "field_lcc_quiz_results",
+            "label": "Result messages",
+            "name": "quiz_results",
+            "aria-label": "",
+            "type": "repeater",
+            "instructions": "The message for the highest 'From' score the visitor reached is shown.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "collapsed": "",
+            "min": 0,
+            "max": 0,
+            "layout": "table",
+            "button_label": "Add result message",
+            "rows_per_page": 20,
+            "sub_fields": [
+                {
+                    "key": "field_lcc_result_min",
+                    "label": "From",
+                    "name": "result_min",
+                    "aria-label": "",
+                    "type": "number",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": 20,
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "min": 0,
+                    "max": 100,
+                    "step": 1,
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "%",
+                    "parent_repeater": "field_lcc_quiz_results"
+                },
+                {
+                    "key": "field_lcc_result_message",
+                    "label": "Message",
+                    "name": "result_message",
+                    "aria-label": "",
+                    "type": "wysiwyg",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": 80,
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "tabs": "all",
+                    "toolbar": "basic",
+                    "media_upload": 0,
+                    "delay": 0,
+                    "parent_repeater": "field_lcc_quiz_results"
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "sfwd-quiz"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Questions, answers and result messages. Scored in the visitor's browser; best score kept in that browser.",
+    "show_in_rest": 0,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1792261606
+}
