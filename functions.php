@@ -197,6 +197,96 @@ foreach ( array( 'save_post_post', 'deleted_post', 'edited_category', 'delete_ca
 }
 
 /**
+ * Give every H2 in rendered post content an id and return the list for the
+ * article's "On this page" box. Existing ids are kept. Posts that already
+ * contain a Rank Math TOC block get no generated list.
+ *
+ * @return array{0: string, 1: array<int, array{id: string, text: string}>}
+ */
+function lc_heading_ids_and_toc( $html ) {
+	$toc  = array();
+	$used = array();
+	if ( false !== strpos( $html, 'rank-math-toc' ) ) {
+		return array( $html, $toc );
+	}
+	$html = preg_replace_callback(
+		'/<h2(\s[^>]*)?>(.*?)<\/h2>/is',
+		function ( $m ) use ( &$toc, &$used ) {
+			$attrs = isset( $m[1] ) ? $m[1] : '';
+			$text  = trim( wp_strip_all_tags( $m[2] ) );
+			if ( '' === $text ) {
+				return $m[0];
+			}
+			if ( preg_match( '/\sid=("|\')([^"\']+)\1/', $attrs, $id_match ) ) {
+				$id = $id_match[2];
+			} else {
+				$base = sanitize_title( $text );
+				$base = '' === $base ? 'section' : $base;
+				$id   = $base;
+				$n    = 2;
+				while ( isset( $used[ $id ] ) ) {
+					$id = $base . '-' . $n++;
+				}
+				$attrs .= ' id="' . esc_attr( $id ) . '"';
+			}
+			$used[ $id ] = true;
+			$toc[]       = array(
+				'id'   => $id,
+				'text' => html_entity_decode( $text, ENT_QUOTES, 'UTF-8' ),
+			);
+			return '<h2' . $attrs . '>' . $m[2] . '</h2>';
+		},
+		$html
+	);
+	return array( $html, $toc );
+}
+
+/**
+ * Estimated reading time in minutes (220 words a minute, at least 1).
+ */
+function lc_reading_minutes( $html ) {
+	return max( 1, (int) round( str_word_count( wp_strip_all_tags( $html ) ) / 220 ) );
+}
+
+/**
+ * Up to $count published posts related to a post: same primary category
+ * first, topped up with the latest posts.
+ *
+ * @return WP_Post[]
+ */
+function lc_related_posts( $post_id, $count = 3 ) {
+	$base     = array(
+		'post_type'           => 'post',
+		'post_status'         => 'publish',
+		'posts_per_page'      => $count,
+		'post__not_in'        => array( $post_id ),
+		'ignore_sticky_posts' => true,
+		'no_found_rows'       => true,
+	);
+	$related  = array();
+	$category = lc_post_primary_category( $post_id );
+	if ( $category ) {
+		$related = get_posts( array_merge( $base, array( 'cat' => $category->term_id ) ) );
+	}
+	if ( count( $related ) < $count ) {
+		$exclude = array_merge( array( $post_id ), wp_list_pluck( $related, 'ID' ) );
+		$related = array_merge(
+			$related,
+			get_posts(
+				array_merge(
+					$base,
+					array(
+						'posts_per_page' => $count - count( $related ),
+						'post__not_in'   => $exclude,
+					)
+				)
+			)
+		);
+	}
+	return $related;
+}
+
+/**
  * Dequeue plugin assets on pages that don't need them.
  *
  * The site loads ~18 render-blocking stylesheets on every page from
