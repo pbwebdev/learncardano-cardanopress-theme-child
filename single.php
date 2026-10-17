@@ -24,6 +24,8 @@ while ( have_posts() ) :
 	list( $lc_content, $lc_toc ) = lc_heading_ids_and_toc( $lc_content );
 
 	$lc_is_article = ( 'post' === get_post_type() );
+	$lc_is_kb      = lc_is_kb();
+	$lc_kb_types   = lc_kb_types();
 	$lc_has_toc    = count( $lc_toc ) >= 3;
 	$lc_category   = $lc_is_article ? lc_post_primary_category() : null;
 	$lc_minutes    = lc_reading_minutes( $lc_content );
@@ -41,6 +43,8 @@ while ( have_posts() ) :
 			<header class="lca__header">
 				<?php if ( $lc_category ) : ?>
 					<a class="lca__kicker" href="<?php echo esc_url( get_term_link( $lc_category ) ); ?>"><?php echo esc_html( $lc_category->name ); ?></a>
+				<?php elseif ( $lc_is_kb ) : ?>
+					<a class="lca__kicker" href="<?php echo esc_url( get_post_type_archive_link( get_post_type() ) ); ?>"><?php echo esc_html( $lc_kb_types[ get_post_type() ]['single'] ); ?></a>
 				<?php endif; ?>
 				<h1 class="lca__title entry-title"><?php the_title(); ?></h1>
 				<div class="lca__byline">
@@ -60,6 +64,14 @@ while ( have_posts() ) :
 						?>
 					</span>
 				</div>
+				<?php $lc_facts = $lc_is_kb ? lc_kb_facts( get_the_ID() ) : array(); ?>
+				<?php if ( $lc_facts ) : ?>
+					<ul class="kb__facts">
+						<?php foreach ( $lc_facts as $lc_fact ) : ?>
+							<li><?php echo esc_html( $lc_fact ); ?></li>
+						<?php endforeach; ?>
+					</ul>
+				<?php endif; ?>
 			</header>
 
 			<?php if ( $lc_show_hero ) : ?>
@@ -101,9 +113,17 @@ while ( have_posts() ) :
 				<?php endif; ?>
 
 				<div class="lca__main">
+					<?php if ( $lc_is_kb ) : ?>
+						<div class="kb__intro"><?php lc_kb_render_intro( get_the_ID() ); ?></div>
+					<?php endif; ?>
+
 					<div class="lca__content entry-content">
 						<?php echo $lc_content; // phpcs:ignore WordPress.Security.EscapeOutput -- filtered post content. ?>
 					</div>
+
+					<?php if ( $lc_is_kb ) : ?>
+						<div class="kb__details"><?php lc_kb_render_details( get_the_ID() ); ?></div>
+					<?php endif; ?>
 
 					<footer class="lca__footer">
 						<?php the_tags( '<div class="lca__tags">', '', '</div>' ); ?>
@@ -172,6 +192,21 @@ while ( have_posts() ) :
 				</section>
 			<?php endif; ?>
 
+			<?php $lc_kb_groups = $lc_is_kb ? lc_kb_related_groups( get_the_ID() ) : array(); ?>
+			<?php if ( $lc_kb_groups ) : ?>
+				<section class="lca__related" aria-labelledby="lca-related-title">
+					<h2 id="lca-related-title" class="lca__related-title"><?php esc_html_e( 'Keep learning', 'learncardano' ); ?></h2>
+					<?php foreach ( $lc_kb_groups as $lc_group_title => $lc_group_ids ) : ?>
+						<h3 class="kb__group-title"><?php echo esc_html( $lc_group_title ); ?></h3>
+						<div class="kb__grid">
+							<?php foreach ( $lc_group_ids as $lc_group_id ) : ?>
+								<?php get_template_part( 'template-parts/kb-card', null, array( 'post_id' => $lc_group_id, 'heading' => 'h3' ) ); ?>
+							<?php endforeach; ?>
+						</div>
+					<?php endforeach; ?>
+				</section>
+			<?php endif; ?>
+
 			<?php if ( comments_open() || get_comments_number() ) : ?>
 				<div class="lca__comments">
 					<?php comments_template(); ?>
@@ -191,8 +226,10 @@ while ( have_posts() ) :
 			});
 		});
 	</script>
-
 	<?php
+	if ( $lc_is_kb ) {
+		lc_kb_copy_script();
+	}
 endwhile;
 
 get_footer();
