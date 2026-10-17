@@ -511,7 +511,8 @@ function lc_kb_render_details( $post_id ) {
 				$rows = '';
 				foreach ( $txs as $tx ) {
 					$hash = trim( (string) $tx['tx_hash'] );
-					if ( ! $hash ) {
+					// Only real transaction ids (64 hex chars) get an explorer link.
+					if ( ! preg_match( '/^[0-9a-f]{64}$/i', $hash ) ) {
 						continue;
 					}
 					$network = isset( $explorers[ $tx['tx_network'] ] ) ? $tx['tx_network'] : 'mainnet';

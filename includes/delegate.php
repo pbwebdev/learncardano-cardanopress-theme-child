@@ -141,7 +141,8 @@ add_action(
 					'stake' => array(
 						'required'          => true,
 						'validate_callback' => function ( $value ) {
-							return (bool) preg_match( '/^stake1[0-9a-z]{50,}$/', (string) $value );
+							// Mainnet stake address: stake1 + 53 bech32 characters.
+							return (bool) preg_match( '/^stake1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{53}$/', (string) $value );
 						},
 					),
 				),
@@ -154,7 +155,7 @@ function lc_rest_delegation( WP_REST_Request $request ) {
 	$stake  = (string) $request['stake'];
 	$params = lc_protocol_params();
 	if ( ! $params ) {
-		return new WP_Error( 'chain_unavailable', 'Could not reach the Cardano network. Try again in a minute.', array( 'status' => 502 ) );
+		return new WP_Error( 'chain_unavailable', 'Could not reach the Cardano network. Try again in a minute.', array( 'status' => 503 ) );
 	}
 
 	// Short cache (30s): someone may check again right after delegating; the
@@ -164,7 +165,7 @@ function lc_rest_delegation( WP_REST_Request $request ) {
 	if ( false === $account ) {
 		$rows = lc_koios( 'account_info', array( '_stake_addresses' => array( $stake ) ) );
 		if ( null === $rows ) {
-			return new WP_Error( 'chain_unavailable', 'Could not reach the Cardano network. Try again in a minute.', array( 'status' => 502 ) );
+			return new WP_Error( 'chain_unavailable', 'Could not reach the Cardano network. Try again in a minute.', array( 'status' => 503 ) );
 		}
 		// Koios returns nothing (or status "not registered") for a stake key
 		// that has never been registered on-chain.
@@ -188,6 +189,23 @@ function lc_rest_delegation( WP_REST_Request $request ) {
 	$response->header( 'Cache-Control', 'no-store' );
 	return $response;
 }
+
+/**
+ * Send Retry-After with the delegation endpoint's 503 (Koios unreachable).
+ * 503 rather than 502: Cloudflare replaces 502 responses with its own page.
+ */
+add_filter(
+	'rest_post_dispatch',
+	function ( $response, $server, $request ) {
+		if ( '/learncardano/v1/delegation' === $request->get_route() && 503 === $response->get_status() ) {
+			$response->header( 'Retry-After', '60' );
+			$response->header( 'Cache-Control', 'no-store' );
+		}
+		return $response;
+	},
+	10,
+	3
+);
 
 /**
  * URL of the delegation endpoint. Inside the Customizer's theme preview it

@@ -38,8 +38,6 @@ if ( ! $lc_subtitle && $lc_kb_type ) {
 		array(
 			'title'       => $lc_title,
 			'subtitle'    => $lc_subtitle,
-			'placeholder' => $lc_is_kb ? __( 'Search Learn Cardano', 'learncardano' ) : __( 'Search articles', 'learncardano' ),
-			'post_type'   => $lc_is_kb ? '' : 'post',
 			'pills'       => $lc_is_kb ? lc_kb_type_pills( (string) $lc_kb_type ) : array(),
 			'pills_label' => __( 'Knowledge base sections', 'learncardano' ),
 		)

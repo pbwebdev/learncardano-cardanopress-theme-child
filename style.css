@@ -485,3 +485,7 @@ img.pa__media-img{width:100%;height:100%;object-fit:cover;display:block}
   .dlg__wallets{grid-template-columns:1fr}
   .dlg__aside{padding:26px 22px}
 }
+
+/* Long unbroken strings (bare URLs, hashes) must not widen the page on phones */
+.lca__content,.kb__box,.kb__tldr,.kb__option{overflow-wrap:break-word}
+.lca__content a,.kb__box a,.kb__tldr a{overflow-wrap:anywhere}
