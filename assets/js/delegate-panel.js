@@ -171,7 +171,7 @@ function initPanel() {
     } catch (err) {
       console.error(err);
       clearConnection();
-      showError(isCancellation(err)
+      showError(isConnectRefusal(err)
         ? "Connection cancelled. No problem — click Connect when you're ready."
         : `Couldn't connect: ${escapeHtml(errorText(err))}`);
     } finally {
@@ -276,7 +276,7 @@ function initPanel() {
       if (step === "sign" && isCancellation(err)) {
         showError("Signature cancelled. Nothing was sent.");
       } else if (step === "submit") {
-        showError(`The network didn't accept the transaction, so nothing was spent. Wait a minute and try again. Details: ${escapeHtml(msg.slice(0, 200))}`);
+        showError(`Your wallet couldn't submit the transaction. Check your wallet's activity (or Cardanoscan) in a few minutes before trying again, in case it went through. Details: ${escapeHtml(msg.slice(0, 200))}`);
       } else if (/insufficient|UTxO Balance|UTxO Fully Depleted|balance/i.test(msg)) {
         showError("Not enough ADA in this wallet to cover the deposit and fees (about 3 ₳ for first-time delegators, otherwise about 0.2 ₳).");
       } else {
@@ -391,6 +391,14 @@ function errorText(err) {
 function isCancellation(err) {
   if (err && (err.code === 2 || err.code === -3)) return true;
   return /declined|denied|refused|cancel/i.test(errorText(err));
+}
+
+// Refusal while connecting: as above, plus APIError.Refused (-3) inside the
+// JSON that Mesh's enable() wraps errors in, and wallet wording such as
+// Lace's "user rejected". (Only safe here: "rejected" can mean a failed
+// submission later on.)
+function isConnectRefusal(err) {
+  return isCancellation(err) || /"code":\s*-3|reject/i.test(errorText(err));
 }
 
 function pretty(name) {
