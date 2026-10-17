@@ -74,30 +74,31 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
                     </div>
                     <div class="col">
                         <h3>Subscribe</h3>
-                            <a href="https://youtube.com/learncardano/" title="Watch Learn Cardano Podcast on YouTube" class="platform-button float-start mr-1" target="_blank" rel="noreferrer">
-                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/youtube-watch.png" width="122" height="35" title="Watch on YouTube" alt="Watch on YouTube" loading="lazy" decoding="async">
-                            </a>
-
-                            <a href="https://podcasts.apple.com/podcast/learn-cardano-podcast/id1560654454" title="Listen to the Learn Cardano Podcast on Apple Podcasts" class="platform-button float-start mr-1" target="_blank" rel="noreferrer">
-                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/apple-podcasts.svg" width="174" height="35" title="Listen on Apple Podcasts" alt="Apple Podcasts" loading="lazy" decoding="async">
-                            </a>
-
-
-                            <a href="https://open.spotify.com/show/11FpPiHPzivZoSOTgVcfgT" title="Listen to the Learn Cardano Podcast on Spotify" class="platform-button  float-start mr-1" target="_blank" rel="noreferrer">
-                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/spotify.svg" width="122" height="35" title="Listen on Spotify" alt="Spotify" loading="lazy" decoding="async">
-                            </a>
-
-                            <a href="https://podcasts.google.com/feed/aHR0cHM6Ly93d3cuc3ByZWFrZXIuY29tL3Nob3cvNDg1NjIwNy9lcGlzb2Rlcy9mZWVk" title="Listen to the Learn Cardano Podcast on Google Podcasts" class="platform-button  float-start mr-1" target="_blank" rel="noreferrer">
-                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/google-podcasts.svg" width="170" height="35" title="Listen on Google Podcasts" alt="Google Podcasts" loading="lazy" decoding="async">
-                            </a>
-
-                            <a href="https://www.iheart.com/podcast/53-learn-cardano-podcast-80684119/" title="Listen to the Learn Cardano Podcast on iHeart Radio" class="platform-button  float-start mr-1" target="_blank" rel="noreferrer">
-                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/iheart.png" width="122" height="35" title="Listen on iHeart Radio" alt="iHeart Radio" loading="lazy" decoding="async">
-                            </a>
-
-                            <a href="https://www.spreaker.com/show/learn-cardano-podcast" title="Listen to the Learn Cardano Podcast on Spreaker" class="platform-button  float-start mr-1" target="_blank" rel="noreferrer">
-                                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/spreaker.png" width="122" height="35" title="Listen on Spreaker" alt="Spreaker" loading="lazy" decoding="async">
-                            </a>
+                        <?php
+                        // Podcast platforms: vector brand icons (images/platforms/, CC0 marks
+                        // from Simple Icons plus Apple's and Spotify's own icons) with live
+                        // text, so the buttons stay sharp at any size. Google Podcasts shut
+                        // down in 2024 and was removed.
+                        $lc_platforms = array(
+                            array( 'https://youtube.com/learncardano/', 'youtube', 'Watch on', 'YouTube' ),
+                            array( 'https://podcasts.apple.com/podcast/learn-cardano-podcast/id1560654454', 'apple-podcasts', 'Listen on', 'Apple Podcasts' ),
+                            array( 'https://open.spotify.com/show/11FpPiHPzivZoSOTgVcfgT', 'spotify', 'Listen on', 'Spotify' ),
+                            array( 'https://www.iheart.com/podcast/53-learn-cardano-podcast-80684119/', 'iheart', 'Listen on', 'iHeart' ),
+                            array( 'https://www.spreaker.com/show/learn-cardano-podcast', 'spreaker', 'Listen on', 'Spreaker' ),
+                        );
+                        ?>
+                        <div class="lc-platforms">
+                            <?php foreach ( $lc_platforms as $lc_platform ) : ?>
+                                <?php list( $lc_url, $lc_icon, $lc_verb, $lc_name ) = $lc_platform; ?>
+                                <a class="lc-platform" href="<?php echo esc_url( $lc_url ); ?>" target="_blank" rel="noopener noreferrer">
+                                    <img class="lc-platform__icon" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/images/platforms/' . $lc_icon . '.svg' ); ?>" width="32" height="32" alt="" loading="lazy" decoding="async">
+                                    <span class="lc-platform__text">
+                                        <span class="lc-platform__verb"><?php echo esc_html( $lc_verb ); ?></span>
+                                        <span class="lc-platform__name"><?php echo esc_html( $lc_name ); ?></span>
+                                    </span>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
 
                     </div>
                 </div>
