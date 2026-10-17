@@ -1,0 +1,795 @@
+{
+	"schema": "learncardano.courses.quiz-data.v1",
+	"generated_from": "courses-baseline/quizzes/quizzes.json (exported 2026-10-17T17:26:28+00:00 from https://learncardano.io, LearnDash 5.1.9)",
+	"notes": [
+		"Read by tools/courses/migrate.php (seed phase) and written to the ACF fields of group_lcc_quiz.",
+		"Questions keep their authored order; answers keep their authored order except where a change below says otherwise.",
+		"explanation_correct / explanation_incorrect come from the LearnDash per-question messages; empty means none.",
+		"results[].min is the lowest score (%) that shows that message; the highest min reached wins."
+	],
+	"quizzes": [
+		{
+			"id": 25541,
+			"slug": "understanding-impermanent-loss",
+			"title": "Understanding Impermanent Loss",
+			"pass_mark": 80,
+			"randomise": false,
+			"questions": [
+				{
+					"question": "<p>What causes impermanent loss?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "When the assets provided in a liquidity pool lose more value compared to simply holding the assets",
+							"correct": true
+						},
+						{
+							"text": "When you lose one of the assets provided in a liquidity pool.",
+							"correct": false
+						},
+						{
+							"text": "When you sell an assets for a lower price than you purchased it for.",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>How to mitigate and reduce your exposure to impermanent loss?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "Choose stable pair of tokens",
+							"correct": false
+						},
+						{
+							"text": "Monitor your assets",
+							"correct": false
+						},
+						{
+							"text": "Evaluate risk-reward ratio",
+							"correct": false
+						},
+						{
+							"text": "Diversify your assets",
+							"correct": false
+						},
+						{
+							"text": "All the above!",
+							"correct": true
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				}
+			],
+			"results": [],
+			"changes": [
+				"Pass mark lowered from 100% to 80%.",
+				"Q1 \"What causes impermanent loss?\": type changed from multiple to single (only one answer is correct).",
+				"Question text: 2 <h2> headings changed to <p> so every question renders in the same style inside the quiz box (wording unchanged)."
+			]
+		},
+		{
+			"id": 25840,
+			"slug": "consolidate-your-swap-knowledge-on-minswap",
+			"title": "Consolidate Your Swap Knowledge on Minswap",
+			"pass_mark": 80,
+			"randomise": false,
+			"questions": [
+				{
+					"question": "<p>Why would you use a decentralised exchange as opposed to a centralised exchange like Coinbase or Binance? There is more than one correct answer.</p>",
+					"type": "multiple",
+					"answers": [
+						{
+							"text": "For better staking rewards",
+							"correct": false
+						},
+						{
+							"text": "To be able to access air drops from the DEX.",
+							"correct": false
+						},
+						{
+							"text": "To access Cardano Native Tokens that are not listed on centralised exchanges!",
+							"correct": true
+						},
+						{
+							"text": "To be able to trade in a decentralised and non-custodial way using smart contracts.",
+							"correct": true
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>Choose the correct definition of slippage in relation to trading on a decentralised exchange.</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "Slippage is when your tokens are slipped from your wallet.",
+							"correct": false
+						},
+						{
+							"text": "Slippage is when the price of a token falls over before you can trade on the DEX.",
+							"correct": false
+						},
+						{
+							"text": "Slippage is when the price of a token moves out of your desired swap price due to being volatile.",
+							"correct": true
+						},
+						{
+							"text": "Slippage is the price volatility of a token.",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>In what situation would you want to change the slippage tolerance on your trade?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "If you fall over before you start trading.",
+							"correct": false
+						},
+						{
+							"text": "If the token price is volatile and moves beyond your set slippage tolerance before it is executed.",
+							"correct": true
+						},
+						{
+							"text": "If the price of a token falls over.",
+							"correct": false
+						},
+						{
+							"text": "If a token is about to be launched on another exchange and liquidity is expected to be moved from one exchange to another.",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>For a user who hasn't changed their slippage tolerance before, what is the default slippage tolerance? It is the setting applied automatically for every user and suits most trades.</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "0.1%",
+							"correct": false
+						},
+						{
+							"text": "0.5%",
+							"correct": true
+						},
+						{
+							"text": "1%",
+							"correct": false
+						},
+						{
+							"text": "5%",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>Choose the best definition of price impact?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "Price impact is the percentage of loss in a users trade (swap) due to low liquidity in token pair liquidity pool.",
+							"correct": true
+						},
+						{
+							"text": "Price impact is the increase of the token price due to liquidity in a token pair liquidity pool.",
+							"correct": false
+						},
+						{
+							"text": "Price impact is the decrease of a tokens price when liquidity is added to its token pair liquidity pool.",
+							"correct": false
+						},
+						{
+							"text": "Price impact is related percentage of profit that can occur when performing a stop loss when shorting a token.",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>What should a trader look out for to help them avoid price impact?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "Only trade tokens that have been verified on the DEX!",
+							"correct": false
+						},
+						{
+							"text": "Ensure that you use ADA when trading for another token to avoid price impact.",
+							"correct": false
+						},
+						{
+							"text": "Make sure that your slippage tolerance is set as high as possible to help reduce price impact.",
+							"correct": false
+						},
+						{
+							"text": "Ensure that there is plenty of liquidity added to the liquidity pool of the token pair that you are trading.",
+							"correct": true
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>Choose the best answer to define batching on Minswap.</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "Batching is when slippage orders are grouped together when they have been failed in a order batch.",
+							"correct": false
+						},
+						{
+							"text": "Batching is defined as moving assets from one wallet to another via Minswap.",
+							"correct": false
+						},
+						{
+							"text": "Batching is the process that Minswap employs to process liquidity that is added to the DEX.",
+							"correct": false
+						},
+						{
+							"text": "Batching is the process Minswap uses to scale or process multiple orders at the same time off chain.",
+							"correct": true
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>How do you optimise your orders to get them processed by the batching process?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "Change the price impact to be able to get your order processed.",
+							"correct": false
+						},
+						{
+							"text": "Increase the gas amount to be able to push your order through the queue and have it processed before others in the queue.",
+							"correct": false
+						},
+						{
+							"text": "Change the slippage tolerance on your trade so that when your trade is executed and the price has moved that it will still execute.",
+							"correct": true
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>What is a limit order, choose the best answer.</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "A limit order is executed straight away at the current market price, whatever that price is.",
+							"correct": false
+						},
+						{
+							"text": "A limit order is when a user sets an order price at a certain price to be executed when it is reached or better.",
+							"correct": true
+						},
+						{
+							"text": "A limit order limits how many tokens you can swap in a single transaction.",
+							"correct": false
+						},
+						{
+							"text": "A limit order lets you borrow tokens up to a set limit to increase the size of your trade.",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>When would you use a limit order?</p>",
+					"type": "multiple",
+					"answers": [
+						{
+							"text": "To sell a token automatically when its price rises to a higher target price that you set.",
+							"correct": true
+						},
+						{
+							"text": "To buy a token straight away at whatever the current market price is.",
+							"correct": false
+						},
+						{
+							"text": "To buy a token automatically if its price drops to a level that you set.",
+							"correct": true
+						},
+						{
+							"text": "To get your swap processed ahead of other orders waiting in the batcher queue.",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				}
+			],
+			"results": [],
+			"changes": [
+				"Pass mark lowered from 100% to 80%.",
+				"Q1: question ends with \"?\" instead of \".\"; answer typo \"smart contacts\" fixed to \"smart contracts\". Still multiple choice with 2 correct answers, so \"There is more than one correct answer\" stays.",
+				"Q4: rewrote the question text, which said \"There are multiple options to chose but select the correct answer is...\" although only one answer is correct. Was: For a user that hasn't modified their slippage tolerance before on their account, what is the default slippage tolerance rate set to? There are multiple options to chose but select the correct answer is the default option that is automatically set for all users that is deemed suitable for the majority of trades.",
+				"Q5: typo \"definition of.price impact!\" fixed to \"definition of price impact?\".",
+				"Q6: typo \"What should a trade look out for\" fixed to \"a trader\".",
+				"Q9 \"What is a limit order?\": had only one answer option (impossible to get wrong). Kept the correct answer and added 3 wrong options about limit orders (a market order, a swap size cap, borrowing).",
+				"Q10 \"When to use limit orders?\": both of its 2 options were marked correct and option 2 (\"User a limit order to buy a token when the price falls and you are trying to short a token\") had a typo and a wrong claim about shorting. Rebuilt as multiple choice with 2 correct uses (sell automatically at a higher target price; buy automatically if the price drops to your level) and 2 wrong ones."
+			]
+		},
+		{
+			"id": 26291,
+			"slug": "genius-yield-quiz",
+			"title": "Genius Yield Launch Quiz",
+			"pass_mark": 80,
+			"randomise": true,
+			"questions": [
+				{
+					"question": "<p>What is a key difference between an Automated Market Maker (AMM) Decentralized Exchange (DEX) and an Order Book DEX?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "An AMM DEX relies on a fixed, centralized authority to set prices, while an Order Book DEX allows prices to be determined through user orders.",
+							"correct": false
+						},
+						{
+							"text": "An AMM DEX uses liquidity pools for trading, setting prices algorithmically, whereas an Order Book DEX matches buyers and sellers through a traditional order book.",
+							"correct": true
+						},
+						{
+							"text": "Only AMM DEXs allow for the trading of cryptocurrencies, while Order Book DEXs are used exclusively for trading traditional assets like stocks and bonds.",
+							"correct": false
+						},
+						{
+							"text": "Order Book DEXs use blockchain technology for transactions, whereas AMM DEXs do not.",
+							"correct": false
+						},
+						{
+							"text": "An AMM DEX requires users to have a specific software wallet, while an Order Book DEX is compatible with any type of digital wallet.",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>What is described as a significant feature of Genius Yield?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "The implementation of cross-chain transactions for all major cryptocurrencies.",
+							"correct": false
+						},
+						{
+							"text": "The integration of a high-frequency trading system for all users.",
+							"correct": false
+						},
+						{
+							"text": "The use of a unique consensus algorithm to increase transaction speed.",
+							"correct": false
+						},
+						{
+							"text": "The introduction of concentrated liquidity positions in the AMM model.",
+							"correct": true
+						},
+						{
+							"text": "The ability to conduct atomic swaps between different blockchain networks.",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>What are Smart Swaps in the context of decentralized finance (DeFi) on Genius Yield?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "A cryptocurrency wallet designed for secure storage of digital assets.",
+							"correct": false
+						},
+						{
+							"text": "A type of blockchain transaction that requires manual approval by network participants.",
+							"correct": false
+						},
+						{
+							"text": "Buy or sell orders on a decentralized exchange (DEX) that execute automatically based on programmable logic.",
+							"correct": true
+						},
+						{
+							"text": "A peer-to-peer lending mechanism used in DeFi platforms.",
+							"correct": false
+						},
+						{
+							"text": "A digital contract that validates and records real estate transactions on a blockchain.",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>What's a key benefit of using Smart Swaps on its platform?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "Reduction in transaction fees for all users.",
+							"correct": false
+						},
+						{
+							"text": "Increased privacy and security for user transactions.",
+							"correct": false
+						},
+						{
+							"text": "Enhanced speed and efficiency in transaction processing.",
+							"correct": false
+						},
+						{
+							"text": "Ability to execute trades based on user-set, programmable conditions.",
+							"correct": true
+						},
+						{
+							"text": "Provision of real-time data analytics for market trends.",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>What is the purpose of the 'Smart Liquidity Vault' in the Genius Yield platform?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "To provide a secure digital wallet for storing private keys and cryptocurrencies.",
+							"correct": false
+						},
+						{
+							"text": "To allow users to borrow against their cryptocurrency holdings at fixed interest rates.",
+							"correct": false
+						},
+						{
+							"text": "To enable automatic rebalancing of liquidity positions based on market conditions.",
+							"correct": true
+						},
+						{
+							"text": "To facilitate high-frequency trading for institutional investors.",
+							"correct": false
+						},
+						{
+							"text": "To act as a decentralized exchange for peer-to-peer cryptocurrency transactions.",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>What is the function of the 'Yield Optimizer' in the Genius Yield platform?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "To provide real-time market analysis and trading signals to users.",
+							"correct": false
+						},
+						{
+							"text": "To automatically adjust and optimize liquidity positions for maximum yield.",
+							"correct": true
+						},
+						{
+							"text": "To enable margin trading and leverage options for experienced traders.",
+							"correct": false
+						},
+						{
+							"text": "To offer a decentralized credit scoring system for borrowers.",
+							"correct": false
+						},
+						{
+							"text": "To facilitate cross-chain transactions for enhanced liquidity.",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>What is the function of the 'auto-compound' feature in the Genius Yield platform's Smart Liquidity Vault?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "It enables automatic trading of cryptocurrencies based on market conditions.",
+							"correct": false
+						},
+						{
+							"text": "It automatically reinvests any profits generated, providing higher returns without the need to exit the position.",
+							"correct": true
+						},
+						{
+							"text": "It allows users to borrow funds against their existing cryptocurrency holdings.",
+							"correct": false
+						},
+						{
+							"text": "It facilitates the automatic conversion of profits into stablecoins.",
+							"correct": false
+						},
+						{
+							"text": "It provides real-time analytics and reports on liquidity pool performance.",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>What is the total token supply of GENS, the native token of the Genius Yield platform?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "100 million tokens",
+							"correct": true
+						},
+						{
+							"text": "250 million tokens",
+							"correct": false
+						},
+						{
+							"text": "500 million tokens",
+							"correct": false
+						},
+						{
+							"text": "1 billion tokens",
+							"correct": false
+						},
+						{
+							"text": "10 billion tokens",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>What is the primary purpose of the GENS Staking Program in the Genius Yield platform?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "To allow users to mine new cryptocurrencies.",
+							"correct": false
+						},
+						{
+							"text": "To enable cross-chain swaps within the DEX.",
+							"correct": false
+						},
+						{
+							"text": "To enable users to lend their cryptocurrencies to others for interest.",
+							"correct": false
+						},
+						{
+							"text": "To offer rewards to users who lock their GENS tokens for a certain period.",
+							"correct": true
+						},
+						{
+							"text": "To facilitate peer-to-peer transactions in GENS tokens.",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>What is the primary benefit of 'Concentrated Liquidity' for Liquidity Providers (LPs)?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "It allows LPs to engage in high-frequency trading with lower risk.",
+							"correct": false
+						},
+						{
+							"text": "It enables LPs to allocate their capital at selected price ranges, enhancing capital efficiency.",
+							"correct": true
+						},
+						{
+							"text": "It provides LPs with the ability to directly lend their assets to other users.",
+							"correct": false
+						},
+						{
+							"text": "It automatically adjusts the interest rates for LPs based on market conditions.",
+							"correct": false
+						},
+						{
+							"text": "It offers LPs a fixed return on investment regardless of market volatility.",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				}
+			],
+			"results": [
+				{
+					"min": 0,
+					"message": "<h2>Not quite there yet</h2>\n<p>Some of your answers were incorrect. Review them, then try the quiz again.</p>\n<p>Stuck on a question? Ask in the <a href=\"https://discord.gg/DxBSy9xwrE\" target=\"_blank\" rel=\"noopener\">Genius Yield</a> or <a href=\"https://discord.gg/V6mZGYUPNW\" target=\"_blank\" rel=\"noopener\">Learn Cardano</a> Discord server, where other community members may help you.</p>"
+				},
+				{
+					"min": 80,
+					"message": "<h2>Well done!</h2>\n<p>You have shown you understand some of the core concepts behind what Genius Yield offers the decentralised finance space.</p>\n<p><a href=\"https://twitter.com/intent/tweet?url=https%3A%2F%2Flearncardano.io%2Fquizzes%2Fgenius-yield-quiz%2F&amp;text=I%20passed%20the%20%40geniusyieldO%20quiz%20on%20%40Learncardano.%20Test%20your%20Cardano%20DeFi%20knowledge%20too.\" target=\"_blank\" rel=\"noopener\">Share your result on X</a></p>"
+				}
+			],
+			"changes": [
+				"Pass mark lowered from 100% to 80%.",
+				"Time limit (600 seconds) dropped: the new quiz has no timer. Question order is still shuffled (randomise kept).",
+				"Q2: \"a significant feature of the Genius Yield?\" changed to \"of Genius Yield?\".",
+				"Q9: answer capitalised (\"to enable\" -> \"To enable\").",
+				"Q10: added the missing question mark.",
+				"Question text: 10 <h2> headings changed to <p> so every question renders in the same style inside the quiz box (wording unchanged).",
+				"Result messages rewritten: the pass message no longer promises $GENS tokens or says \"a perfect 10\" (the launch campaign ended in January 2024); it keeps one neutral \"Share your result on X\" link. The fail message drops the duplicated \"ask the Genius Yield team on X\" links and keeps the two Discord invites (copied from the old message, not re-checked). Pass message starts at 80% (was 100%) to match the new pass mark."
+			]
+		},
+		{
+			"id": 28945,
+			"slug": "test-your-strike-finance-knowledge",
+			"title": "Test Your Strike Finance Knowledge",
+			"pass_mark": 80,
+			"randomise": false,
+			"questions": [
+				{
+					"question": "<p>What type of contract does Strike Finance currently support?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "Options",
+							"correct": false
+						},
+						{
+							"text": "Spot trades",
+							"correct": false
+						},
+						{
+							"text": "Perpetual futures",
+							"correct": true
+						},
+						{
+							"text": "Lending contracts",
+							"correct": false
+						}
+					],
+					"explanation_correct": "",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>Which asset is currently required as collateral?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "iUSD",
+							"correct": false
+						},
+						{
+							"text": "STRIKE",
+							"correct": false
+						},
+						{
+							"text": "USDT",
+							"correct": false
+						},
+						{
+							"text": "ADA",
+							"correct": true
+						}
+					],
+					"explanation_correct": "<p>Correct! ADA is the only collateral available at the time of writing this course. This will change over time as the team add more options as the protocol grows.</p>",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>What happens if a position is liquidated?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "You earn protocol rewards",
+							"correct": false
+						},
+						{
+							"text": "Your collateral is fully refunded",
+							"correct": false
+						},
+						{
+							"text": "Your position is closed and collateral may be partially or fully lost",
+							"correct": true
+						},
+						{
+							"text": "Nothing — you continue holding the position",
+							"correct": false
+						}
+					],
+					"explanation_correct": "<p>Correct! You will lose your collateral on your position. It is important to manage your position with stop loss and take profits, which will automatically close your positions and save your collateral.</p>",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>What does the Stop Loss feature do?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "Doubles your position size",
+							"correct": false
+						},
+						{
+							"text": "Automatically closes a position at a preset loss threshold",
+							"correct": true
+						},
+						{
+							"text": "Removes margin requirements",
+							"correct": false
+						},
+						{
+							"text": "Changes leverage without a transaction",
+							"correct": false
+						}
+					],
+					"explanation_correct": "<p>As in the answer above, this is a very important feature to us.</p>",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>What is one utility of the $STRIKE token?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "Stablecoin swaps",
+							"correct": false
+						},
+						{
+							"text": "Delegating to a stake pool",
+							"correct": false
+						},
+						{
+							"text": "Governance voting",
+							"correct": true
+						},
+						{
+							"text": "Buying NFTs",
+							"correct": false
+						}
+					],
+					"explanation_correct": "<p>Correct, the main purpose is to govern the protocol.</p>",
+					"explanation_incorrect": ""
+				},
+				{
+					"question": "<p>How much of the STRIKE token supply is allocated to the public?</p>",
+					"type": "single",
+					"answers": [
+						{
+							"text": "25%",
+							"correct": false
+						},
+						{
+							"text": "60%",
+							"correct": true
+						},
+						{
+							"text": "85%",
+							"correct": false
+						},
+						{
+							"text": "100%",
+							"correct": false
+						}
+					],
+					"explanation_correct": "<p>Correct!</p>\n<ul>\n<li>Public Sale - 60% (15,000,000 tokens)</li>\n<li>Team and Advisors - 15% (3,750,000 tokens)</li>\n<li>Liquidity - 12% (3,000,000 tokens)</li>\n<li>DAO - 13% (3,250,000 tokens)</li>\n</ul>\n<p> </p>",
+					"explanation_incorrect": ""
+				}
+			],
+			"results": [],
+			"changes": [
+				"No content changes: pass mark already 80%, no time limit, no result messages. Feedback for Q2-Q6 kept as the \"correct\" explanation (there was no \"incorrect\" text)."
+			]
+		}
+	]
+}

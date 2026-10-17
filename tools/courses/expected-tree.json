@@ -1,0 +1,629 @@
+{
+	"schema": "learncardano.courses.expected-tree.v1",
+	"generated_from": "courses-baseline/structure/tree.json (raw-dump.json (read-only SELECT dump of icg_posts/icg_postmeta/terms))",
+	"dump_generated_utc": "2026-10-17T17:23:22+00:00",
+	"note": "Course -> ordered lessons -> ordered topics/quizzes, ids only, in LearnDash ld_course_steps order. Used by migrate.php seed to cross-check what it reads from the database.",
+	"courses": [
+		{
+			"id": 25093,
+			"slug": "using-the-minswap-dex",
+			"lessons": [
+				{
+					"id": 25095,
+					"topics": [],
+					"quizzes": []
+				},
+				{
+					"id": 25097,
+					"topics": [],
+					"quizzes": []
+				},
+				{
+					"id": 25099,
+					"topics": [
+						{
+							"id": 26196,
+							"quizzes": []
+						},
+						{
+							"id": 25505,
+							"quizzes": []
+						},
+						{
+							"id": 25507,
+							"quizzes": []
+						},
+						{
+							"id": 25153,
+							"quizzes": []
+						},
+						{
+							"id": 25825,
+							"quizzes": []
+						},
+						{
+							"id": 25822,
+							"quizzes": []
+						}
+					],
+					"quizzes": [
+						25840
+					]
+				},
+				{
+					"id": 26149,
+					"topics": [
+						{
+							"id": 26152,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 25101,
+					"topics": [
+						{
+							"id": 25510,
+							"quizzes": []
+						},
+						{
+							"id": 25520,
+							"quizzes": [
+								25541
+							]
+						},
+						{
+							"id": 25514,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 25479,
+					"topics": [],
+					"quizzes": []
+				},
+				{
+					"id": 25103,
+					"topics": [
+						{
+							"id": 25482,
+							"quizzes": []
+						},
+						{
+							"id": 25559,
+							"quizzes": []
+						},
+						{
+							"id": 25484,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 25105,
+					"topics": [],
+					"quizzes": []
+				},
+				{
+					"id": 25107,
+					"topics": [],
+					"quizzes": []
+				},
+				{
+					"id": 25109,
+					"topics": [],
+					"quizzes": []
+				}
+			],
+			"quizzes": []
+		},
+		{
+			"id": 26036,
+			"slug": "lace-wallet",
+			"lessons": [
+				{
+					"id": 26039,
+					"topics": [
+						{
+							"id": 26042,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				}
+			],
+			"quizzes": []
+		},
+		{
+			"id": 26791,
+			"slug": "fluid-tokens",
+			"lessons": [
+				{
+					"id": 26792,
+					"topics": [],
+					"quizzes": []
+				},
+				{
+					"id": 27320,
+					"topics": [
+						{
+							"id": 27304,
+							"quizzes": []
+						},
+						{
+							"id": 27361,
+							"quizzes": []
+						},
+						{
+							"id": 27191,
+							"quizzes": []
+						},
+						{
+							"id": 27336,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 26793,
+					"topics": [
+						{
+							"id": 27295,
+							"quizzes": []
+						},
+						{
+							"id": 27060,
+							"quizzes": []
+						},
+						{
+							"id": 27351,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 26794,
+					"topics": [
+						{
+							"id": 27063,
+							"quizzes": []
+						},
+						{
+							"id": 27084,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 26795,
+					"topics": [
+						{
+							"id": 27004,
+							"quizzes": []
+						},
+						{
+							"id": 27006,
+							"quizzes": []
+						},
+						{
+							"id": 26549,
+							"quizzes": []
+						},
+						{
+							"id": 27366,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				}
+			],
+			"quizzes": []
+		},
+		{
+			"id": 27739,
+			"slug": "minswap-decentralised-exchange-course",
+			"lessons": [
+				{
+					"id": 27740,
+					"topics": [],
+					"quizzes": []
+				},
+				{
+					"id": 27741,
+					"topics": [],
+					"quizzes": []
+				},
+				{
+					"id": 27743,
+					"topics": [
+						{
+							"id": 27756,
+							"quizzes": []
+						},
+						{
+							"id": 27758,
+							"quizzes": []
+						},
+						{
+							"id": 28919,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 27744,
+					"topics": [
+						{
+							"id": 27851,
+							"quizzes": []
+						},
+						{
+							"id": 27786,
+							"quizzes": []
+						},
+						{
+							"id": 27788,
+							"quizzes": []
+						},
+						{
+							"id": 29330,
+							"quizzes": []
+						},
+						{
+							"id": 27794,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 27742,
+					"topics": [
+						{
+							"id": 27797,
+							"quizzes": []
+						},
+						{
+							"id": 27799,
+							"quizzes": []
+						},
+						{
+							"id": 27813,
+							"quizzes": []
+						},
+						{
+							"id": 27815,
+							"quizzes": []
+						},
+						{
+							"id": 27817,
+							"quizzes": []
+						},
+						{
+							"id": 27819,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 27748,
+					"topics": [
+						{
+							"id": 27963,
+							"quizzes": []
+						},
+						{
+							"id": 27967,
+							"quizzes": []
+						},
+						{
+							"id": 27969,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 27750,
+					"topics": [],
+					"quizzes": []
+				},
+				{
+					"id": 27745,
+					"topics": [
+						{
+							"id": 29338,
+							"quizzes": []
+						},
+						{
+							"id": 29340,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 27747,
+					"topics": [],
+					"quizzes": []
+				},
+				{
+					"id": 27746,
+					"topics": [],
+					"quizzes": []
+				}
+			],
+			"quizzes": []
+		},
+		{
+			"id": 28700,
+			"slug": "eternl-wallet-course-tutorials",
+			"lessons": [
+				{
+					"id": 28702,
+					"topics": [
+						{
+							"id": 28704,
+							"quizzes": []
+						},
+						{
+							"id": 28706,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 28708,
+					"topics": [
+						{
+							"id": 28812,
+							"quizzes": []
+						},
+						{
+							"id": 28818,
+							"quizzes": []
+						},
+						{
+							"id": 28716,
+							"quizzes": []
+						},
+						{
+							"id": 28820,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 28854,
+					"topics": [
+						{
+							"id": 28856,
+							"quizzes": []
+						},
+						{
+							"id": 28858,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 28710,
+					"topics": [
+						{
+							"id": 28721,
+							"quizzes": []
+						},
+						{
+							"id": 28723,
+							"quizzes": []
+						},
+						{
+							"id": 28725,
+							"quizzes": []
+						},
+						{
+							"id": 28727,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 28729,
+					"topics": [
+						{
+							"id": 28731,
+							"quizzes": []
+						},
+						{
+							"id": 28733,
+							"quizzes": []
+						},
+						{
+							"id": 28735,
+							"quizzes": []
+						},
+						{
+							"id": 28737,
+							"quizzes": []
+						},
+						{
+							"id": 28740,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 28742,
+					"topics": [
+						{
+							"id": 28744,
+							"quizzes": []
+						},
+						{
+							"id": 28746,
+							"quizzes": []
+						},
+						{
+							"id": 28748,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 28750,
+					"topics": [
+						{
+							"id": 28752,
+							"quizzes": []
+						},
+						{
+							"id": 28754,
+							"quizzes": []
+						},
+						{
+							"id": 28756,
+							"quizzes": []
+						},
+						{
+							"id": 28852,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 28758,
+					"topics": [],
+					"quizzes": []
+				},
+				{
+					"id": 28760,
+					"topics": [
+						{
+							"id": 28763,
+							"quizzes": []
+						},
+						{
+							"id": 28765,
+							"quizzes": []
+						},
+						{
+							"id": 28767,
+							"quizzes": []
+						},
+						{
+							"id": 28769,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 28771,
+					"topics": [
+						{
+							"id": 28866,
+							"quizzes": []
+						},
+						{
+							"id": 28773,
+							"quizzes": []
+						},
+						{
+							"id": 28775,
+							"quizzes": []
+						},
+						{
+							"id": 28777,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				}
+			],
+			"quizzes": []
+		},
+		{
+			"id": 28928,
+			"slug": "strike-finance-perpetuals-on-cardano",
+			"lessons": [
+				{
+					"id": 28929,
+					"topics": [],
+					"quizzes": []
+				},
+				{
+					"id": 28931,
+					"topics": [],
+					"quizzes": []
+				},
+				{
+					"id": 28933,
+					"topics": [
+						{
+							"id": 29007,
+							"quizzes": []
+						},
+						{
+							"id": 29011,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 28956,
+					"topics": [],
+					"quizzes": []
+				},
+				{
+					"id": 28958,
+					"topics": [],
+					"quizzes": []
+				},
+				{
+					"id": 28939,
+					"topics": [],
+					"quizzes": []
+				},
+				{
+					"id": 28941,
+					"topics": [
+						{
+							"id": 29050,
+							"quizzes": []
+						},
+						{
+							"id": 29056,
+							"quizzes": []
+						}
+					],
+					"quizzes": []
+				},
+				{
+					"id": 28943,
+					"topics": [],
+					"quizzes": []
+				}
+			],
+			"quizzes": [
+				28945
+			]
+		}
+	]
+}

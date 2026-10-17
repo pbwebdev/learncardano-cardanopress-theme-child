@@ -3,6 +3,7 @@
 require_once 'includes/lockbox.php';
 require_once 'includes/knowledge-base.php';
 require_once 'includes/delegate.php';
+require_once 'includes/courses.php';
 
 add_theme_support('responsive-embeds');
 add_filter('rest_enabled', '__return_false');
@@ -213,27 +214,6 @@ function lc_blog_category_pills( $active = 0 ) {
 }
 
 /**
- * Keep LearnDash pages (courses, lessons, topics, quizzes…) on the original
- * single layout, single-learndash.php: it has the sidebar with LearnDash's
- * Course Navigation widget, and no article chrome or date-ordered
- * previous/next links that would jump between courses.
- */
-add_filter(
-	'single_template',
-	function ( $template ) {
-		$type     = get_post_type();
-		$ld_types = function_exists( 'learndash_get_post_types' ) ? (array) learndash_get_post_types() : array();
-		if ( $type && ( in_array( $type, $ld_types, true ) || 0 === strpos( $type, 'sfwd-' ) ) ) {
-			$legacy = locate_template( 'single-learndash.php' );
-			if ( $legacy ) {
-				return $legacy;
-			}
-		}
-		return $template;
-	}
-);
-
-/**
  * Give every H2 in rendered post content an id and return the list for the
  * article's "On this page" box. Existing ids are kept. Posts that already
  * contain a table of contents (Rank Math or core block) get no generated list.
@@ -327,8 +307,8 @@ function lc_related_posts( $post_id, $count = 3 ) {
  * Dequeue plugin assets on pages that don't need them.
  *
  * The site loads ~18 render-blocking stylesheets on every page from
- * plugins whose features aren't actually used there (LearnDash on a
- * podcast post, GravityForms on every page, etc.). Strip those so
+ * plugins whose features aren't actually used there (GravityForms on
+ * every page, etc.). Strip those so
  * each page only pays for what it actually renders.
  *
  * Runs at priority 100 so it fires after plugins have enqueued.
@@ -350,15 +330,10 @@ add_action( 'wp_enqueue_scripts', function () {
 		|| has_shortcode( $post_content, 'wppopups' )
 	);
 
-	// Note: an earlier version of this function deregistered `dashicons` for
-	// anonymous frontend visitors. Don't. LearnDash registers `learndash-front`
-	// (the entire LD30 theme stylesheet) with `dashicons` as a dependency, so
-	// dropping dashicons silently dropped LD30 from every page on the site
-	// and the LearnDash login modal rendered as raw HTML above the layout.
-	// Saving was tiny; the breakage was not.
+	// LearnDash was removed: courses are theme templates now (includes/courses.php).
 
-	// LearnDash + GravityForms dequeue on the homepage only.
-	// front-page.php is verified static HTML with no LD/GF shortcodes/blocks.
+	// GravityForms dequeue on the homepage only.
+	// front-page.php is verified static HTML with no GF shortcodes/blocks.
 	if ( is_front_page() ) {
 		// Marker for the late wp_print_styles handler below — same logic
 		// but at a later hook so it catches plugins (notably GravityForms)
@@ -403,18 +378,6 @@ add_action( 'wp_print_styles', function () {
 		return;
 	}
 	$styles = array(
-		// LearnDash bundle (homepage has no LD content).
-		'learndash',
-		'learndash-front',
-		'learndash-admin-bar',
-		'learndash-course-grid-skin-grid',
-		'learndash-course-grid-pagination',
-		'learndash-course-grid-filter',
-		'learndash-course-grid-card-grid-1',
-		'learndash-course-reviews',
-		'jquery-dropdown-css',
-		'learndash_lesson_video',
-		'learndash_quiz_front_css',
 		// GravityForms bundle (no form on the homepage).
 		'gform_basic',
 		'gform_theme',
@@ -432,11 +395,6 @@ add_action( 'wp_print_scripts', function () {
 		return;
 	}
 	$scripts = array(
-		// LearnDash JS (verified from live queue).
-		'learndash_pager_js',
-		'learndash_template_script_js',
-		'jquery-dropdown-js',
-		'learndash-course-grid-elementor-compatibility',
 		// GravityForms JS.
 		'gform_gravityforms',
 		'gform_conditional_logic',
