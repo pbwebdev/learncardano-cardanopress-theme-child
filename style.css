@@ -395,3 +395,92 @@ img.pa__media-img{width:100%;height:100%;object-fit:cover;display:block}
   .kb__tldr,.kb__box{padding:18px}
   .kb-hub__filter-label{width:100%}
 }
+
+/* ============================================================
+   Delegate page (template-delegate.php, .dlg__ namespace)
+   Cardanode's #delegate layout in Learn Cardano's look.
+   ============================================================ */
+.dlg{background:#f4f4f6;font-family:'Mulish',sans-serif;color:#15151a;padding:64px 24px 72px}
+.dlg__container{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,0.88fr);gap:48px;align-items:start}
+.dlg__eyebrow{font-size:13px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#9333ea;margin-bottom:14px}
+.dlg__title{font-family:'Chivo',sans-serif;font-weight:900;font-size:46px;line-height:1.06;letter-spacing:-0.02em;margin:0 0 18px}
+.dlg__lede{font-size:18px;line-height:1.65;color:#3a3a42;margin:0 0 18px}
+.dlg__lede strong{color:#15151a}
+.dlg__intro{font-size:16px;line-height:1.65;color:#5b5b63;margin-bottom:22px}
+.dlg__intro p{margin:0 0 0.8em}
+
+/* wallet panel */
+.dlg__panel{background:#fff;border-radius:20px;padding:30px;box-shadow:0 1px 3px rgba(20,20,30,0.06),0 18px 40px rgba(20,20,30,0.06);margin:8px 0 20px}
+.dlg__panel h3{font-family:'Chivo',sans-serif;font-weight:900;font-size:22px;margin:0 0 12px;color:#15151a}
+.dlg__panel h3:focus{outline:none}
+.dlg__panel p{font-size:15.5px;line-height:1.6;color:#3a3a42}
+.dlg__banner{background:#faf7ff;border:1px solid #e4d4fb;color:#7a23c9;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:700;margin-bottom:16px}
+.dlg__hint{font-size:14.5px;color:#5b5b63;margin:16px 0 0}
+.dlg__btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:12px;background:#9333ea;color:#fff;font-family:'Mulish',sans-serif;font-size:15px;font-weight:800;padding:12px 22px;cursor:pointer;transition:background .18s ease,box-shadow .18s ease,transform .18s ease}
+.dlg__btn:hover{background:#7a23c9;color:#fff}
+.dlg__btn:focus-visible{outline:3px solid rgba(147,51,234,0.35);outline-offset:2px}
+.dlg__btn--lg{width:100%;font-size:18px;padding:18px 24px;border-radius:14px;box-shadow:0 10px 24px rgba(147,51,234,0.28)}
+.dlg__btn--lg:hover{transform:translateY(-2px)}
+.dlg__btn--ghost{background:#fff;color:#15151a;box-shadow:inset 0 0 0 1px #dcdce1}
+.dlg__btn--ghost:hover{background:#fff;color:#9333ea;box-shadow:inset 0 0 0 2px #9333ea}
+.dlg__btn--sm{font-size:13px;padding:7px 12px;border-radius:9px}
+.dlg__btn[hidden]{display:none}
+.dlg__wallets{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 16px;padding:0}
+.dlg__wallet{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:12px;border:1px solid #e3e3e8;background:#fff;font-family:'Mulish',sans-serif;font-size:15px;font-weight:800;color:#15151a;cursor:pointer;transition:border-color .18s ease}
+.dlg__wallet:hover,.dlg__wallet:focus-visible{border-color:#9333ea;color:#9333ea}
+.dlg__wallet img{width:28px;height:28px;border-radius:6px}
+.dlg__wallet-fallback{width:28px;height:28px;border-radius:6px;background:#f4f4f6;display:inline-flex;align-items:center;justify-content:center;font-weight:900}
+.dlg__kv{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;margin:0 0 20px;font-size:15px}
+.dlg__kv dt{color:#8a8a90;font-weight:700}
+.dlg__kv dd{margin:0;font-weight:700;word-break:break-all}
+.dlg__ok{color:#15803d}
+.dlg__warn{color:#b45309}
+.dlg__actions{display:flex;flex-direction:column;gap:10px;margin:0}
+.dlg__error{color:#b91c1c}
+.dlg__error a,.dlg__panel a{color:#7a23c9;font-weight:700}
+#dp-tx-link{word-break:break-all}
+
+/* calculator CTA, manual steps, links */
+.dlg__calc,.dlg__calc:hover{text-decoration:none}
+.dlg__calc{display:flex;align-items:center;gap:16px;background:#faf7ff;border:1px solid #e4d4fb;border-radius:16px;padding:18px 20px;color:#15151a;margin-bottom:20px;transition:box-shadow .2s ease,transform .2s ease}
+.dlg__calc:hover{box-shadow:0 14px 32px rgba(147,51,234,0.14);transform:translateY(-2px);color:#15151a}
+.dlg__calc-icon{flex:none;width:46px;height:46px;border-radius:12px;background:#9333ea;color:#fff;display:flex;align-items:center;justify-content:center}
+.dlg__calc-icon svg{width:24px;height:24px}
+.dlg__calc-text{flex:1;font-size:15px;line-height:1.5;color:#5b5b63}
+.dlg__calc-text strong{display:block;font-family:'Chivo',sans-serif;font-size:18px;color:#15151a;margin-bottom:2px}
+.dlg__calc-arrow{font-size:20px;color:#9333ea}
+.dlg__manual{background:#fff;border:1px solid #e3e3e8;border-radius:16px;padding:16px 20px;margin-bottom:20px}
+.dlg__manual summary{cursor:pointer;font-weight:800;color:#7a23c9}
+.dlg__manual ol{margin:14px 0 14px;padding-left:1.2em;font-size:15px;line-height:1.6;color:#3a3a42}
+.dlg__pool-id{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.dlg__pool-id code{font-size:12.5px;background:#f4f4f6;color:#3a3a42 !important;-webkit-text-fill-color:#3a3a42 !important;padding:6px 8px;border-radius:8px;word-break:break-all}
+.dlg__links{display:flex;flex-wrap:wrap;gap:12px}
+.dlg__links a{display:inline-flex;align-items:center;height:46px;padding:0 20px;border-radius:12px;background:#fff;border:1px solid #e3e3e8;color:#15151a;font-weight:800;text-decoration:none}
+.dlg__links a:hover{border-color:#9333ea;color:#9333ea;text-decoration:none}
+
+/* dark aside */
+.dlg__aside{background:linear-gradient(160deg,#15151a 0%,#2a1747 100%);color:#d9d6e3;border-radius:24px;padding:34px 34px 30px;position:sticky;top:96px}
+.dlg__aside-title{font-family:'Chivo',sans-serif;font-weight:900;font-size:24px;color:#fff;margin:0 0 18px}
+.dlg__stats{margin-bottom:30px;padding-bottom:26px;border-bottom:1px solid rgba(255,255,255,0.12)}
+.dlg__stats dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:0}
+.dlg__stats dt{font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#a99cc6}
+.dlg__stats dd{margin:2px 0 0;font-family:'Chivo',sans-serif;font-weight:900;font-size:22px;color:#fff}
+.dlg__stats-note{font-size:12.5px;color:#8f86a6;margin:14px 0 0}
+.dlg__expect{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:20px}
+.dlg__expect li{display:flex;gap:14px;align-items:flex-start}
+.dlg__icon{flex:none;width:26px;height:26px;color:#c084fc;margin-top:2px}
+.dlg__icon svg{width:26px;height:26px}
+.dlg__expect h3{font-family:'Chivo',sans-serif;font-weight:900;font-size:17px;color:#fff;margin:0 0 4px}
+.dlg__expect p{margin:0;font-size:15px;line-height:1.55;color:#c9c3d8}
+
+@media (max-width:980px){
+  .dlg__container{grid-template-columns:1fr;gap:32px}
+  .dlg__aside{position:static}
+}
+@media (max-width:600px){
+  .dlg{padding:40px 16px 48px}
+  .dlg__title{font-size:34px}
+  .dlg__panel{padding:22px}
+  .dlg__wallets{grid-template-columns:1fr}
+  .dlg__aside{padding:26px 22px}
+}
