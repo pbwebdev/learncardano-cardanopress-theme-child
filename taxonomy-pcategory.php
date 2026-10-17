@@ -44,7 +44,13 @@ get_header();
 
                                             <div class="episode-tags col">
     <span class="badge rounded-pill text-bg-primary"><?php
-        echo get_the_term_list( $post->ID, 'episodes', '<span class="badge rounded-pill text-bg-primary">', ',</span><span class="badge rounded-pill text-bg-primary">', '</span>' );
+        // 'ptag' (episode tags), as in taxonomy-ptag.php. This used to ask for an
+        // unregistered 'episodes' taxonomy: echoing the WP_Error was a fatal
+        // error, so every /pcategory/ page returned HTTP 500.
+        $lc_terms = get_the_term_list( $post->ID, 'ptag', '<span class="badge rounded-pill text-bg-primary">', ',</span><span class="badge rounded-pill text-bg-primary">', '</span>' );
+        if ( $lc_terms && ! is_wp_error( $lc_terms ) ) {
+            echo $lc_terms;
+        }
         ?></span>
                                             </div>
 

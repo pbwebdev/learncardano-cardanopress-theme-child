@@ -212,6 +212,20 @@ function lc_delegation_api_url() {
 }
 
 /**
+ * URL of the Mesh SDK bundle, versioned by the content hash that
+ * tools/mesh/build.mjs writes next to it. Deploys reset file mtimes, so an
+ * mtime version would make returning visitors re-download ~1 MB each deploy.
+ */
+function lc_mesh_bundle_url() {
+	$version_file = get_stylesheet_directory() . '/assets/vendor/mesh/mesh.version';
+	$version      = file_exists( $version_file ) ? trim( (string) file_get_contents( $version_file ) ) : '';
+	if ( ! preg_match( '/^[a-f0-9]{8,64}$/', $version ) ) {
+		return lc_theme_asset_url( 'assets/vendor/mesh/mesh.js' );
+	}
+	return add_query_arg( 'ver', $version, get_stylesheet_directory_uri() . '/assets/vendor/mesh/mesh.js' );
+}
+
+/**
  * Compact ADA amount: 71458269 → "71.46M ₳", 60000 → "60,000 ₳".
  */
 function lc_format_ada( $ada ) {

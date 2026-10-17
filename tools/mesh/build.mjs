@@ -13,7 +13,8 @@
 */
 import * as esbuild from "esbuild";
 import { polyfillNode } from "esbuild-plugin-polyfill-node";
-import { existsSync, mkdirSync, rmSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -54,7 +55,12 @@ const result = await esbuild.build({
   logLevel: "info",
 });
 
-console.log("\nMesh bundle written for", publicPath);
+// Content hash for cache-busting (?ver=), read by lc_mesh_bundle_url(). Deploys
+// reset file mtimes, so an mtime version would change on every deploy.
+const hash = createHash("sha256").update(readFileSync(`${outDir}/mesh.js`)).digest("hex").slice(0, 12);
+writeFileSync(`${outDir}/mesh.version`, hash);
+
+console.log("\nMesh bundle written for", publicPath, "— version", hash);
 for (const [file, info] of Object.entries(result.metafile.outputs)) {
   console.log(`  ${file}  ${(info.bytes / 1024 / 1024).toFixed(2)} MB`);
 }

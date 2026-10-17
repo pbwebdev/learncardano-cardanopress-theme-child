@@ -151,9 +151,12 @@ function initPanel() {
 
       const data = await fetchDelegationData(stake);
       let account = data.account;
-      // Delegated from this browser moments ago, but the chain or the API's
-      // short cache doesn't show it yet: trust the submitted transaction.
-      if (!account.is_delegated_to_pool && sessionGet(stake)) {
+      if (account.is_delegated_to_pool) {
+        sessionClear(stake);
+      } else if (sessionGet(stake)) {
+        // Delegated from this browser in the last few minutes, but the chain
+        // or the API's short cache doesn't show it yet: trust the submitted
+        // transaction rather than offering to delegate again.
         account = { ...account, registered: true, is_delegated_to_pool: true, delegated_pool: POOL_ID, pending: true };
       }
 
@@ -227,6 +230,9 @@ function initPanel() {
     }
     setState("working");
     setWorking("Building transaction", "Composing the delegation certificate…");
+    // Which step failed decides the message: CIP-30 uses code 2 both for
+    // "user declined to sign" and "wallet failed to submit".
+    let step = "build";
     try {
       const m = await loadMesh();
 
@@ -247,9 +253,11 @@ function initPanel() {
       tx.changeAddress(changeAddress).selectUtxosFrom(utxos);
       const unsignedTx = await tx.complete();
 
+      step = "sign";
       setWorking("Sign in your wallet", "Your wallet will pop up — review and approve.");
       const signedTx = await wallet.signTx(unsignedTx);
 
+      step = "submit";
       setWorking("Submitting", "Sending the signed transaction to the network…");
       const txHash = await wallet.submitTx(signedTx);
 
@@ -265,8 +273,10 @@ function initPanel() {
     } catch (err) {
       console.error(err);
       const msg = errorText(err);
-      if (isCancellation(err)) {
+      if (step === "sign" && isCancellation(err)) {
         showError("Signature cancelled. Nothing was sent.");
+      } else if (step === "submit") {
+        showError(`The network didn't accept the transaction, so nothing was spent. Wait a minute and try again. Details: ${escapeHtml(msg.slice(0, 200))}`);
       } else if (/insufficient|UTxO Balance|UTxO Fully Depleted|balance/i.test(msg)) {
         showError("Not enough ADA in this wallet to cover the deposit and fees (about 3 ₳ for first-time delegators, otherwise about 0.2 ₳).");
       } else {
@@ -311,12 +321,23 @@ function initPanel() {
     }
   }
 
-  // Delegations submitted from this browser, per stake address (session only).
+  // Delegations submitted from this browser, per stake address. Kept for this
+  // session only and trusted for 15 minutes, after which the chain should
+  // show it; a transaction that never landed then stops hiding the button.
+  const SUBMITTED_TTL_MS = 15 * 60 * 1000;
   function sessionGet(stake) {
-    try { return sessionStorage.getItem(`lc-delegated:${stake}`); } catch { return null; }
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(`lc-delegated:${stake}`) || "null");
+      if (saved && typeof saved.at === "number" && Date.now() - saved.at < SUBMITTED_TTL_MS) return saved.txHash;
+      sessionClear(stake);
+    } catch { /* storage unavailable or malformed */ }
+    return null;
   }
   function sessionSet(stake, txHash) {
-    try { sessionStorage.setItem(`lc-delegated:${stake}`, txHash); } catch { /* storage unavailable */ }
+    try { sessionStorage.setItem(`lc-delegated:${stake}`, JSON.stringify({ txHash, at: Date.now() })); } catch { /* storage unavailable */ }
+  }
+  function sessionClear(stake) {
+    try { sessionStorage.removeItem(`lc-delegated:${stake}`); } catch { /* storage unavailable */ }
   }
 
   function setStatusBanner(text) {
@@ -364,11 +385,12 @@ function errorText(err) {
   try { return JSON.stringify(err); } catch { return String(err); }
 }
 
-// The user said no in their wallet: CIP-30 TxSignError.UserDeclined (code 2),
-// APIError.Refused (code -3), or a wallet/Mesh message saying so.
+// The user said no in their wallet: CIP-30 TxSignError.UserDeclined (code 2,
+// only meaningful while signing), APIError.Refused (code -3), or a wallet/Mesh
+// message saying so.
 function isCancellation(err) {
   if (err && (err.code === 2 || err.code === -3)) return true;
-  return /declined|denied|refused|cancel|rejected/i.test(errorText(err));
+  return /declined|denied|refused|cancel/i.test(errorText(err));
 }
 
 function pretty(name) {
