@@ -7,8 +7,7 @@
  * article search and a category filter, then large cards and numbered
  * pagination. Built from template-parts/archive-{hero,list,card}.php, which
  * category.php shares. index.php is left alone because it is WordPress's
- * fallback for every other view. (Search results are rendered by the Algolia
- * plugin's InstantSearch page, not the theme.)
+ * fallback for every other view. Search results use search.php.
  *
  * @package CardanoPress Bootstrap
  * @since 0.1.0
