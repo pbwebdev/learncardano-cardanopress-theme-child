@@ -51,24 +51,17 @@ foreach ( array( 'level' => 'difficulty', 'era' => 'era' ) as $lc_key => $lc_tax
 		}
 	}
 }
-$lc_level_order = array( 'beginner', 'intermediate', 'advanced' );
-uksort(
-	$lc_filter['level'],
-	function ( $a, $b ) use ( $lc_level_order ) {
-		$ia = array_search( $a, $lc_level_order, true );
-		$ib = array_search( $b, $lc_level_order, true );
+// Natural order for levels and eras. Live slugs carry suffixes ("beginner-5"),
+// so compare on the slug without its trailing number.
+$lc_by_order = function ( $order ) {
+	return function ( $a, $b ) use ( $order ) {
+		$ia = array_search( preg_replace( '/-\d+$/', '', $a ), $order, true );
+		$ib = array_search( preg_replace( '/-\d+$/', '', $b ), $order, true );
 		return ( false === $ia ? 99 : $ia ) <=> ( false === $ib ? 99 : $ib );
-	}
-);
-$lc_era_order = array( 'byron', 'shelley', 'goguen', 'mary', 'alonzo', 'babbage', 'conway' );
-uksort(
-	$lc_filter['era'],
-	function ( $a, $b ) use ( $lc_era_order ) {
-		$ia = array_search( $a, $lc_era_order, true );
-		$ib = array_search( $b, $lc_era_order, true );
-		return ( false === $ia ? 99 : $ia ) <=> ( false === $ib ? 99 : $ib );
-	}
-);
+	};
+};
+uksort( $lc_filter['level'], $lc_by_order( array( 'beginner', 'intermediate', 'advanced' ) ) );
+uksort( $lc_filter['era'], $lc_by_order( array( 'byron', 'shelley', 'goguen', 'mary', 'alonzo', 'babbage', 'conway' ) ) );
 ?>
 
 <main class="resources-archive kb-hub <?php echo cardanopress_bootstrap_class( 'content-full' ); ?>">

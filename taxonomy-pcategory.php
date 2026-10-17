@@ -24,7 +24,7 @@ get_header();
 				            <?php while ( have_posts() ) : the_post(); ?>
 
                             
-                            <article id="<?php echo $post_type . '-' . get_the_ID(); ?>" class="">
+                            <article id="<?php echo esc_attr( get_post_type() . '-' . get_the_ID() ); ?>" class="">
 
                             <div class="episode-card">
 
@@ -39,13 +39,16 @@ get_header();
 
                                         <div class="row metadata">
                                             <div class="episode-tags col">
-                                                <span class="badge rounded-pill text-bg-primary"><?php echo $tags; ?></span>
-                                            </div>
-
-                                            <div class="episode-tags col">
-    <span class="badge rounded-pill text-bg-primary"><?php
-        echo get_the_term_list( $post->ID, 'episodes', '<span class="badge rounded-pill text-bg-primary">', ',</span><span class="badge rounded-pill text-bg-primary">', '</span>' );
-        ?></span>
+    <?php
+        // Episode tags ('ptag'), laid out as in taxonomy-ptag.php. This used to
+        // echo an undefined $tags and ask for an unregistered 'episodes'
+        // taxonomy; echoing that WP_Error was a fatal error, so every
+        // /pcategory/ page returned HTTP 500.
+        $lc_terms = get_the_term_list( $post->ID, 'ptag', '<span class="badge rounded-pill text-bg-primary">', ',</span><span class="badge rounded-pill text-bg-primary">', '</span>' );
+        if ( $lc_terms && ! is_wp_error( $lc_terms ) ) {
+            echo $lc_terms;
+        }
+        ?>
                                             </div>
 
                                             <div class="episode-date col text-end"> <?php the_time('F jS, Y') ?></div>

@@ -165,13 +165,29 @@ function lc_kb_list( $text, $split_commas = false ) {
 }
 
 /**
- * Field text as paragraphs: blank lines split paragraphs, single newlines
- * become line breaks, and a multi-line block where every line is bulleted
- * or numbered becomes a list.
+ * Field text as paragraphs: fenced ```code``` becomes a code block, blank
+ * lines split paragraphs, single newlines become line breaks, and a
+ * multi-line block where every line is bulleted or numbered becomes a list.
  */
 function lc_kb_prose( $text ) {
+	$text   = str_replace( "\r", '', trim( (string) $text ) );
+	$blocks = array();
+	$text   = preg_replace_callback(
+		'/```([\w-]*)\n(.*?)\n?```/s',
+		function ( $m ) use ( &$blocks ) {
+			$lang     = $m[1] ? ' class="language-' . esc_attr( $m[1] ) . '"' : '';
+			$blocks[] = '<pre class="wp-block-code"><code' . $lang . '>' . esc_html( $m[2] ) . '</code></pre>';
+			return "\n\n@@lc-kb-code-" . ( count( $blocks ) - 1 ) . "@@\n\n";
+		},
+		$text
+	);
+
 	$out = '';
-	foreach ( preg_split( '/\n\s*\n/', str_replace( "\r", '', trim( (string) $text ) ) ) as $para ) {
+	foreach ( preg_split( '/\n\s*\n/', trim( $text ) ) as $para ) {
+		if ( preg_match( '/^@@lc-kb-code-(\d+)@@$/', trim( $para ), $placeholder ) ) {
+			$out .= $blocks[ (int) $placeholder[1] ];
+			continue;
+		}
 		$lines = array_values( array_filter( array_map( 'trim', explode( "\n", $para ) ) ) );
 		if ( ! $lines ) {
 			continue;

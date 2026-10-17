@@ -28,7 +28,7 @@ $args = wp_parse_args(
 <section class="pa__hero">
 	<h1 class="pa__h1"><?php echo esc_html( $args['title'] ); ?></h1>
 	<?php if ( $args['subtitle'] ) : ?>
-		<p class="pa__sub"><?php echo wp_kses_post( $args['subtitle'] ); ?></p>
+		<div class="pa__sub"><?php echo wp_kses_post( $args['subtitle'] ); ?></div>
 	<?php endif; ?>
 	<?php if ( $args['show_search'] ) : ?>
 		<form class="pa__search" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">

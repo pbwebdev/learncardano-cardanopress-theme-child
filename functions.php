@@ -2,6 +2,7 @@
 
 require_once 'includes/lockbox.php';
 require_once 'includes/knowledge-base.php';
+require_once 'includes/delegate.php';
 
 add_theme_support('responsive-embeds');
 add_filter('rest_enabled', '__return_false');
@@ -212,16 +213,37 @@ function lc_blog_category_pills( $active = 0 ) {
 }
 
 /**
+ * Keep LearnDash pages (courses, lessons, topics, quizzes…) on the original
+ * single layout, single-learndash.php: it has the sidebar with LearnDash's
+ * Course Navigation widget, and no article chrome or date-ordered
+ * previous/next links that would jump between courses.
+ */
+add_filter(
+	'single_template',
+	function ( $template ) {
+		$type     = get_post_type();
+		$ld_types = function_exists( 'learndash_get_post_types' ) ? (array) learndash_get_post_types() : array();
+		if ( $type && ( in_array( $type, $ld_types, true ) || 0 === strpos( $type, 'sfwd-' ) ) ) {
+			$legacy = locate_template( 'single-learndash.php' );
+			if ( $legacy ) {
+				return $legacy;
+			}
+		}
+		return $template;
+	}
+);
+
+/**
  * Give every H2 in rendered post content an id and return the list for the
  * article's "On this page" box. Existing ids are kept. Posts that already
- * contain a Rank Math TOC block get no generated list.
+ * contain a table of contents (Rank Math or core block) get no generated list.
  *
  * @return array{0: string, 1: array<int, array{id: string, text: string}>}
  */
 function lc_heading_ids_and_toc( $html ) {
 	$toc  = array();
 	$used = array();
-	if ( false !== strpos( $html, 'rank-math-toc' ) ) {
+	if ( false !== strpos( $html, 'rank-math-toc' ) || false !== strpos( $html, 'wp-block-table-of-contents' ) ) {
 		return array( $html, $toc );
 	}
 	$html = preg_replace_callback(

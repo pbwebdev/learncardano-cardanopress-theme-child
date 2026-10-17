@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Vendored, minified bundles: never convert line endings.
+assets/vendor/** -text
