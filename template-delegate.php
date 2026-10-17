@@ -51,7 +51,7 @@ $lc_check   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 				<div id="delegate-panel" class="dlg__panel" aria-live="polite" data-state="idle"
 					data-pool="<?php echo esc_attr( $lc_pool_id ); ?>"
 					data-api="<?php echo esc_url( lc_delegation_api_url() ); ?>"
-					data-mesh-url="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/vendor/mesh/mesh.js' ); ?>">
+					data-mesh-url="<?php echo esc_url( lc_theme_asset_url( 'assets/vendor/mesh/mesh.js' ) ); ?>">
 					<div id="dp-status-banner" class="dlg__banner" role="status" hidden></div>
 
 					<div data-show="idle">

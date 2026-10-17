@@ -40,7 +40,7 @@ function initPanel() {
   let accountInfo = null;
   let protocolParams = null;  // current mainnet parameters, from the API
 
-  setState("idle");
+  setState("idle", false);
 
   // Event delegation for buttons.
   panel.addEventListener("click", async (e) => {
@@ -51,8 +51,21 @@ function initPanel() {
     if (action === "disconnect") return disconnect();
     if (action === "delegate") return startDelegation();
     if (action === "reset") return reset();
-    if (action === "retry") return setState(wallet ? "connected" : "idle");
+    if (action === "retry") return setState(isConnected() ? "connected" : "idle");
   });
+
+  // Connected = wallet enabled AND its account + protocol parameters loaded.
+  function isConnected() {
+    return Boolean(wallet && stakeAddress && changeAddress && accountInfo && protocolParams);
+  }
+
+  function clearConnection() {
+    wallet = null;
+    stakeAddress = null;
+    changeAddress = null;
+    accountInfo = null;
+    protocolParams = null;
+  }
 
   async function loadMesh() {
     if (!mesh) {
@@ -75,16 +88,26 @@ function initPanel() {
           "No Cardano wallet detected. Install <a href='https://www.lace.io/' target='_blank' rel='noopener noreferrer'>Lace</a> or <a href='https://eternl.io/' target='_blank' rel='noopener noreferrer'>Eternl</a> and refresh.",
         );
       }
-      // Stable ordering: priority list first, then the rest alphabetically.
+      // Each wallet has an id (its window.cardano key, which enable() needs)
+      // and a display name. Stable ordering: priority ids first, then the rest
+      // by name. Some wallets inject twice (e.g. typhon + typhoncip30), so keep
+      // the first entry per name.
+      const rank = (w) => PRIORITY_WALLETS.findIndex((p) => w.id.toLowerCase().startsWith(p));
       const byPriority = (a, b) => {
-        const ai = PRIORITY_WALLETS.indexOf(a.name.toLowerCase());
-        const bi = PRIORITY_WALLETS.indexOf(b.name.toLowerCase());
-        if (ai === -1 && bi === -1) return a.name.localeCompare(b.name);
+        const ai = rank(a);
+        const bi = rank(b);
+        if (ai === -1 && bi === -1) return pretty(a.name).localeCompare(pretty(b.name));
         if (ai === -1) return 1;
         if (bi === -1) return -1;
         return ai - bi;
       };
-      const sorted = [...installed].sort(byPriority);
+      const seen = new Set();
+      const sorted = [...installed].sort(byPriority).filter((w) => {
+        const key = pretty(w.name).toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
 
       const list = $("#dp-wallets");
       list.innerHTML = "";
@@ -93,13 +116,13 @@ function initPanel() {
         const btn = document.createElement("button");
         btn.className = "dlg__wallet";
         btn.type = "button";
-        btn.dataset.walletId = w.name;
+        btn.dataset.walletId = w.id;
         btn.setAttribute("aria-label", `Connect ${pretty(w.name)} wallet`);
         btn.innerHTML = `
           ${w.icon ? `<img src="${escapeHtml(w.icon)}" alt="" width="28" height="28">` : `<span class="dlg__wallet-fallback" aria-hidden="true">${escapeHtml(pretty(w.name).charAt(0))}</span>`}
           <span class="dlg__wallet-name">${escapeHtml(pretty(w.name))}</span>
         `;
-        btn.addEventListener("click", () => connect(w.name));
+        btn.addEventListener("click", () => connect(w.id, pretty(w.name)));
         li.appendChild(btn);
         list.appendChild(li);
       }
@@ -110,29 +133,44 @@ function initPanel() {
     }
   }
 
-  async function connect(walletId) {
+  async function connect(walletId, walletName) {
+    clearConnection();
     setState("connecting");
-    setStatusBanner(`Connecting to ${pretty(walletId)}…`);
+    setStatusBanner(`Connecting to ${walletName}…`);
     try {
       const m = await loadMesh();
-      wallet = await m.BrowserWallet.enable(walletId);
-      const rewardAddresses = await wallet.getRewardAddresses();
-      stakeAddress = rewardAddresses?.[0];
-      changeAddress = await wallet.getChangeAddress();
-      if (!stakeAddress) throw new Error("Wallet didn't return a stake address.");
-      if (stakeAddress.startsWith("stake_test")) {
+      // Work on locals and only keep them once every step has succeeded, so a
+      // failure never leaves a half-connected panel behind.
+      const w = await m.BrowserWallet.enable(walletId);
+      const stake = (await w.getRewardAddresses())?.[0];
+      const change = await w.getChangeAddress();
+      if (!stake) throw new Error("Wallet didn't return a stake address.");
+      if (stake.startsWith("stake_test")) {
         return showError("Your wallet is on a test network. Switch it to Mainnet, then connect again.");
       }
 
-      ({ account: accountInfo, params: protocolParams } = await fetchDelegationData(stakeAddress));
+      const data = await fetchDelegationData(stake);
+      let account = data.account;
+      // Delegated from this browser moments ago, but the chain or the API's
+      // short cache doesn't show it yet: trust the submitted transaction.
+      if (!account.is_delegated_to_pool && sessionGet(stake)) {
+        account = { ...account, registered: true, is_delegated_to_pool: true, delegated_pool: POOL_ID, pending: true };
+      }
+
+      wallet = w;
+      stakeAddress = stake;
+      changeAddress = change;
+      accountInfo = account;
+      protocolParams = data.params;
 
       renderConnected();
       setState("connected");
     } catch (err) {
       console.error(err);
-      showError(/declined|denied|cancel/i.test(String(err?.message || err))
+      clearConnection();
+      showError(isCancellation(err)
         ? "Connection cancelled. No problem — click Connect when you're ready."
-        : `Couldn't connect: ${escapeHtml(err?.message || "unknown error")}`);
+        : `Couldn't connect: ${escapeHtml(errorText(err))}`);
     } finally {
       setStatusBanner("");
     }
@@ -164,7 +202,7 @@ function initPanel() {
       : "<span class='dlg__warn'>Not registered (one-time 2 ₳ deposit required)</span>";
 
     $("#dp-current-pool").innerHTML = onPool
-      ? "<span class='dlg__ok'>ADAOZ 🎉</span>"
+      ? (accountInfo.pending ? "<span class='dlg__ok'>ADAOZ (confirming on-chain)</span>" : "<span class='dlg__ok'>ADAOZ 🎉</span>")
       : currentPool
         ? `Another pool (<code>${escapeHtml(shortPool(currentPool))}</code>)`
         : "Not delegated yet";
@@ -215,7 +253,10 @@ function initPanel() {
       setWorking("Submitting", "Sending the signed transaction to the network…");
       const txHash = await wallet.submitTx(signedTx);
 
-      accountInfo = { ...accountInfo, is_delegated_to_pool: true, delegated_pool: POOL_ID, registered: true };
+      // Remember it for this browser session so a quick reconnect (before the
+      // chain and the API's short cache catch up) doesn't offer it again.
+      sessionSet(stakeAddress, txHash);
+      accountInfo = { ...accountInfo, is_delegated_to_pool: true, delegated_pool: POOL_ID, registered: true, pending: true };
 
       const link = $("#dp-tx-link");
       link.href = `https://cardanoscan.io/transaction/${encodeURIComponent(txHash)}`;
@@ -223,10 +264,10 @@ function initPanel() {
       setState("success");
     } catch (err) {
       console.error(err);
-      const msg = String(err?.message || err || "");
-      if (/declined|user denied|cancel/i.test(msg)) {
+      const msg = errorText(err);
+      if (isCancellation(err)) {
         showError("Signature cancelled. Nothing was sent.");
-      } else if (/insufficient|UTxO Balance|balance/i.test(msg)) {
+      } else if (/insufficient|UTxO Balance|UTxO Fully Depleted|balance/i.test(msg)) {
         showError("Not enough ADA in this wallet to cover the deposit and fees (about 3 ₳ for first-time delegators, otherwise about 0.2 ₳).");
       } else {
         showError(`Delegation failed: ${escapeHtml(msg.slice(0, 200))}`);
@@ -237,32 +278,45 @@ function initPanel() {
   }
 
   function disconnect() {
-    wallet = null;
-    stakeAddress = null;
-    changeAddress = null;
-    accountInfo = null;
-    protocolParams = null;
+    clearConnection();
     setState("idle");
   }
 
+  // "Done" after a delegation: show the connected view, now reflecting ADAOZ.
   function reset() {
-    setState(wallet ? "connected" : "idle");
+    if (isConnected()) {
+      renderConnected();
+      setState("connected");
+    } else {
+      setState("idle");
+    }
   }
 
   /* ---- state helpers ---- */
 
-  function setState(name) {
+  // `moveFocus` is false only for the initial render, so the page doesn't jump.
+  function setState(name, moveFocus = true) {
     panel.dataset.state = name;
     $$("[data-show]", panel).forEach((el) => {
       el.hidden = el.dataset.show !== name;
     });
-    // Move focus to the new state's heading or first button, for screen readers.
+    if (!moveFocus) return;
+    // Move focus to the new state's heading or first button, for keyboard and
+    // screen-reader users (back to the Connect button when returning to idle).
     const visible = $(`[data-show="${name}"]`, panel);
-    const focusTarget = visible?.querySelector("h3, button, [tabindex]");
-    if (focusTarget && name !== "idle" && document.activeElement !== focusTarget) {
+    const focusTarget = visible?.querySelector(name === "idle" ? "button" : "h3, button, [tabindex]");
+    if (focusTarget && document.activeElement !== focusTarget) {
       if (focusTarget.tagName === "H3") focusTarget.setAttribute("tabindex", "-1");
       focusTarget.focus({ preventScroll: false });
     }
+  }
+
+  // Delegations submitted from this browser, per stake address (session only).
+  function sessionGet(stake) {
+    try { return sessionStorage.getItem(`lc-delegated:${stake}`); } catch { return null; }
+  }
+  function sessionSet(stake, txHash) {
+    try { sessionStorage.setItem(`lc-delegated:${stake}`, txHash); } catch { /* storage unavailable */ }
   }
 
   function setStatusBanner(text) {
@@ -299,6 +353,23 @@ function initCopyButtons() {
 }
 
 /* ---- pure helpers ---- */
+
+// Readable text from any error: Error objects, CIP-30 {code, info} objects
+// (APIError / TxSignError), Mesh's wrapped errors, or plain strings.
+function errorText(err) {
+  if (!err) return "unknown error";
+  if (typeof err === "string") return err;
+  if (err.info) return String(err.info);
+  if (err.message) return String(err.message);
+  try { return JSON.stringify(err); } catch { return String(err); }
+}
+
+// The user said no in their wallet: CIP-30 TxSignError.UserDeclined (code 2),
+// APIError.Refused (code -3), or a wallet/Mesh message saying so.
+function isCancellation(err) {
+  if (err && (err.code === 2 || err.code === -3)) return true;
+  return /declined|denied|refused|cancel|rejected/i.test(errorText(err));
+}
 
 function pretty(name) {
   return String(name || "")

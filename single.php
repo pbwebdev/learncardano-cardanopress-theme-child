@@ -26,7 +26,7 @@ while ( have_posts() ) :
 	$lc_is_article = ( 'post' === get_post_type() );
 	$lc_is_kb      = lc_is_kb();
 	$lc_kb_types   = lc_kb_types();
-	$lc_has_toc    = count( $lc_toc ) >= 3;
+	$lc_has_toc    = ( $lc_is_article || $lc_is_kb ) && count( $lc_toc ) >= 3;
 	$lc_category   = $lc_is_article ? lc_post_primary_category() : null;
 	$lc_minutes    = lc_reading_minutes( $lc_content );
 	$lc_thumb_id   = get_post_thumbnail_id();
@@ -34,7 +34,7 @@ while ( have_posts() ) :
 	$lc_updated    = ( get_the_modified_time( 'U' ) - get_the_time( 'U' ) ) > DAY_IN_SECONDS;
 	$lc_bio        = get_the_author_meta( 'description' );
 	$lc_share_url  = rawurlencode( get_permalink() );
-	$lc_share_text = rawurlencode( wp_strip_all_tags( get_the_title() ) );
+	$lc_share_text = rawurlencode( html_entity_decode( wp_strip_all_tags( get_the_title() ), ENT_QUOTES, get_bloginfo( 'charset' ) ) );
 	?>
 
 	<main class="lca">
@@ -154,12 +154,15 @@ while ( have_posts() ) :
 
 		<div class="lca__wide">
 			<?php
-			the_post_navigation(
-				array(
-					'prev_text' => '<span class="screen-reader-text">' . __( 'Previous article', 'learncardano' ) . '</span><span aria-hidden="true" class="nav-subtitle">&larr; ' . __( 'Previous', 'learncardano' ) . '</span> <span class="nav-title">%title</span>',
-					'next_text' => '<span class="screen-reader-text">' . __( 'Next article', 'learncardano' ) . '</span><span aria-hidden="true" class="nav-subtitle">' . __( 'Next', 'learncardano' ) . ' &rarr;</span> <span class="nav-title">%title</span>',
-				)
-			);
+			// Date-ordered previous/next only makes sense for articles and KB entries.
+			if ( $lc_is_article || $lc_is_kb ) {
+				the_post_navigation(
+					array(
+						'prev_text' => '<span class="screen-reader-text">' . __( 'Previous article', 'learncardano' ) . '</span><span aria-hidden="true" class="nav-subtitle">&larr; ' . __( 'Previous', 'learncardano' ) . '</span> <span class="nav-title">%title</span>',
+						'next_text' => '<span class="screen-reader-text">' . __( 'Next article', 'learncardano' ) . '</span><span aria-hidden="true" class="nav-subtitle">' . __( 'Next', 'learncardano' ) . ' &rarr;</span> <span class="nav-title">%title</span>',
+					)
+				);
+			}
 			?>
 
 			<?php $lc_related = $lc_is_article ? lc_related_posts( get_the_ID() ) : array(); ?>

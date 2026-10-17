@@ -157,7 +157,8 @@ function lc_rest_delegation( WP_REST_Request $request ) {
 		return new WP_Error( 'chain_unavailable', 'Could not reach the Cardano network. Try again in a minute.', array( 'status' => 502 ) );
 	}
 
-	// Short cache: someone may check again right after delegating.
+	// Short cache (30s): someone may check again right after delegating; the
+	// panel also remembers delegations it just submitted (sessionStorage).
 	$key     = 'lc_account_' . md5( $stake );
 	$account = get_transient( $key );
 	if ( false === $account ) {
@@ -175,7 +176,7 @@ function lc_rest_delegation( WP_REST_Request $request ) {
 			'is_delegated_to_pool' => lc_adaoz_pool_id() === $pool,
 			'total_balance_ada'    => isset( $acc['total_balance'] ) ? (int) round( (float) $acc['total_balance'] / 1000000 ) : null,
 		);
-		set_transient( $key, $account, MINUTE_IN_SECONDS );
+		set_transient( $key, $account, 30 );
 	}
 
 	$response = rest_ensure_response(
