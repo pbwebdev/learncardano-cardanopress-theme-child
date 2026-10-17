@@ -1,0 +1,293 @@
+/* ============================================================
+   Courses (.lcc__ namespace)
+   archive-sfwd-courses.php, single-sfwd-*.php, template-parts/
+   course-{card,step}.php and the progress/quiz UI built by
+   assets/js/courses.js. Enqueued on course views only, on top of
+   the .lca__ article and .pa__ archive styles in style.css.
+
+   style.css is linked after this file (footer.php), so rules that
+   adjust .lca__/.pa__ parts use a compound selector to win.
+   Accent #9333ea / hover #7a23c9, Chivo headings, Mulish text.
+   ============================================================ */
+
+/* ---- shared ---- */
+.lcc__sr,
+.lcc__sr-done,
+.lcc__more-text{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+
+.lcc__notice{max-width:720px;margin:0 0 28px;padding:14px 18px;border:1px solid #e4d4fb;border-radius:14px;background:#faf7ff;color:#3a3a42;font-family:'Mulish',sans-serif;font-size:15.5px;line-height:1.55;text-align:left;overflow-wrap:break-word}
+.lca__header .lcc__notice{margin:24px auto 0}
+.lcc__notice a{color:#7a23c9;font-weight:800;text-decoration:underline;text-underline-offset:2px}
+.lcc__notice a:hover{color:#9333ea}
+
+.lcc__badge{display:inline-flex;align-items:center;min-height:28px;padding:3px 12px;border-radius:999px;border:1px solid #fde3b0;background:#fff8eb;color:#b45309;font-family:'Mulish',sans-serif;font-size:12.5px;font-weight:800;line-height:1.3}
+
+.lcc__btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 24px;border:0;border-radius:10px;background:#9333ea;color:#fff;font-family:'Mulish',sans-serif;font-size:15px;font-weight:800;line-height:1.2;text-align:center;text-decoration:none;cursor:pointer;transition:background .18s ease,box-shadow .18s ease}
+.lcc__btn:hover{background:#7a23c9;color:#fff;text-decoration:none}
+.lcc__btn:focus-visible{outline:2px solid #9333ea;outline-offset:2px}
+.lcc__btn:disabled{opacity:.5;cursor:not-allowed}
+
+.lcc__section-title{font-family:'Mulish',sans-serif;font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#5b5b63;margin:0 0 12px}
+
+/* the course page's "Course" kicker is a link: same look, 44px tap area */
+.lcc-view .lca__header a.lca__kicker{padding:12px 4px;margin:-12px 0 2px}
+
+/* "In: Lesson title" in a step's byline (underlined: the purple alone is too close to the grey text) */
+.lcc-view .lca__byline a{color:#7a23c9;font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.lcc-view .lca__byline a:hover{color:#9333ea}
+
+/* ---- breadcrumb ---- */
+.lcc__crumbs{margin:-6px 0 10px}
+.lcc__crumbs ol{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;margin:0;padding:0;font-size:13.5px;line-height:20px;color:#5b5b63}
+.lcc__crumbs li{display:flex;align-items:center;min-width:0;max-width:100%}
+.lcc__crumbs li+li::before{content:"\203A";flex:none;margin:0 8px;color:#c4c4cc}
+.lcc__crumbs a,.lcc__crumbs [aria-current]{min-width:0;overflow-wrap:anywhere}
+.lcc__crumbs a{display:block;padding:12px 0;color:#5b5b63;font-weight:700;text-decoration:none}
+.lcc__crumbs a:hover{color:#9333ea;text-decoration:none}
+.lcc__crumbs [aria-current]{color:#15151a;font-weight:700}
+@media (max-width:780px){
+  /* Inline crumbs: a long title wraps right after its separator instead of
+     getting a row of its own; each link keeps a 44px tap area. */
+  .lcc__crumbs ol{display:block;text-align:center}
+  .lcc__crumbs li{display:inline}
+  .lcc__crumbs a{display:inline-block;max-width:100%}
+  /* The current page is the H1 right below: keep it for screen readers only. */
+  .lcc__crumbs li:last-child{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+}
+@media (min-width:781px){
+  .lcc__crumbs{margin:0 0 14px}
+  .lcc__crumbs a{padding:4px 0}
+}
+
+/* ---- course card (archive) ---- */
+.lcc__card .pa__actions{flex-wrap:wrap;gap:12px 20px}
+.lcc__card-progress{font-size:13.5px;font-weight:800;color:#7a23c9}
+.lcc__card-progress:empty{display:none}
+
+/* ---- course page: progress box ---- */
+.lcc__progress{display:flex;flex-direction:column;gap:18px;margin:44px 0 0;padding:24px;border:1px solid #e3e3e8;border-radius:18px;background:#fafafb;font-family:'Mulish',sans-serif}
+.lcc__progress-info{flex:1;min-width:0}
+.lcc__progress-text{margin:0 0 10px;font-family:'Chivo',sans-serif;font-weight:900;font-size:19px;line-height:1.3;color:#15151a}
+.lcc__progress.has-progress .lcc__progress-text{color:#7a23c9}
+.lcc__progress-bar{height:8px;border-radius:999px;background:#e9e9ee;overflow:hidden}
+.lcc__progress-bar>span{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,#dc10ff 0%,#9333ea 100%);transition:width .4s ease}
+.lcc__progress-note{margin:10px 0 0;font-size:14px;line-height:1.5;color:#5b5b63}
+.lcc__start.pa__btn{align-self:flex-start;justify-content:center;min-height:48px;text-decoration:none;white-space:nowrap}
+.lcc__start.pa__btn:hover,.lcc__start.pa__btn:focus-visible{background:#7a23c9;color:#fff;text-decoration:none}
+.lcc__start.pa__btn:focus-visible{outline:2px solid #9333ea;outline-offset:2px}
+@media (min-width:600px){
+  .lcc__progress{flex-direction:row;align-items:center;gap:28px;padding:26px 28px}
+  .lcc__start.pa__btn{align-self:center}
+}
+.no-js .lcc__progress-text,.no-js .lcc__progress-bar{display:none}
+
+/* ---- outline (course page "full", step page "panel") ---- */
+.lcc__outline-wrap{margin-top:48px}
+.lcc__outline-title{font-family:'Chivo',sans-serif;font-weight:900;font-size:30px;line-height:1.2;letter-spacing:-0.015em;color:#15151a;margin:0 0 18px}
+.lcc__outline,.lcc__sub,.lcc__steps{list-style:none;margin:0;padding:0}
+.lcc__item{margin:0;padding:0}
+
+.lcc__link{position:relative;display:grid;grid-template-columns:auto auto minmax(0,1fr);align-items:start;min-height:44px;padding:12px 18px;color:#15151a;font-family:'Mulish',sans-serif;text-decoration:none;transition:background .18s ease}
+.lcc__link:hover{background:#fafafb;color:#15151a;text-decoration:none}
+.lcc__link:hover .lcc__label{color:#9333ea}
+.lcc__link:focus-visible{outline:2px solid #9333ea;outline-offset:-2px}
+.lcc__check{grid-column:1;grid-row:1/span 2;position:relative;width:20px;height:20px;margin:2px 12px 0 0;border:2px solid #c9c9d1;border-radius:50%;background:#fff;transition:background .18s ease,border-color .18s ease}
+.lcc__item--quiz>.lcc__link .lcc__check{border-radius:6px}
+.lcc__item.is-done>.lcc__link .lcc__check{border-color:#9333ea;background:#9333ea url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.4l2.9 2.9L12.5 5' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px 14px no-repeat}
+.lcc__num{grid-column:2;grid-row:1;min-width:1.5em;margin-right:8px;font-family:'Chivo',sans-serif;font-weight:900;font-size:15px;line-height:24px;color:#5b5b63}
+.lcc__label{grid-column:3;grid-row:1;min-width:0;font-size:16px;font-weight:700;line-height:24px;overflow-wrap:break-word;transition:color .18s ease}
+.lcc__type{grid-column:3;grid-row:2;margin-top:1px;font-size:12.5px;font-weight:700;line-height:1.4;color:#5b5b63}
+.lcc__item--quiz>.lcc__link .lcc__type{color:#9333ea}
+.lcc__item.is-current>.lcc__link{background:#faf7ff;box-shadow:inset 3px 0 0 #9333ea}
+.lcc__item.is-current>.lcc__link .lcc__label,
+.lcc__item.has-current>.lcc__link .lcc__label{color:#7a23c9}
+
+/* full outline: a bordered list, every lesson open */
+.lcc__outline--full{border:1px solid #e3e3e8;border-radius:18px;overflow:hidden;background:#fff}
+.lcc__outline--full>.lcc__item+.lcc__item{border-top:1px solid #eeeef2}
+.lcc__outline--full>.lcc__item--lesson>.lcc__link{padding-top:16px;padding-bottom:16px}
+.lcc__outline--full>.lcc__item--lesson>.lcc__link .lcc__label{font-family:'Chivo',sans-serif;font-weight:800;font-size:17px}
+.lcc__outline--full .lcc__sub{padding-bottom:8px}
+.lcc__outline--full .lcc__sub .lcc__sub{padding-bottom:0}
+.lcc__outline--full .lcc__sub .lcc__link{padding-top:9px;padding-bottom:9px;padding-left:50px}
+.lcc__outline--full .lcc__sub .lcc__sub .lcc__link{padding-left:82px}
+.lcc__sub .lcc__label{font-size:15px;font-weight:600}
+.lcc__outline--full>.lcc__item--final{background:#fcfbff}
+
+/* Step pages print the panel after the main column (keyboard order); below
+   1200px, where style.css has no grid, it still sits above the content.
+   From 1200px the grid puts it in the right-hand column (.lca__toc order:2). */
+@media (max-width:1199px){
+  .lcc__layout{display:flex;flex-direction:column}
+  .lcc__layout>.lcc__aside{order:-1}
+}
+
+/* panel: inside the sticky "In this course" box (.lca__toc-box from style.css) */
+.lca__toc-box.lcc__panel{padding:4px 12px 10px}
+.lca__toc-box.lcc__panel>summary{padding:12px 6px;line-height:20px}
+.lcc__panel .lcc__panel-course{display:block;min-height:44px;margin:0 0 4px;padding:10px 6px;border-radius:10px;font-family:'Chivo',sans-serif;font-weight:900;font-size:17px;line-height:1.4;color:#15151a;text-decoration:none;overflow-wrap:break-word}
+.lcc__panel .lcc__panel-course:hover{color:#9333ea;text-decoration:none}
+.lcc__panel .lcc__outline,.lcc__panel .lcc__sub{margin:0;padding:0}
+.lcc__panel .lcc__item{position:relative;margin:0;padding:0;border-top:0;font-size:14.5px;line-height:1.4}
+.lcc__panel .lcc__outline>.lcc__item{border-top:1px solid #eeeef2}
+.lcc__panel .lcc__link{padding:10px 6px;border-radius:10px;color:#15151a}
+.lcc__panel .lcc__item.is-current>.lcc__link{border-radius:0 10px 10px 0}
+.lcc__panel .lcc__link:hover{background:#f1eef9;color:#15151a}
+.lcc__panel .lcc__link:hover .lcc__label{color:#7a23c9}
+.lcc__panel .lcc__item--lesson.has-children>.lcc__link{padding-right:44px}
+.lcc__panel .lcc__check{width:18px;height:18px;margin-right:10px}
+.lcc__panel .lcc__item.is-done>.lcc__link .lcc__check{background-size:12px 12px}
+.lcc__panel .lcc__num{min-width:1.4em;font-size:13.5px;line-height:22px}
+.lcc__panel .lcc__label{font-size:14.5px;line-height:22px}
+.lcc__panel .lcc__sub .lcc__label{font-weight:600}
+.lcc__panel .lcc__type{font-size:12px}
+.lcc__panel .lcc__sub{padding:0 0 6px 18px}
+.lcc__panel .lcc__sub .lcc__sub{padding-bottom:0}
+/* the <details> toggle: a chevron beside the lesson link */
+.lcc__more>summary{position:absolute;top:0;right:0;display:flex;align-items:center;justify-content:center;width:44px;height:44px;list-style:none;border-radius:10px;cursor:pointer}
+.lcc__more>summary::-webkit-details-marker{display:none}
+.lcc__more>summary::before{content:"";width:8px;height:8px;margin-left:-3px;border:solid #8a8a90;border-width:0 2px 2px 0;transform:rotate(-45deg);transition:transform .18s ease}
+.lcc__more[open]>summary::before{margin:-4px 0 0;transform:rotate(45deg)}
+.lcc__more>summary:hover{background:#f1eef9}
+.lcc__more>summary:hover::before{border-color:#7a23c9}
+.lcc__more>summary:focus-visible{outline:2px solid #9333ea;outline-offset:-2px}
+
+/* ---- lesson page: "In this lesson" ---- */
+.lcc__lesson-topics{margin:44px 0 0}
+.lcc__steps{border:1px solid #e3e3e8;border-radius:16px;overflow:hidden;background:#fff}
+.lcc__steps>.lcc__item+.lcc__item{border-top:1px solid #eeeef2}
+.lcc__steps>.lcc__item--nested>.lcc__link{padding-left:50px}
+
+/* ---- mark as done ---- */
+.lcc__mark-wrap{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;margin:44px 0 0;padding:26px 0 0;border-top:1px solid #eeeef2}
+.lcc__mark{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 22px 0 16px;border:2px solid #9333ea;border-radius:12px;background:#fff;color:#7a23c9;font-family:'Mulish',sans-serif;font-size:15.5px;font-weight:800;line-height:1.2;cursor:pointer;transition:background .18s ease,color .18s ease}
+.lcc__mark::before{content:"";flex:none;width:20px;height:20px;border:2px solid currentColor;border-radius:50%}
+.lcc__mark:hover{background:#faf7ff;color:#7a23c9}
+.lcc__mark:focus-visible{outline:2px solid #9333ea;outline-offset:2px}
+.lcc__mark.is-done,.lcc__mark[aria-pressed="true"]{background:#9333ea;color:#fff}
+.lcc__mark.is-done:hover,.lcc__mark[aria-pressed="true"]:hover{background:#7a23c9;border-color:#7a23c9;color:#fff}
+.lcc__mark.is-done::before,.lcc__mark[aria-pressed="true"]::before{border-color:#fff;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.4l2.9 2.9L12.5 5' fill='none' stroke='%239333ea' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px 14px no-repeat}
+.lcc__mark-note{margin:0;font-size:14px;color:#5b5b63}
+.no-js .lcc__mark-wrap{display:none}
+
+/* ---- previous / next ---- */
+.lcc__stepnav{margin:44px 0 0}
+.lcc__stepnav-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.lcc__stepnav-prev,.lcc__stepnav-next{display:flex;flex-direction:column;gap:4px;min-width:0;padding:18px 20px;border:1px solid #e3e3e8;border-radius:16px;background:#fff;color:#15151a;font-family:'Mulish',sans-serif;text-decoration:none;transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+.lcc__stepnav-prev:hover,.lcc__stepnav-next:hover{border-color:#9333ea;box-shadow:0 14px 32px rgba(20,20,30,0.10);transform:translateY(-2px);color:#15151a;text-decoration:none}
+.lcc__stepnav-prev:focus-visible,.lcc__stepnav-next:focus-visible{outline:2px solid #9333ea;outline-offset:2px}
+.lcc__stepnav-label{font-size:12.5px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#9333ea}
+.lcc__stepnav-title{font-family:'Chivo',sans-serif;font-weight:900;font-size:18px;line-height:1.25;color:#15151a;overflow-wrap:break-word;transition:color .2s ease}
+.lcc__stepnav-prev:hover .lcc__stepnav-title,.lcc__stepnav-next:hover .lcc__stepnav-title{color:#7a23c9}
+.lcc__stepnav-type{font-size:13px;font-weight:700;color:#5b5b63}
+.lcc__back{display:inline-flex;align-items:center;gap:8px;min-height:44px;margin-top:10px;font-family:'Mulish',sans-serif;font-size:15px;font-weight:800;color:#7a23c9;text-decoration:none}
+.lcc__back:hover{color:#9333ea;text-decoration:underline}
+@media (min-width:700px){
+  .lcc__stepnav-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lcc__stepnav-next{grid-column:2;align-items:flex-end;text-align:right}
+}
+
+/* ---- tables and wide content inside course text ---- */
+.lcc-view .lca__content .wp-block-table{overflow-x:auto;margin:2em 0}
+.lcc-view .lca__content table{width:100%;border-collapse:collapse;font-size:16px;line-height:1.5}
+.lcc-view .lca__content th,.lcc-view .lca__content td{padding:10px 12px;border:1px solid #e3e3e8;text-align:left;vertical-align:top}
+.lcc-view .lca__content thead th{background:#fafafb;font-weight:800;color:#15151a}
+.lcc-view .lca__content :is(iframe,video,embed){max-width:100%}
+
+/* ---- quiz ---- */
+.lcc__quiz{margin:40px 0 0;padding:28px;border:1px solid #e3e3e8;border-radius:18px;background:#fff;box-shadow:0 1px 3px rgba(20,20,30,0.06);font-family:'Mulish',sans-serif;color:#15151a;overflow-wrap:break-word}
+.lcc__quiz-app:empty{min-height:120px}
+.no-js .lcc__quiz-app{display:none}
+.lcc__quiz-noscript{margin:0;color:#5b5b63}
+.lcc__quiz p{margin:0}
+.lcc__quiz [tabindex="-1"]:focus{outline:none}
+
+/* start screen */
+.lcc__quiz-start{display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0;text-align:center}
+.lcc__quiz-meta{font-family:'Chivo',sans-serif;font-weight:900;font-size:20px;line-height:1.3;color:#15151a}
+.lcc__quiz-best{font-size:15px;font-weight:700;color:#5b5b63}
+.lcc__quiz-start.is-passed .lcc__quiz-best{color:#15803d}
+.lcc__quiz-start .lcc__btn{margin-top:8px}
+
+/* question screen */
+.lcc__quiz-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin:0 0 20px}
+.lcc__quiz .lcc__quiz-count{flex:none;font-size:12.5px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#5b5b63}
+.lcc__quiz-bar{flex:1 1 120px;height:6px;border-radius:999px;background:#eeeef2;overflow:hidden}
+.lcc__quiz-bar>span{display:block;width:0;height:100%;border-radius:inherit;background:#9333ea;transition:width .3s ease}
+.lcc__q{min-width:0;margin:0;padding:0;border:0}
+.lcc__q-text{float:none;display:block;width:100%;margin:0 0 8px;padding:0;font-family:'Chivo',sans-serif;font-weight:800;font-size:21px;line-height:1.35;color:#15151a}
+.lcc__q-text :is(h1,h2,h3,h4,h5,h6,p){margin:0 0 .4em;padding:0;font:inherit;color:inherit;background:none;-webkit-text-fill-color:currentColor}
+.lcc__q-text>:last-child{margin-bottom:0}
+.lcc__q-text img{max-width:100%;height:auto;border-radius:10px}
+.lcc__q-text a{color:#7a23c9}
+.lcc__quiz .lcc__q-hint{margin:0 0 14px;font-size:14px;font-weight:700;color:#5b5b63}
+.lcc__quiz .lcc__q-hint--multiple{color:#7a23c9}
+.lcc__answer{display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px 12px;width:100%;min-height:52px;margin:0 0 10px;padding:13px 16px;border:2px solid #e3e3e8;border-radius:12px;background:#fff;font-size:16px;font-weight:600;line-height:1.45;color:#26262c;cursor:pointer;transition:border-color .15s ease,background .15s ease}
+.lcc__answer input{flex:none;width:20px;height:20px;margin:1px 0 0;accent-color:#9333ea;cursor:inherit}
+.lcc__answer>span:not(.lcc__answer-tag){flex:1 1 140px;min-width:0;overflow-wrap:break-word}
+.lcc__answer:hover{border-color:#c9b3f5}
+.lcc__answer:has(input:checked){border-color:#9333ea;background:#faf7ff}
+.lcc__answer:has(input:focus-visible){outline:2px solid #9333ea;outline-offset:2px}
+.lcc__q.is-answered .lcc__answer{cursor:default}
+.lcc__q.is-answered .lcc__answer:not(.is-correct):not(.is-wrong):not(.is-missed){border-color:#eeeef2;color:#8a8a90}
+.lcc__quiz .lcc__answer.is-correct{border-color:#16a34a;background:#f0fbf4;color:#14532d}
+.lcc__quiz .lcc__answer.is-wrong{border-color:#dc2626;background:#fef2f2;color:#7f1d1d}
+.lcc__quiz .lcc__answer.is-missed{border-style:dashed;background:#fff}
+.lcc__answer-tag{flex:none;align-self:center;margin-left:auto;padding:3px 10px;border-radius:999px;background:#eeeef2;color:#3a3a42;font-size:12px;font-weight:800;line-height:1.4;white-space:nowrap}
+.lcc__answer.is-correct .lcc__answer-tag{background:#15803d;color:#fff}
+.lcc__answer.is-wrong .lcc__answer-tag{background:#dc2626;color:#fff}
+.lcc__answer.is-missed .lcc__answer-tag{background:#fff;color:#15803d;box-shadow:inset 0 0 0 1.5px #16a34a}
+
+/* feedback after "Check answer" */
+.lcc__feedback{margin:6px 0 0;font-size:15.5px;line-height:1.6;color:#26262c}
+.lcc__feedback:empty{margin:0}
+.lcc__feedback.is-notice{color:#b45309;font-weight:700}
+.lcc__feedback.is-correct,.lcc__feedback.is-wrong{padding:14px 16px;border-left:4px solid;border-radius:12px}
+.lcc__feedback.is-correct{border-color:#15803d;background:#f0fbf4}
+.lcc__feedback.is-wrong{border-color:#dc2626;background:#fef2f2}
+.lcc__feedback-title strong{font-weight:900}
+.lcc__feedback.is-correct .lcc__feedback-title{color:#15803d}
+.lcc__feedback.is-wrong .lcc__feedback-title{color:#b91c1c}
+.lcc__explain{margin-top:6px}
+.lcc__explain p{margin:0 0 .6em}
+.lcc__explain>:last-child{margin-bottom:0}
+.lcc__explain a,.lcc__result-msg a{color:#7a23c9;text-decoration:underline}
+.lcc__explain img,.lcc__result-msg img{max-width:100%;height:auto}
+.lcc__quiz-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+
+/* results */
+.lcc__result{text-align:center}
+.lcc__quiz .lcc__score{margin:4px 0 6px;font-family:'Chivo',sans-serif;font-weight:900;font-size:44px;line-height:1.1;letter-spacing:-0.02em;color:#15151a;background:none;-webkit-text-fill-color:currentColor}
+.lcc__result.is-pass .lcc__score{color:#15803d}
+.lcc__result.is-fail .lcc__score{color:#b45309}
+.lcc__verdict{font-size:17px;font-weight:700;color:#3a3a42}
+.lcc__result .lcc__quiz-best{margin-top:6px}
+.lcc__result-msg{max-width:560px;margin:18px auto 0;padding:16px 20px;border-radius:14px;background:#faf7ff;font-size:15.5px;line-height:1.6;color:#3a3a42;text-align:left}
+.lcc__result-msg p{margin:0 0 .6em}
+.lcc__result-msg>:last-child{margin-bottom:0}
+.lcc__quiz .lcc__review-title{margin:32px 0 12px;font-family:'Mulish',sans-serif;font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#5b5b63;text-align:left}
+.lcc__review{margin:0;padding:0 0 0 1.5em;border-top:1px solid #eeeef2;text-align:left}
+.lcc__review-item{padding:14px 0;border-bottom:1px solid #eeeef2;font-size:15px;line-height:1.55;color:#3a3a42}
+.lcc__review-item::marker{font-weight:800;color:#5b5b63}
+.lcc__quiz .lcc__review-q{margin:0 0 4px;font-weight:800;color:#15151a}
+.lcc__review-mark{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin-right:4px;border-radius:50%;font-size:13px;font-weight:900;line-height:1;vertical-align:1px}
+.lcc__review-item.is-correct .lcc__review-mark{background:#dcfce7;color:#15803d}
+.lcc__review-item.is-wrong .lcc__review-mark{background:#fee2e2;color:#b91c1c}
+.lcc__review-yours strong,.lcc__review-correct strong{color:#15151a}
+.lcc__review-item.is-wrong .lcc__review-yours{color:#b91c1c}
+.lcc__result .lcc__quiz-actions{justify-content:center;margin-top:24px}
+
+/* ---- phones ---- */
+@media (max-width:780px){
+  .lcc__progress{margin-top:36px;padding:20px}
+  .lcc__outline-title{font-size:25px}
+  .lcc__link{padding:12px 14px}
+  .lcc__outline--full .lcc__sub .lcc__link{padding-left:40px}
+  .lcc__outline--full .lcc__sub .lcc__sub .lcc__link{padding-left:66px}
+  .lcc__steps>.lcc__item--nested>.lcc__link{padding-left:40px}
+  .lcc__quiz{margin-top:32px;padding:20px 16px}
+  .lcc__q-text{font-size:19px}
+  .lcc__answer{padding:12px 14px}
+  .lcc__quiz .lcc__score{font-size:30px}
+  .lcc__quiz-actions .lcc__btn{flex:1 1 auto}
+}

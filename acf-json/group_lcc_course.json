@@ -1,0 +1,112 @@
+{
+    "key": "group_lcc_course",
+    "title": "Course outline",
+    "fields": [
+        {
+            "key": "field_lcc_course_lessons",
+            "label": "Lessons",
+            "name": "course_lessons",
+            "aria-label": "",
+            "type": "relationship",
+            "instructions": "The lessons in this course, in order. Drag to reorder.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "sfwd-lessons"
+            ],
+            "post_status": "",
+            "taxonomy": "",
+            "filters": [
+                "search"
+            ],
+            "return_format": "id",
+            "min": 0,
+            "max": 0,
+            "allow_in_bindings": 0,
+            "elements": [],
+            "bidirectional": 0,
+            "bidirectional_target": []
+        },
+        {
+            "key": "field_lcc_course_final_quiz",
+            "label": "Final quiz",
+            "name": "course_final_quiz",
+            "aria-label": "",
+            "type": "post_object",
+            "instructions": "Optional quiz shown after the last lesson.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 50,
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "sfwd-quiz"
+            ],
+            "post_status": "",
+            "taxonomy": "",
+            "return_format": "id",
+            "multiple": 0,
+            "allow_null": 1,
+            "allow_in_bindings": 0,
+            "bidirectional": 0,
+            "ui": 1,
+            "bidirectional_target": []
+        },
+        {
+            "key": "field_lcc_superseded_by",
+            "label": "Superseded by",
+            "name": "superseded_by",
+            "aria-label": "",
+            "type": "post_object",
+            "instructions": "If a newer course replaces this one, pick it here. Visitors see a notice linking to it.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": 50,
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "sfwd-courses"
+            ],
+            "post_status": "",
+            "taxonomy": "",
+            "return_format": "id",
+            "multiple": 0,
+            "allow_null": 1,
+            "allow_in_bindings": 0,
+            "bidirectional": 0,
+            "ui": 1,
+            "bidirectional_target": []
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "sfwd-courses"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Lessons, final quiz and replacement course. Drives the course outline, progress and step navigation.",
+    "show_in_rest": 0,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1792261606
+}

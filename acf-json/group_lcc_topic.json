@@ -1,0 +1,55 @@
+{
+    "key": "group_lcc_topic",
+    "title": "Topic quiz",
+    "fields": [
+        {
+            "key": "field_lcc_topic_quiz",
+            "label": "Topic quiz",
+            "name": "topic_quiz",
+            "aria-label": "",
+            "type": "post_object",
+            "instructions": "Optional quiz shown after this topic.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "sfwd-quiz"
+            ],
+            "post_status": "",
+            "taxonomy": "",
+            "return_format": "id",
+            "multiple": 0,
+            "allow_null": 1,
+            "allow_in_bindings": 0,
+            "bidirectional": 0,
+            "ui": 1,
+            "bidirectional_target": []
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "sfwd-topic"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Optional quiz for a topic. Which lesson a topic belongs to is set on the lesson.",
+    "show_in_rest": 0,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1792261606
+}
