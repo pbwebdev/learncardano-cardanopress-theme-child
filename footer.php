@@ -129,9 +129,9 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
 
 		<?php wp_footer(); ?>
 
-        <link rel='stylesheet' id='cardanopress-bootstrap-child-theme'  href='/wp-content/themes/learncardano-cardanopress-theme-child/style.css' media='all' />
-        <link rel='stylesheet' id='cardanopress-bootstrap-child-theme-fonts'  href='/wp-content/themes/learncardano-cardanopress-theme-child/fonts.css' media='all' />
-        <link rel="stylesheet" href="/wp-content/themes/learncardano-cardanopress-theme-child/learndash.css"  >
+        <link rel='stylesheet' id='cardanopress-bootstrap-child-theme'  href='<?php echo esc_url( lc_theme_asset_url( 'style.css' ) ); ?>' media='all' />
+        <link rel='stylesheet' id='cardanopress-bootstrap-child-theme-fonts'  href='<?php echo esc_url( lc_theme_asset_url( 'fonts.css' ) ); ?>' media='all' />
+        <link rel="stylesheet" href="<?php echo esc_url( lc_theme_asset_url( 'learndash.css' ) ); ?>"  >
 
 <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/fontawesome.min.css" integrity="sha384-zIaWifL2YFF1qaDiAo0JFgsmasocJ/rqu7LKYH8CoBEXqGbb9eO+Xi3s6fQhgFWM" crossorigin="anonymous">-->
 

@@ -135,6 +135,68 @@ if ( ! function_exists( 'lc_episode_thumb_url' ) ) {
 }
 
 /**
+ * URL of a child-theme asset with its modified time as the version, so each
+ * deploy busts browser caches. Used for the stylesheets linked in footer.php.
+ */
+function lc_theme_asset_url( $file ) {
+	$path = get_stylesheet_directory() . '/' . $file;
+	$ver  = file_exists( $path ) ? filemtime( $path ) : false;
+	return add_query_arg( 'ver', $ver, get_stylesheet_directory_uri() . '/' . $file );
+}
+
+/**
+ * A post's primary category: Rank Math's primary pick when set, otherwise the
+ * first category. Uncategorized counts as no category.
+ */
+function lc_post_primary_category( $post_id = null ) {
+	$post_id = $post_id ? $post_id : get_the_ID();
+	$term    = null;
+	$primary = (int) get_post_meta( $post_id, 'rank_math_primary_category', true );
+	if ( $primary ) {
+		$term = get_term( $primary, 'category' );
+	}
+	if ( ! $term || is_wp_error( $term ) ) {
+		$cats = get_the_category( $post_id );
+		$term = $cats ? $cats[0] : null;
+	}
+	return ( $term && 'uncategorized' !== $term->slug ) ? $term : null;
+}
+
+/**
+ * Categories used by published blog posts, most-used first, for the category
+ * filter on the Resources archive. Cached, and cleared whenever a post is
+ * saved or deleted or a category changes.
+ */
+function lc_blog_categories() {
+	$terms = get_transient( 'lc_blog_categories' );
+	if ( false !== $terms ) {
+		return $terms;
+	}
+	$counts = array();
+	$ids    = get_posts( array( 'post_type' => 'post', 'post_status' => 'publish', 'numberposts' => -1, 'fields' => 'ids' ) );
+	foreach ( $ids as $id ) {
+		foreach ( wp_get_post_categories( $id ) as $term_id ) {
+			$counts[ $term_id ] = ( $counts[ $term_id ] ?? 0 ) + 1;
+		}
+	}
+	arsort( $counts );
+	$terms = array();
+	foreach ( array_keys( $counts ) as $term_id ) {
+		$term = get_term( $term_id, 'category' );
+		if ( $term && ! is_wp_error( $term ) && 'uncategorized' !== $term->slug ) {
+			$terms[] = $term;
+		}
+	}
+	set_transient( 'lc_blog_categories', $terms, DAY_IN_SECONDS );
+	return $terms;
+}
+foreach ( array( 'save_post_post', 'deleted_post', 'edited_category', 'delete_category' ) as $lc_hook ) {
+	add_action( $lc_hook, function () {
+		delete_transient( 'lc_blog_categories' );
+	} );
+}
+
+/**
  * Dequeue plugin assets on pages that don't need them.
  *
  * The site loads ~18 render-blocking stylesheets on every page from
