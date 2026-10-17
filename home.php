@@ -26,7 +26,8 @@ get_header();
 		array(
 			'title'           => 'Cardano Resources & Tutorials',
 			'subtitle'        => 'Tutorials, explainers, governance updates and news from across the Cardano ecosystem.',
-			'show_categories' => true,
+			'pills'           => lc_blog_category_pills(),
+			'pills_label'     => __( 'Article categories', 'learncardano' ),
 		)
 	);
 

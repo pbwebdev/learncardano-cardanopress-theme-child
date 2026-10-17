@@ -1,7 +1,14 @@
 <?php
 
 /**
- * The template for displaying pages
+ * Generic archive: post type archives without their own template (the
+ * knowledge base types, LearnDash groups…), taxonomy, tag, author and date
+ * archives. Podcasts, courses, proposals and blog categories have their own.
+ *
+ * Uses the podcast-archive hero with the real archive title (this template
+ * used to say "Learn Cardano Podcast Episode Archives" everywhere). Knowledge
+ * base archives get the compact card grid and type filter; everything else
+ * gets the large cards.
  *
  * @package CardanoPress Bootstrap
  * @since 0.1.0
@@ -9,93 +16,51 @@
 
 get_header();
 
+add_filter( 'get_the_archive_title_prefix', '__return_empty_string' );
+
+$lc_kb_types   = lc_kb_types();
+$lc_kb_type    = is_post_type_archive( array_keys( $lc_kb_types ) ) ? get_query_var( 'post_type' ) : '';
+$lc_kb_type    = is_array( $lc_kb_type ) ? reset( $lc_kb_type ) : $lc_kb_type;
+$lc_is_kb      = $lc_kb_type || is_tax( lc_kb_taxonomies() );
+$lc_title      = wp_strip_all_tags( get_the_archive_title() );
+$lc_subtitle   = get_the_archive_description();
+if ( ! $lc_subtitle && $lc_kb_type ) {
+	$lc_subtitle = $lc_kb_types[ $lc_kb_type ]['blurb'];
+}
 ?>
 
+<main class="resources-archive <?php echo cardanopress_bootstrap_class( 'content-full' ); ?>">
 
-<div class="archive-header pt-5">
-    <div class="container">
-        <div class="row justify-content-md-center">
-            <div class="col-md-8 text-center">
-                <h1>Learn Cardano Podcast Episode Archives</h1>
-                <p>View all of the latest episodes produced by the Learn Cardano Podcast.</p>
-            </div>
-        </div>
-    </div>
-</div>
+	<?php
+	get_template_part(
+		'template-parts/archive-hero',
+		null,
+		array(
+			'title'       => $lc_title,
+			'subtitle'    => $lc_subtitle,
+			'placeholder' => $lc_is_kb ? __( 'Search Learn Cardano', 'learncardano' ) : __( 'Search articles', 'learncardano' ),
+			'post_type'   => $lc_is_kb ? '' : 'post',
+			'pills'       => $lc_is_kb ? lc_kb_type_pills( (string) $lc_kb_type ) : array(),
+			'pills_label' => __( 'Knowledge base sections', 'learncardano' ),
+		)
+	);
 
-    <main class="podcast-category <?php echo cardanopress_bootstrap_class( 'content-full' ); ?>">
+	if ( $lc_is_kb ) {
+		get_template_part( 'template-parts/kb-grid' );
+	} else {
+		get_template_part(
+			'template-parts/archive-list',
+			null,
+			array(
+				'empty'     => __( 'Nothing here yet.', 'learncardano' ),
+				'nav_label' => __( 'Archive navigation', 'learncardano' ),
+			)
+		);
+	}
+	?>
 
-        <div class="latest section">
-            <div class="container">
-
-                <div class="episode-list ">
-
-                    <div class="row  justify-content-md-center">
-                        <div class="col-md-10">
-
-                            <?php if ( have_posts() ) : ?>
-                                <?php while ( have_posts() ) : the_post(); ?>
-                                    <article id="<?php echo $post_type . '-' . get_the_ID(); ?>" class="">
-
-                                        <div class="episode-card">
-
-                                            <div class="row">
-                                                <div class="col-md-3 episode-image align-self-start">
-                                                    <?php if ( has_post_thumbnail() ) : ?>
-                                                        <?php the_post_thumbnail(); ?>
-                                                    <?php endif; ?>
-                                                </div>
-                                                <div class="col-md-8 offset-md-1 episode-details">
-
-                                                    <div class="row metadata">
-                                                        <div class="episode-tags col">
-    <?php echo get_the_term_list( $post->ID, 'ptag', '<span class="badge rounded-pill text-bg-primary">', ',</span> <span class="badge rounded-pill text-bg-primary">', '</span>' );
-        ?></span>
-                                                        </div>
-                                                        <div class="episode-date col text-end"> <?php the_time('d M, Y') ?></div>
-                                                    </div>
-
-
-                                                    <div class="episode-title">
-                                                        <h3 id="post-<?php the_ID(); ?>">
-                                                            <a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>">
-                                                                <?php the_title(); ?></a>
-                                                        </h3>
-                                                    </div>
-                                                    <div class="episode-excerpt">
-                                                        <?php the_excerpt(); ?>
-                                                    </div>
-                                                    <a href="<?php the_permalink() ?>" class="btn btn-primary"  rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>">
-                                                        <span class="fa fa-play"></span> Play episode
-                                                    </a> <a  href="<?php the_permalink() ?>#comments"  class="btn-secondary btn"><span class="fa fa-comment"></span> <?php printf( _n( '%d comment', '%d comments', get_comments_number(), 'learncardano' ), get_comments_number() ); ?></a>
-
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-
-                                    </article><!-- #single-<?php the_ID(); ?> -->
-
-
-
-                                <?php endwhile; ?>
-
-                                <?php the_posts_pagination(); ?>
-
-                            <?php endif; ?>
-
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-
-    </main><!-- .content -->
+</main><!-- .resources-archive -->
 
 <?php
 
 get_footer();
-

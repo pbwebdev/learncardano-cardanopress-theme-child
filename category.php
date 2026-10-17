@@ -27,8 +27,8 @@ if ( ! $lc_subtitle ) {
 		array(
 			'title'           => single_cat_title( '', false ),
 			'subtitle'        => $lc_subtitle,
-			'show_categories' => true,
-			'active_category' => $lc_category ? $lc_category->term_id : 0,
+			'pills'           => lc_blog_category_pills( $lc_category ? $lc_category->term_id : 0 ),
+			'pills_label'     => __( 'Article categories', 'learncardano' ),
 		)
 	);
 

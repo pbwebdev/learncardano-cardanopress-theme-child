@@ -1,6 +1,7 @@
 <?php
 
 require_once 'includes/lockbox.php';
+require_once 'includes/knowledge-base.php';
 
 add_theme_support('responsive-embeds');
 add_filter('rest_enabled', '__return_false');
@@ -194,6 +195,20 @@ foreach ( array( 'save_post_post', 'deleted_post', 'edited_category', 'delete_ca
 	add_action( $lc_hook, function () {
 		delete_transient( 'lc_blog_categories' );
 	} );
+}
+
+/**
+ * Filter pills for the blog archives: "All" plus each category in use, with
+ * the given category (term ID, 0 for "All") marked active.
+ *
+ * @return array<int, array{0: string, 1: string, 2: bool}>
+ */
+function lc_blog_category_pills( $active = 0 ) {
+	$pills = array( array( __( 'All', 'learncardano' ), get_permalink( get_option( 'page_for_posts' ) ), ! $active ) );
+	foreach ( lc_blog_categories() as $term ) {
+		$pills[] = array( $term->name, get_term_link( $term ), (int) $active === (int) $term->term_id );
+	}
+	return $pills;
 }
 
 /**
