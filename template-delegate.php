@@ -112,15 +112,16 @@ $lc_check   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 					</div>
 				</div>
 
-				<a class="dlg__calc" href="https://cardanode.com.au/cardano-staking-calculator-rewards-ada/">
+				<a class="dlg__calc" href="https://cardanode.com.au/cardano-staking-calculator-rewards-ada/" target="_blank" rel="noopener">
 					<span class="dlg__calc-icon" aria-hidden="true">
 						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="10" y2="11"/><line x1="12" y1="11" x2="14" y2="11"/><line x1="16" y1="11" x2="16" y2="11.01"/><line x1="8" y1="15" x2="10" y2="15"/><line x1="12" y1="15" x2="14" y2="15"/><line x1="16" y1="15" x2="16" y2="15.01"/><line x1="8" y1="19" x2="10" y2="19"/><line x1="12" y1="19" x2="14" y2="19"/><line x1="16" y1="19" x2="16" y2="19.01"/></svg>
 					</span>
 					<span class="dlg__calc-text">
 						<strong><?php esc_html_e( 'Curious what you could earn?', 'learncardano' ); ?></strong>
 						<?php esc_html_e( 'Use the Cardano staking calculator to project your ADA rewards over time — including weekly DCA.', 'learncardano' ); ?>
+						<span class="visually-hidden"><?php esc_html_e( '(opens in a new tab)', 'learncardano' ); ?></span>
 					</span>
-					<span class="dlg__calc-arrow" aria-hidden="true">&rarr;</span>
+					<span class="dlg__calc-arrow" aria-hidden="true">&nearr;</span>
 				</a>
 
 				<details class="dlg__manual">
