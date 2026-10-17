@@ -146,7 +146,7 @@ function lc_course_prime( $ids ) {
 /**
  * The structure of every course (any status but trash/auto-draft) and of
  * every lesson, topic and quiz it lists, read from raw meta. Cached in the
- * `lc_course_map` transient (no expiry, cleared by lc_course_map_flush())
+ * `lc_course_map` transient (one-week expiry, cleared early by lc_course_map_flush())
  * and for the rest of the request. Also holds each course's counts under
  * 'counts' (see lc_course_counts()).
  *
@@ -975,6 +975,21 @@ add_filter(
 	'feed_links_extra_show_post_comments_feed',
 	function ( $show ) {
 		return is_singular( array( 'sfwd-lessons', 'sfwd-topic', 'sfwd-quiz' ) ) ? false : $show;
+	}
+);
+
+/**
+ * No ?p=ID shortlink on course views: for these post types Rank Math's
+ * 404-to-homepage fallback answers ?p=ID before WordPress can redirect it,
+ * so the shortlink in the head and Link header would lead to the homepage.
+ */
+add_action(
+	'wp',
+	function () {
+		if ( is_singular( array_keys( lc_course_types() ) ) ) {
+			remove_action( 'wp_head', 'wp_shortlink_wp_head', 10 );
+			remove_action( 'template_redirect', 'wp_shortlink_header', 11 );
+		}
 	}
 );
 

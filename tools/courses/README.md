@@ -192,6 +192,9 @@ ssh learncardano 'wp eval-file ~/claude-scripts/courses/migrate.php cutover appl
 ```bash
 ssh learncardano 'wp rewrite flush --path=$HOME/www/learncardano.io/public_html'
 ssh learncardano 'wp sg purge --path=$HOME/www/learncardano.io/public_html'
+# Rank Math's sitemap file cache only notices post changes made in wp-admin or cron,
+# not WP-CLI, so the drafted steps stay in the sitemaps until it is cleared:
+ssh learncardano "wp eval '\\RankMath\\Sitemap\\Cache::invalidate_storage();' --path=\$HOME/www/learncardano.io/public_html"
 ```
 
 Purge Cloudflare as well (by hand): at least `/courses/*`, `/lessons/*`, `/topic/*` and
@@ -201,11 +204,11 @@ Purge Cloudflare as well (by hand): at least `/courses/*`, `/lessons/*`, `/topic
 
 ```bash
 # LearnDash's daily payment-check job has no handler once LearnDash is off.
-ssh learncardano 'wp action-scheduler action cancel --hook=learndash_payment_subscription_check_due_payments --path=$HOME/www/learncardano.io/public_html'
+ssh learncardano 'wp action-scheduler action cancel learndash_payment_subscription_check_due_payments --all --path=$HOME/www/learncardano.io/public_html'
 ```
 
-- Settings → Menu Editor (Admin Menu Editor) still has LearnDash's `learndash-lms` top-level
-  entry: put the new "Courses" menu (with Lessons, Topics, Quizzes) in its place and save.
+- Check the admin menu: on live (2026-10-18) Admin Menu Editor showed the new "Courses"
+  menu (with Lessons, Topics, Quizzes) on its own, so nothing needed changing.
 - Editors can now edit courses: the post types use normal post capabilities, where
   LearnDash used its own `course` capabilities (admins only).
 
