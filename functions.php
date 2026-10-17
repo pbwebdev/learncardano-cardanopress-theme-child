@@ -4,6 +4,19 @@ require_once 'includes/lockbox.php';
 require_once 'includes/knowledge-base.php';
 require_once 'includes/delegate.php';
 require_once 'includes/courses.php';
+require_once 'includes/search.php';
+require_once 'includes/svg-uploads.php';
+require_once 'includes/rest-meta.php';
+require_once 'includes/mail.php';
+require_once 'includes/admin-tweaks.php';
+require_once 'includes/critical-css.php';
+
+// Forms and the newsletter popup (replace Gravity Forms and WP Popups).
+foreach ( array( 'includes/forms.php', 'includes/newsletter-popup.php' ) as $lc_include ) {
+	if ( file_exists( __DIR__ . '/' . $lc_include ) ) {
+		require_once __DIR__ . '/' . $lc_include;
+	}
+}
 
 add_theme_support('responsive-embeds');
 add_filter('rest_enabled', '__return_false');
@@ -306,11 +319,6 @@ function lc_related_posts( $post_id, $count = 3 ) {
 /**
  * Dequeue plugin assets on pages that don't need them.
  *
- * The site loads ~18 render-blocking stylesheets on every page from
- * plugins whose features aren't actually used there (GravityForms on
- * every page, etc.). Strip those so
- * each page only pays for what it actually renders.
- *
  * Runs at priority 100 so it fires after plugins have enqueued.
  */
 add_action( 'wp_enqueue_scripts', function () {
@@ -318,94 +326,14 @@ add_action( 'wp_enqueue_scripts', function () {
 		return;
 	}
 
-	$queried        = get_queried_object();
-	$post_content   = ( $queried instanceof WP_Post ) ? $queried->post_content : '';
-	$has_gform      = $post_content && (
-		has_shortcode( $post_content, 'gravityform' )
-		|| has_shortcode( $post_content, 'gravityforms' )
-		|| ( function_exists( 'has_block' ) && $queried instanceof WP_Post && has_block( 'gravityforms/form', $queried ) )
-	);
-	$has_popup      = $post_content && (
-		has_shortcode( $post_content, 'wppopup' )
-		|| has_shortcode( $post_content, 'wppopups' )
-	);
-
 	// LearnDash was removed: courses are theme templates now (includes/courses.php).
-
-	// GravityForms dequeue on the homepage only.
-	// front-page.php is verified static HTML with no GF shortcodes/blocks.
-	if ( is_front_page() ) {
-		// Marker for the late wp_print_styles handler below — same logic
-		// but at a later hook so it catches plugins (notably GravityForms)
-		// that enqueue past priority 100 of wp_enqueue_scripts.
-		$GLOBALS['lc_front_page_dequeue'] = true;
-	}
-
-	// GravityForms only needed on pages that embed a form.
-	if ( ! $has_gform ) {
-		foreach ( array( 'gform_basic', 'gform_theme_components', 'gform_theme', 'gform_legacy_multifile', 'gform_chosen' ) as $h ) {
-			wp_dequeue_style( $h );
-		}
-		foreach ( array( 'gform_gravityforms', 'gform_conditional_logic', 'gform_json', 'gform_textarea_counter', 'gform_masked_input', 'gform_chosen' ) as $h ) {
-			wp_dequeue_script( $h );
-		}
-	}
-
-	// wp-popups-lite only needed when a popup is actually triggered on the page.
-	if ( ! $has_popup ) {
-		wp_dequeue_style( 'wppopups-base' );
-		wp_dequeue_script( 'wppopups-base' );
-	}
+	// Gravity Forms and WP Popups were replaced by includes/forms.php and
+	// includes/newsletter-popup.php, which only load their assets when used.
 
 	// UserAccessManager's login-form CSS only matters on its own login form.
 	// Drop it on regular content; it'll still load if UAM injects its form.
 	if ( ! is_page( 'login' ) && ! is_page( 'register' ) ) {
 		wp_dequeue_style( 'UserAccessManagerLoginForm' );
-	}
-}, 100 );
-
-/**
- * Late dequeue pass on the homepage — runs at wp_print_styles / wp_print_scripts
- * so it fires after every plugin's wp_enqueue_scripts hook, including ones that
- * enqueue at priorities > 100 (notably GravityForms).
- *
- * Handle names below match what is actually present in $wp_scripts->queue and
- * $wp_styles->queue on the live homepage, not what I inferred from CSS link
- * IDs in the HTML (those didn't always match the underlying handle name).
- */
-add_action( 'wp_print_styles', function () {
-	if ( empty( $GLOBALS['lc_front_page_dequeue'] ) ) {
-		return;
-	}
-	$styles = array(
-		// GravityForms bundle (no form on the homepage).
-		'gform_basic',
-		'gform_theme',
-		'gform_theme_components',
-		'gform_legacy_multifile',
-		'gform_chosen',
-	);
-	foreach ( $styles as $h ) {
-		wp_dequeue_style( $h );
-	}
-}, 100 );
-
-add_action( 'wp_print_scripts', function () {
-	if ( empty( $GLOBALS['lc_front_page_dequeue'] ) ) {
-		return;
-	}
-	$scripts = array(
-		// GravityForms JS.
-		'gform_gravityforms',
-		'gform_conditional_logic',
-		'gform_json',
-		'gform_textarea_counter',
-		'gform_masked_input',
-		'gform_chosen',
-		'gform_placeholder',
-	);
-	foreach ( $scripts as $h ) {
-		wp_dequeue_script( $h );
 	}
 }, 100 );
 
@@ -434,7 +362,6 @@ add_filter( 'script_loader_tag', function ( $tag, $handle ) {
 		return $tag;
 	}
 	$defer = array(
-		'image-watermark-no-right-click',
 		'siteground-optimizer-lazy-sizes-js',
 	);
 	if ( ! in_array( $handle, $defer, true ) ) {
