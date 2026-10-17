@@ -17,8 +17,10 @@ $args = wp_parse_args(
 	array(
 		'title'       => '',
 		'subtitle'    => '',
-		'placeholder' => 'Search articles',
-		'post_type'   => 'post',
+		// Algolia InstantSearch replaces the results page and ignores
+		// post_type, so the box searches the whole site and says so.
+		'placeholder' => __( 'Search Learn Cardano', 'learncardano' ),
+		'post_type'   => '',
 		'show_search' => true,
 		'pills'       => array(),
 		'pills_label' => __( 'Filter', 'learncardano' ),

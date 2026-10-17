@@ -30,7 +30,11 @@ while ( have_posts() ) :
 	$lc_category   = $lc_is_article ? lc_post_primary_category() : null;
 	$lc_minutes    = lc_reading_minutes( $lc_content );
 	$lc_thumb_id   = get_post_thumbnail_id();
-	$lc_show_hero  = $lc_thumb_id && false === strpos( $lc_content, 'wp-image-' . $lc_thumb_id );
+	// Skip the hero only when the featured image already opens the article
+	// (before the first H2); an image used further down still gets a hero.
+	$lc_img_pos    = $lc_thumb_id ? strpos( $lc_content, 'wp-image-' . $lc_thumb_id ) : false;
+	$lc_h2_pos     = strpos( $lc_content, '<h2' );
+	$lc_show_hero  = $lc_thumb_id && ( false === $lc_img_pos || $lc_img_pos > ( false === $lc_h2_pos ? 3000 : $lc_h2_pos ) );
 	$lc_updated    = ( get_the_modified_time( 'U' ) - get_the_time( 'U' ) ) > DAY_IN_SECONDS;
 	$lc_bio        = get_the_author_meta( 'description' );
 	$lc_share_url  = rawurlencode( get_permalink() );
@@ -122,7 +126,14 @@ while ( have_posts() ) :
 					</div>
 
 					<?php if ( $lc_is_kb ) : ?>
-						<div class="kb__details"><?php lc_kb_render_details( get_the_ID() ); ?></div>
+						<?php
+						ob_start();
+						lc_kb_render_details( get_the_ID() );
+						$lc_kb_details = trim( ob_get_clean() );
+						?>
+						<?php if ( '' !== $lc_kb_details ) : ?>
+							<div class="kb__details"><?php echo $lc_kb_details; // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in lc_kb_render_details(). ?></div>
+						<?php endif; ?>
 					<?php endif; ?>
 
 					<footer class="lca__footer">

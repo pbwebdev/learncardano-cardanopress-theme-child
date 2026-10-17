@@ -186,6 +186,11 @@ function initPanel() {
     const res = await fetch(url, { headers: { accept: "application/json" }, credentials: "same-origin" });
     const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.account || !data.params) {
+      // A proxy (e.g. Cloudflare) may replace a server error with its own
+      // non-JSON page, so 5xx without our message gets the friendly text.
+      if (!data.message && res.status >= 500) {
+        throw new Error("Could not reach the Cardano network. Try again in a minute.");
+      }
       throw new Error(data.message || `Account lookup failed (${res.status})`);
     }
     return data;
