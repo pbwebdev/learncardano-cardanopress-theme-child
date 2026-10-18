@@ -17,12 +17,6 @@ $lc_youtube_id = function_exists('lc_youtube_id') ? lc_youtube_id(get_field('you
 $lc_spotify_id = function_exists('lc_spotify_id') ? lc_spotify_id(get_field('spotify_id', false, false)) : '';
 
 ?>
-<?php if ($lc_youtube_id): ?>
-    <div id="preloader" style="visibility: hidden; display: none;">
-        <img src="<?php echo esc_url('https://i.ytimg.com/vi/' . $lc_youtube_id . '/hqdefault.jpg'); ?>" height="1" width="1" style="visibility: hidden; display: none;" alt="">
-    </div>
-<?php endif; ?>
-
 <div class="podcast-episode">
     <main class="content" role="main">
 
@@ -80,30 +74,52 @@ $lc_spotify_id = function_exists('lc_spotify_id') ? lc_spotify_id(get_field('spo
                         <div class="row justify-content-md-center">
                             <div class="col-md-10 col-sm-12">
                                 <?php if ($lc_youtube_id): ?>
+                                    <?php
+                                    // YouTube facade: the episode thumbnail and a play button stand in
+                                    // for the player, which is ~1MB of third-party script. Clicking
+                                    // swaps in the real iframe (autoplaying); without JS the link
+                                    // opens the video on YouTube.
+                                    $lc_yt_thumb = 'https://i.ytimg.com/vi/' . $lc_youtube_id . '/hqdefault.jpg';
+                                    ?>
                                     <div class="youtube-embed col-md-10 mb-2 offset-md-1">
-                                        <style>
-                                            .embed-container {
-                                                position: relative;
-                                                padding-bottom: 56.25%;
-                                                height: 0;
-                                                overflow: hidden;
-                                                max-width: 100%;
-                                            }
-
-                                            .embed-container iframe,
-                                            .embed-container object,
-                                            .embed-container embed {
-                                                position: absolute;
-                                                top: 0;
-                                                left: 0;
-                                                width: 100%;
-                                                height: 100%;
-                                            }
-                                        </style>
-                                        <div class='embed-container'>
-                                            <iframe src="<?php echo esc_url('https://www.youtube.com/embed/' . $lc_youtube_id); ?>" title="<?php echo esc_attr(get_the_title()); ?>" loading="lazy" frameborder="0" allowfullscreen></iframe>
+                                        <div class="embed-container">
+                                            <a class="lc-yt" href="<?php echo esc_url('https://www.youtube.com/watch?v=' . $lc_youtube_id); ?>" data-id="<?php echo esc_attr($lc_youtube_id); ?>" data-title="<?php echo esc_attr(get_the_title()); ?>" target="_blank" rel="noopener">
+                                                <img class="lc-yt__thumb" src="<?php echo esc_url($lc_yt_thumb); ?>" width="480" height="360" alt="" fetchpriority="high" decoding="async">
+                                                <span class="lc-yt__play" aria-hidden="true"><?php echo lc_icon('play'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG. ?></span>
+                                                <span class="visually-hidden"><?php echo esc_html(sprintf(__('Play video: %s', 'learncardano'), get_the_title())); ?></span>
+                                            </a>
                                         </div>
                                     </div>
+                                    <script>
+                                    (function () {
+                                        var link = document.querySelector('.lc-yt');
+                                        if (!link) { return; }
+                                        var id = link.getAttribute('data-id');
+                                        // hqdefault is 480px wide; on larger screens swap in the HD still
+                                        // once the page has loaded, if the video has one (YouTube serves
+                                        // a 120px placeholder when it doesn't).
+                                        if (window.innerWidth >= 768) {
+                                            window.addEventListener('load', function () {
+                                                var hd = new Image();
+                                                hd.onload = function () {
+                                                    if (hd.naturalWidth > 120) { link.querySelector('img').src = hd.src; }
+                                                };
+                                                hd.src = 'https://i.ytimg.com/vi/' + id + '/maxresdefault.jpg';
+                                            });
+                                        }
+                                        link.addEventListener('click', function (e) {
+                                            e.preventDefault();
+                                            var frame = document.createElement('iframe');
+                                            frame.src = 'https://www.youtube.com/embed/' + encodeURIComponent(id) + '?autoplay=1&rel=0';
+                                            frame.title = link.getAttribute('data-title');
+                                            frame.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+                                            frame.setAttribute('allowfullscreen', '');
+                                            frame.setAttribute('frameborder', '0');
+                                            link.parentNode.replaceChild(frame, link);
+                                            frame.focus();
+                                        });
+                                    })();
+                                    </script>
                                 <?php endif; ?>
                                 <h1 class="entry-title text-center"><?php the_title(); ?></h1>
                                 <div class="hero-host">

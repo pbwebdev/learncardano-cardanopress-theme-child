@@ -224,15 +224,26 @@ get_header();
 
 /* MOBILE (< 600px): hide all the pill scenery entirely */
 @media (max-width: 600px) {
-  .lc-hero .lc-scene { height: auto; min-height: 320px; padding: 60px 20px; }
+  /* Compact: no pill scenery to make room for, so the newest episode
+     moves up into the first screen */
+  .lc-hero .lc-scene { height: auto; min-height: 0; padding: 8px 20px 36px; }
   .lc-hero .lc-center { position: relative; inset: auto; padding: 0; }
   .lc-hero .lc-center .lc-headline .lc-headline-text {
     font-size: 38px !important;
     letter-spacing: -1px !important;
   }
   .lc-hero .lc-center .lc-sub { font-size: 14px; }
-  /* Nuke every pill on mobile — too cramped to be useful */
+  /* Nuke every pill on mobile — too cramped to be useful (the script
+     doesn't build them at this width either) */
   .lc-hero .lc-tag { display: none !important; }
+  /* Mobile shows plain text: paint it straight away, no entrance fade,
+     so the first paint isn't waiting on the script */
+  .lc-hero .lc-center .lc-headline,
+  .lc-hero .lc-center .lc-sub {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
 </style>
 
@@ -274,6 +285,10 @@ get_header();
   const scene = document.getElementById('lcScene');
   const headline = document.getElementById('lcHeadline');
   if (!scene || !headline) return;
+
+  // Mobile gets the plain headline only (CSS shows it without the fade):
+  // no pills, no avatar downloads and no animation loop.
+  if (window.matchMedia('(max-width: 600px)').matches) return;
 
   const tagEls = [];
 
@@ -404,7 +419,18 @@ get_header();
       tag.style.opacity = cur;
       tag.style.transform = 'translate3d(' + moveX + 'px, ' + moveY + 'px, 0) scale(' + scale + ')';
     });
-    requestAnimationFrame(frame);
+    raf = visible ? requestAnimationFrame(frame) : 0;
+  }
+
+  // Only animate while the hero is on screen; scrolling past it (or
+  // switching tabs, where rAF already stops) leaves the main thread idle.
+  let raf = 0;
+  let visible = true;
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function(entries) {
+      visible = entries[0].isIntersecting;
+      if (visible && !raf) { updateRect(); raf = requestAnimationFrame(frame); }
+    }).observe(scene);
   }
   frame();
 })();
