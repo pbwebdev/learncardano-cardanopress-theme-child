@@ -4,6 +4,7 @@ require_once 'includes/lockbox.php';
 require_once 'includes/knowledge-base.php';
 require_once 'includes/delegate.php';
 require_once 'includes/courses.php';
+require_once 'includes/partner.php';
 require_once 'includes/search.php';
 require_once 'includes/svg-uploads.php';
 require_once 'includes/rest-meta.php';
