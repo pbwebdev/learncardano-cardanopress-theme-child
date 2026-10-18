@@ -23,11 +23,12 @@
 
 // Hero stat strip. `count` drives the count-up; `text` is what is printed.
 $lc_stats = array(
-	array( 'text' => '32,077', 'count' => 32077, 'decimals' => 0, 'suffix' => '', 'label' => __( 'subscribers', 'learncardano' ) ),
-	array( 'text' => '2,957,177', 'count' => 2957177, 'decimals' => 0, 'suffix' => '', 'label' => __( 'lifetime views · 853 videos', 'learncardano' ) ),
-	array( 'text' => '257,583', 'count' => 257583, 'decimals' => 0, 'suffix' => '', 'label' => __( 'hours watched', 'learncardano' ) ),
+	// YouTube Studio, lifetime to 16 Oct 2026 (CTR and impressions from the 2026 media kit).
+	array( 'text' => '32,434', 'count' => 32434, 'decimals' => 0, 'suffix' => '', 'label' => __( 'subscribers', 'learncardano' ) ),
+	array( 'text' => '3,198,706', 'count' => 3198706, 'decimals' => 0, 'suffix' => '', 'label' => __( 'lifetime views', 'learncardano' ) ),
+	array( 'text' => '265.1K', 'count' => 265.1, 'decimals' => 1, 'suffix' => 'K', 'label' => __( 'hours watched', 'learncardano' ) ),
+	array( 'text' => '53.4K', 'count' => 53.4, 'decimals' => 1, 'suffix' => 'K', 'label' => __( 'monthly audience', 'learncardano' ) ),
 	array( 'text' => '4.78%', 'count' => 4.78, 'decimals' => 2, 'suffix' => '%', 'label' => __( 'lifetime CTR · 32.5M impressions', 'learncardano' ) ),
-	array( 'text' => '299,907', 'count' => 299907, 'decimals' => 0, 'suffix' => '', 'label' => __( 'views in the last 90 days', 'learncardano' ) ),
 );
 $lc_distribution = __( 'Podcast — Spotify, Apple, iHeart, Spreaker · learncardano.io indexed archive · newsletter · Discord · X · Facebook', 'learncardano' );
 
@@ -66,20 +67,30 @@ $lc_multipliers = array(
 
 // Demographics: figure, label, highlight.
 $lc_demo = array(
-	array( '81%', __( 'aged 25–54', 'learncardano' ) ),
-	array( '57%', __( 'aged 35–54 — the largest cohort', 'learncardano' ) ),
-	array( '97%', __( 'male', 'learncardano' ) ),
-	array( '0.14%', __( 'under 18', 'learncardano' ) ),
+	// YouTube Studio, views, lifetime to 16 Oct 2026.
+	array( '80.5%', __( 'aged 25–54', 'learncardano' ) ),
+	array( '57.5%', __( 'aged 35–54 — the largest cohort', 'learncardano' ) ),
+	array( '96.6%', __( 'male', 'learncardano' ) ),
+	array( '0.2%', __( 'aged 13–17', 'learncardano' ) ),
 );
 
-// Proof: title, date/context, views, watch hours, subs gained, thumbnail (file, w, h) or null.
+// How they watch (YouTube Studio, 16 Oct 2026): figure, label.
+$lc_habits = array(
+	array( '17.1%', __( 'of subscribers have “All notifications” on (5.5K people) — YouTube’s typical range is 10–30%', 'learncardano' ) ),
+	array( '47.8%', __( 'of all watch time comes from subscribers', 'learncardano' ) ),
+	array( '54.6%', __( 'of the monthly audience are new viewers — reach beyond the existing base', 'learncardano' ) ),
+	array( '13.6%', __( 'of watch time is on TV screens; 35.3% on computers, 46.6% on mobile', 'learncardano' ) ),
+);
+$lc_also_watches = __( 'Viewers also watch Altcoin Daily, Paul Barron Network and Crypto Capital Venture.', 'learncardano' );
+
+// Proof: title, date/context, views, average view duration, thumbnail (file, w, h) or null.
+// Top videos by lifetime views, YouTube Studio 16 Oct 2026.
 $lc_proof = array(
-	array( __( 'Bitcoin Tax Free in Australia?', 'learncardano' ), __( 'Landmark Bitcoin Ruling · May 2025', 'learncardano' ), '99,803', '5,328', '2,912', array( 'proof-bitcoin-tax-free.jpg', 1120, 630 ) ),
-	array( __( 'Why the ATO Is Panicking Over This Crypto Case', 'learncardano' ), __( 'Jun 2026', 'learncardano' ), '44,612', '2,027', '753', array( 'proof-ato-panicking.jpg', 640, 360 ) ),
-	array( __( 'Australia’s Wild New Super Tax', 'learncardano' ), __( 'May 2025', 'learncardano' ), '24,514', '1,397', '285', array( 'proof-super-tax.jpg', 640, 360 ) ),
-	array( __( 'It’s official. Australia ruined crypto.', 'learncardano' ), __( 'Jun 2026', 'learncardano' ), '24,417', '1,149', '109', null ),
-	array( __( 'How I’m Playing Australia’s New Crypto Tax Rules', 'learncardano' ), __( 'Jun 2026', 'learncardano' ), '21,081', '1,901', '199', null ),
-	array( __( 'The High Court Crypto Ruling Australians Need To Understand', 'learncardano' ), __( 'Jul 2026', 'learncardano' ), '9,877', '523', '31', null ),
+	array( __( 'Bitcoin Tax Free in Australia? Landmark Bitcoin Ruling', 'learncardano' ), __( 'May 2025', 'learncardano' ), '99,833', '3:12 (33.8%)', array( 'proof-bitcoin-tax-free.jpg', 1120, 630 ) ),
+	array( __( 'Australia’s New Crypto Regulations: What AFSL & AUSTRAC Mean for You', 'learncardano' ), __( 'Sep 2026', 'learncardano' ), '56,244', '3:33 (33.0%)', array( 'proof-afsl-austrac.jpg', 640, 360 ) ),
+	array( __( 'Why the ATO Is Panicking Over This Crypto Case', 'learncardano' ), __( 'Jun 2026', 'learncardano' ), '45,029', '2:43 (38.3%)', array( 'proof-ato-panicking.jpg', 640, 360 ) ),
+	array( __( 'Elon Musk and Charles Are Up to Something… 3 Big Rumours', 'learncardano' ), __( 'Nov 2024', 'learncardano' ), '54,173', '6:00 (37.1%)', null ),
+	array( __( 'Ledger Hardware Implant Confirmed: What Wallet Users Should Check', 'learncardano' ), __( 'Oct 2026 · published 12 Oct', 'learncardano' ), '36,747', '2:49 (33.5%)', null ),
 );
 
 // Click-through case: figure, explanation.
@@ -474,8 +485,7 @@ get_header();
 							<span><strong><?php esc_html_e( 'Australian', 'learncardano' ); ?></strong> · <?php esc_html_e( '22 May–21 Jun 2025', 'learncardano' ); ?><br><?php esc_html_e( 'Landmark Bitcoin tax ruling', 'learncardano' ); ?></span>
 						</div>
 					</div>
-					<p class="pk__note"><?php esc_html_e( 'Channel-wide the Australian share is smaller — but it climbs sharply during exactly the content a sponsor would appear in. You wouldn’t be buying a global channel and hoping for Australian spill — you’d be buying the slot where Australians are the majority of the room.', 'learncardano' ); ?></p>
-				</div>
+					<p class="pk__note"><?php esc_html_e( 'Channel-wide the Australian share is smaller — but it climbs sharply during exactly the content a sponsor would appear in. You wouldn’t be buying a global channel and hoping for Australian spill — you’d be buying the slot where Australians are the majority of the room.', 'learncardano' ); ?></p>				</div>
 			</div>
 
 			<h3 class="pk__subhead" id="pk-who"><?php esc_html_e( 'Who they are', 'learncardano' ); ?></h3>
@@ -491,6 +501,17 @@ get_header();
 				<p><?php esc_html_e( 'The age profile is the point. This is an audience with assets to borrow against and income to service a facility — the 35–54 bracket, the biggest block of this audience by both views and watch time.', 'learncardano' ); ?></p>
 				<p><?php esc_html_e( 'The gender skew is stated plainly rather than buried: a narrow, precisely-targeted audience, not a broad one. And effectively no under-18 viewership — which matters for any regulated financial advertiser.', 'learncardano' ); ?></p>
 			</div>
+
+			<h3 class="pk__subhead"><?php esc_html_e( 'How they watch', 'learncardano' ); ?></h3>
+			<ul class="pk__grid pk__grid--4 pk__demo">
+				<?php foreach ( $lc_habits as $lc_h ) : ?>
+					<li class="pk__card pk__card--stat">
+						<span class="pk__big"><?php echo esc_html( $lc_h[0] ); ?></span>
+						<span><?php echo esc_html( $lc_h[1] ); ?></span>
+					</li>
+				<?php endforeach; ?>
+			</ul>
+			<p class="pk__note"><?php echo esc_html( $lc_also_watches ); ?></p>
 		</div>
 	</section>
 
@@ -504,14 +525,14 @@ get_header();
 			<ul class="pk__grid pk__grid--3 pk__thumbs">
 				<?php foreach ( $lc_proof as $lc_p ) : ?>
 					<?php
-					if ( ! $lc_p[5] ) {
+					if ( ! $lc_p[4] ) {
 						continue;
 					}
 					?>
 					<li class="pk__thumb">
 						<?php
 						/* translators: %s: video title */
-						echo $lc_img( $lc_p[5][0], $lc_p[5][1], $lc_p[5][2], sprintf( __( 'YouTube thumbnail for “%s”', 'learncardano' ), $lc_p[0] ), 'pk__thumb-img' ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img.
+						echo $lc_img( $lc_p[4][0], $lc_p[4][1], $lc_p[4][2], sprintf( __( 'YouTube thumbnail for “%s”', 'learncardano' ), $lc_p[0] ), 'pk__thumb-img' ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img.
 						?>
 						<p><span class="pk__thumb-title"><?php echo esc_html( $lc_p[0] ); ?></span> <strong>
 						<?php
@@ -524,13 +545,12 @@ get_header();
 			</ul>
 			<div class="pk__table-wrap">
 				<table class="pk__table pk__proof">
-					<caption class="pk__sr"><?php esc_html_e( 'Performance of the six Australian tax and ruling videos', 'learncardano' ); ?></caption>
+					<caption class="pk__sr"><?php esc_html_e( 'Top videos by lifetime views, with average view duration', 'learncardano' ); ?></caption>
 					<thead>
 						<tr>
 							<th scope="col"><?php esc_html_e( 'Video', 'learncardano' ); ?></th>
 							<th scope="col"><?php esc_html_e( 'Views', 'learncardano' ); ?></th>
-							<th scope="col"><?php esc_html_e( 'Watch hrs', 'learncardano' ); ?></th>
-							<th scope="col"><?php esc_html_e( 'Subs gained', 'learncardano' ); ?></th>
+							<th scope="col"><?php esc_html_e( 'Avg view duration', 'learncardano' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -539,7 +559,6 @@ get_header();
 								<th scope="row"><?php echo esc_html( $lc_p[0] ); ?> <span class="pk__muted">· <?php echo esc_html( $lc_p[1] ); ?></span></th>
 								<td class="pk__strong"><?php echo esc_html( $lc_p[2] ); ?></td>
 								<td><?php echo esc_html( $lc_p[3] ); ?></td>
-								<td><?php echo esc_html( $lc_p[4] ); ?></td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
@@ -893,7 +912,7 @@ get_header();
 					<p class="pk__kicker"><?php esc_html_e( 'Project interviews', 'learncardano' ); ?></p>
 					<h2 id="pk-interviews" class="pk__h2"><?php esc_html_e( 'Building on Cardano or Midnight?', 'learncardano' ); ?></h2>
 				</div>
-				<p class="pk__lede"><?php esc_html_e( 'Separate from sponsorship: credible projects with a track record of delivering real value can join our free editorial interview queue. We publish roughly 3 a month, and vetting takes 1–2 weeks.', 'learncardano' ); ?></p>
+				<p class="pk__lede"><?php esc_html_e( 'Separate from sponsorship: credible projects with a track record of delivering real value can join our free editorial interview queue. We publish roughly 3 a month, and vetting takes 1–2 weeks. The Interviews playlist has drawn 497.2K views, and the Cardano News & Crypto Update podcast 1.8M.', 'learncardano' ); ?></p>
 			</header>
 
 			<h3 class="pk__subhead"><?php esc_html_e( 'What’s included', 'learncardano' ); ?></h3>
