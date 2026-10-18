@@ -151,7 +151,46 @@ $lc_spotify_id = function_exists('lc_spotify_id') ? lc_spotify_id(get_field('spo
                                 </div>
 
                                 <?php if ($lc_spotify_id): ?>
-                                    <iframe style="border-radius:12px" src="<?php echo esc_url('https://open.spotify.com/embed/episode/' . $lc_spotify_id . '?utm_source=generator&theme=0'); ?>" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                    <?php
+                                    // Spotify facade: the embed is ~800KB of third-party script, so a
+                                    // 152px card of the same size stands in until it's clicked. Without
+                                    // JS the card links to the episode on Spotify.
+                                    $lc_cover = get_stylesheet_directory_uri() . '/images/learn-cardano-podcast-cover-360x360';
+                                    ?>
+                                    <a class="lc-spotify" href="<?php echo esc_url('https://open.spotify.com/episode/' . $lc_spotify_id); ?>" data-src="<?php echo esc_url('https://open.spotify.com/embed/episode/' . $lc_spotify_id . '?utm_source=generator&theme=0'); ?>" target="_blank" rel="noopener">
+                                        <picture>
+                                            <source srcset="<?php echo esc_url($lc_cover . '.webp'); ?>" type="image/webp">
+                                            <img class="lc-spotify__cover" src="<?php echo esc_url($lc_cover . '.jpg'); ?>" width="120" height="120" alt="" loading="lazy" decoding="async">
+                                        </picture>
+                                        <span class="lc-spotify__text">
+                                            <span class="lc-spotify__title"><?php the_title(); ?></span>
+                                            <span class="lc-spotify__show"><?php esc_html_e('Learn Cardano Podcast', 'learncardano'); ?></span>
+                                            <span class="lc-spotify__cta">
+                                                <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/images/platforms/spotify.svg'); ?>" width="20" height="20" alt="" loading="lazy" decoding="async">
+                                                <?php esc_html_e('Listen on Spotify', 'learncardano'); ?>
+                                            </span>
+                                        </span>
+                                        <span class="lc-spotify__play" aria-hidden="true"><?php echo lc_icon('play'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG. ?></span>
+                                    </a>
+                                    <script>
+                                    (function () {
+                                        var card = document.querySelector('.lc-spotify');
+                                        if (!card) { return; }
+                                        card.addEventListener('click', function (e) {
+                                            e.preventDefault();
+                                            var frame = document.createElement('iframe');
+                                            frame.src = card.getAttribute('data-src');
+                                            frame.className = 'lc-spotify-frame';
+                                            frame.title = <?php echo wp_json_encode(sprintf(__('Spotify player: %s', 'learncardano'), get_the_title())); ?>;
+                                            frame.width = '100%';
+                                            frame.height = '152';
+                                            frame.setAttribute('frameborder', '0');
+                                            frame.setAttribute('allow', 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture');
+                                            card.parentNode.replaceChild(frame, card);
+                                            frame.focus();
+                                        });
+                                    })();
+                                    </script>
                                 <?php endif; ?>
 
                             </div>

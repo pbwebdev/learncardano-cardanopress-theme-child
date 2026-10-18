@@ -543,5 +543,21 @@ img.pa__media-img,img.lep__media-img{width:100%;height:100%;object-fit:cover;dis
 .lc-yt:hover .lc-yt__play,.lc-yt:focus-visible .lc-yt__play{background:#9333ea;transform:scale(1.06)}
 .lc-yt:focus-visible{outline:3px solid #9333ea;outline-offset:-3px}
 
+/* Spotify facade (single-podcasts.php .lc-spotify): same 152px box as the
+   embed it stands in for */
+.lc-spotify,.lc-spotify-frame{display:block;width:100%;height:152px;border:0;border-radius:12px}
+.lc-spotify{display:flex;align-items:center;gap:16px;padding:16px;background:#1c1c1e;color:#fff;text-decoration:none;overflow:hidden}
+.lc-spotify:hover,.lc-spotify:focus-visible{color:#fff;background:#26262a}
+.lc-spotify:focus-visible{outline:3px solid #9333ea;outline-offset:2px}
+.lc-spotify__cover{flex:none;width:120px;height:120px;border-radius:8px;display:block;object-fit:cover}
+.lc-spotify__text{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.lc-spotify__title{font-weight:700;font-size:16px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lc-spotify__show{font-size:13px;color:#b3b3b3}
+.lc-spotify__cta{display:inline-flex;align-items:center;gap:8px;margin-top:6px;font-size:13px;font-weight:600}
+.lc-spotify__play{flex:none;display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:#1ed760;color:#000;transition:transform .18s ease}
+.lc-spotify__play .lc-icon{width:18px;height:18px;margin-left:3px;vertical-align:0}
+.lc-spotify:hover .lc-spotify__play{transform:scale(1.06)}
+@media (max-width:480px){.lc-spotify{gap:12px;padding:12px}.lc-spotify__cover{width:88px;height:88px}.lc-spotify__title{font-size:14px}.lc-spotify__play{width:40px;height:40px}}
+
 /* <picture> wrappers from includes/webp.php must not change layout */
 .lc-picture{display:contents}
