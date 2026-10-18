@@ -6,7 +6,6 @@ require_once 'includes/security.php';
 require_once 'includes/cardanopress-lockdown.php';
 require_once 'includes/social-feed.php';
 require_once 'includes/webp.php';
-require_once 'includes/lockbox.php';
 require_once 'includes/knowledge-base.php';
 require_once 'includes/kb-admin.php';
 require_once 'includes/delegate.php';
@@ -28,8 +27,16 @@ foreach ( array( 'includes/forms.php', 'includes/newsletter-popup.php' ) as $lc_
 	}
 }
 
+// Accounts: email link and wallet sign-in, /account/, comment form, members-only helpers.
+// core.php and account.php are hooks and small helpers; email.php and wallet.php
+// load only for /account/* routes. The test mail outbox exists off production only.
+require_once __DIR__ . '/includes/auth/core.php';
+require_once __DIR__ . '/includes/auth/account.php';
+if ( 'production' !== wp_get_environment_type() ) {
+	require_once __DIR__ . '/includes/auth/dev-outbox.php';
+}
+
 add_theme_support('responsive-embeds');
-add_filter('rest_enabled', '__return_false');
 add_filter( 'wp_is_application_passwords_available', '__return_true' ); 
 
 
@@ -112,16 +119,6 @@ function cardanopress_child_bootstrap_class(string $key): string
 
 	return $class_string;
 }
-
-// Member sign-in is paused while CardanoPress is replaced (see
-// includes/cardanopress-lockdown.php). Always return the fields: this used
-// to return nothing for signed-in visitors.
-add_filter('comment_form_defaults', function ($fields) {
-	if ( ! is_user_logged_in() ) {
-		$fields['must_log_in'] = '<p class="must-log-in">' . esc_html__( 'Member sign-in is paused while we upgrade it. Comments will reopen soon.', 'learncardano' ) . '</p>';
-	}
-	return $fields;
-});
 
 // Wallet-created accounts are named after md5(stake address); show those as
 // "Cardano member" instead of the hex string. Every other name is left as

@@ -75,13 +75,11 @@ https://meshwithus.com.au
 					<?php lc_primary_menu(); ?>
 
 					<div class="d-none d-xl-block ms-xl-5">
-						<?php if ( shortcode_exists( 'cardanopress_template' ) ) { echo do_shortcode('[cardanopress_template name="part/modal-trigger" if="!isConnected"]'); } ?>
-						<?php if ( shortcode_exists( 'cardanopress_template' ) ) { echo do_shortcode('[cardanopress_template name="menu-dropdown" if="isConnected"]'); } ?>
+						<?php lc_auth_header_slot( 'desktop' ); ?>
 					</div>
-					
+
 					<div class="d-xl-none">
-						<?php if ( shortcode_exists( 'cardanopress_template' ) ) { echo do_shortcode('[cardanopress_template name="part/modal-trigger" if="!isConnected"]'); } ?>
-						<?php if ( shortcode_exists( 'cardanopress_template' ) ) { echo do_shortcode('[cardanopress_template name="menu-dropdown" if="isConnected"]'); } ?>
+						<?php lc_auth_header_slot( 'mobile' ); ?>
 					</div>
 					
 				</div>

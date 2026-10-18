@@ -23,11 +23,13 @@
  * @param WP_User|int|null $user User or ID.
  * @return bool
  */
-function lc_is_legacy_wallet_account( $user ) {
-	if ( is_numeric( $user ) ) {
-		$user = get_userdata( (int) $user );
+if ( ! function_exists( 'lc_is_legacy_wallet_account' ) ) {
+	function lc_is_legacy_wallet_account( $user ) {
+		if ( is_numeric( $user ) ) {
+			$user = get_userdata( (int) $user );
+		}
+		return $user instanceof WP_User && 1 === preg_match( '/^[0-9a-f]{32}$/', (string) $user->user_login );
 	}
-	return $user instanceof WP_User && 1 === preg_match( '/^[0-9a-f]{32}$/', (string) $user->user_login );
 }
 
 /**
@@ -63,27 +65,45 @@ add_action(
 );
 
 /**
- * No password reset for wallet-created accounts: any email on one may have
- * been set by someone who used the CardanoPress flaw. These members sign in
- * with their wallet again once the theme's wallet sign-in ships.
+ * Whether a CardanoPress-era account is still locked: until its owner has
+ * signed in with the wallet (adopting it) AND verified an email, any email or
+ * password on it may have been set by someone abusing the old plugin. After
+ * that the owner may set a password like any member.
+ *
+ * @param WP_User $user Account.
+ * @return bool
+ */
+function lc_cardanopress_account_locked( $user ) {
+	if ( ! $user instanceof WP_User || ! lc_is_legacy_wallet_account( $user ) ) {
+		return false;
+	}
+	if ( function_exists( 'lc_auth_email_verified' ) && function_exists( 'lc_auth_wallets' ) ) {
+		return ! ( lc_auth_email_verified( $user ) && lc_auth_wallets( $user->ID ) );
+	}
+	return true;
+}
+
+/**
+ * No password reset for wallet-created accounts that are still locked: any
+ * email on one may have been set by someone who used the CardanoPress flaw.
  */
 add_filter(
 	'allow_password_reset',
 	function ( $allow, $user_id ) {
-		return lc_is_legacy_wallet_account( (int) $user_id ) ? false : $allow;
+		return lc_cardanopress_account_locked( get_userdata( (int) $user_id ) ) ? false : $allow;
 	},
 	10,
 	2
 );
 
 /**
- * No password sign-in for wallet-created accounts either.
+ * No password sign-in for those accounts either.
  */
 add_filter(
 	'wp_authenticate_user',
 	function ( $user ) {
-		if ( $user instanceof WP_User && lc_is_legacy_wallet_account( $user ) ) {
-			return new WP_Error( 'lc_wallet_account', __( 'This account signs in with a Cardano wallet. Wallet sign-in is being upgraded and will be back soon.', 'learncardano' ) );
+		if ( lc_cardanopress_account_locked( $user ) ) {
+			return new WP_Error( 'lc_wallet_account', __( 'This account signs in with a Cardano wallet. Sign in with your Cardano wallet from the Sign in button, then you can set a password on your account page.', 'learncardano' ) );
 		}
 		return $user;
 	}

@@ -24,6 +24,9 @@ add_filter(
 		if ( 'production' === wp_get_environment_type() ) {
 			return $return;
 		}
+		if ( true === $return ) {
+			return true; // Already handled: the staging test outbox captured it (includes/auth/dev-outbox.php).
+		}
 		error_log( 'learncardano: wp_mail suppressed on ' . wp_get_environment_type() . ' environment' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		return false;
 	},

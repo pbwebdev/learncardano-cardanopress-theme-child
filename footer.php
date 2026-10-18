@@ -161,6 +161,7 @@
 
 		<?php wp_footer(); ?>
 
+<?php if ( ! function_exists( 'lc_auth_is_private_view' ) || ! lc_auth_is_private_view() ) : // No tag manager on /account/* (it carries tokens and account details). ?>
 <!-- Google Tag Manager: loaded once the page has finished loading and the
      browser is idle, so it never competes with first render. -->
 <script>
@@ -191,4 +192,5 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W49L88K8"
                   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
+<?php endif; ?>
 </html>

@@ -51,6 +51,7 @@ if ( post_password_required() ) {
 						'style'       => 'ol',
 						'short_ping'  => true,
 						'reply_text'  => 'Reply',
+						'login_text'  => 'Sign in to reply',
 					)
 				);
 			?>
