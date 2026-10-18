@@ -44,11 +44,13 @@ function t_origin() {
 	$_SERVER['HTTP_ORIGIN'] = $h['scheme'] . '://' . $h['host'] . ( isset( $h['port'] ) ? ':' . $h['port'] : '' );
 }
 
-/** A fresh browser: new flow cookie, nobody signed in. Also resets rate limits. */
-function t_browser() {
+/** A fresh browser: new flow cookie, nobody signed in. Also resets rate limits unless $reset_limits is false. */
+function t_browser( $reset_limits = true ) {
 	global $wpdb;
-	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\_transient\_lc\_rl\_%' OR option_name LIKE '\_transient\_timeout\_lc\_rl\_%'" );
-	wp_cache_flush(); // the rows were deleted with SQL: drop the request's cached copies too.
+	if ( $reset_limits ) {
+		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\_transient\_lc\_rl\_%' OR option_name LIKE '\_transient\_timeout\_lc\_rl\_%'" );
+		wp_cache_flush(); // the rows were deleted with SQL: drop the request's cached copies too.
+	}
 	$_COOKIE[ lc_auth_cookie_name( 'lcauth' ) ] = lc_auth_new_token();
 	unset( $_COOKIE[ lc_auth_cookie_name( 'lcml' ) ] );
 	unset( $_COOKIE[ LOGGED_IN_COOKIE ] );
@@ -164,6 +166,21 @@ function t_link_token( $email ) {
 function t_confirm( $token, $c = null ) {
 	$flow = lc_auth_flow( false );
 	return lc_auth_email_confirm( $token, null === $c ? lc_auth_confirm_binding( $token, $flow ) : $c );
+}
+
+/** Count live link records (lc_ml_ transients), to prove a skipped mail made no token. */
+function t_live_tokens() {
+	global $wpdb;
+	return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name LIKE '\_transient\_lc\_ml\_%'" );
+}
+
+/** A lc_auth_mail_limits filter with some values overridden; pass the result to remove_filter() when done. */
+function t_limits( array $over ) {
+	$fn = function ( $d ) use ( $over ) {
+		return array_merge( $d, $over );
+	};
+	add_filter( 'lc_auth_mail_limits', $fn );
+	return $fn;
 }
 
 try {
@@ -366,6 +383,41 @@ try {
 	remove_filter( 'lc_auth_signup_enabled', '__return_false' );
 	t( 'sign-up off: unknown wallet refused', 'signup_closed' === t_code( $res ) && 0 === get_current_user_id() );
 
+	// Daily ceiling on new wallet-only accounts.
+	t_browser();
+	$wc_caught = 0;
+	$wc_catch  = function ( $return, $atts ) use ( &$wc_caught ) {
+		$to = is_array( $atts['to'] ) ? implode( ',', $atts['to'] ) : (string) $atts['to'];
+		if ( false !== stripos( $to, (string) get_option( 'admin_email' ) ) ) {
+			++$wc_caught;
+			return true;
+		}
+		return $return;
+	};
+	add_filter( 'pre_wp_mail', $wc_catch, -1, 2 );
+	delete_transient( 'lc_auth_wallet_signup_alerted' );
+	$wc_cap = fn() => 1;
+	add_filter( 'lc_auth_wallet_signup_daily_cap', $wc_cap );
+	$wa  = t_wallet();
+	$wb  = t_wallet();
+	$res = t_wallet_signin( $wa );
+	$GLOBALS['lc_t']['users'][] = get_current_user_id();
+	t( 'wallet ceiling: the first new wallet is within the cap and signs up', is_array( $res ) && ! empty( $res['new_account'] ), t_code( $res ) );
+	t_browser( false ); // Another visit, same day: counters stay.
+	$res = t_wallet_signin( $wb );
+	t( 'wallet ceiling: a second NEW wallet is refused with a friendly message', 'wallet_signup_full' === t_code( $res ) && 0 === get_current_user_id() && ! lc_auth_wallet_owners( $wb['stake'] ) );
+	t( 'wallet ceiling: the admin is emailed once', 1 === $wc_caught && (bool) get_transient( 'lc_auth_wallet_signup_alerted' ) );
+	t_browser( false );
+	$res = t_wallet_signin( $wb );
+	t( 'wallet ceiling: still refused, admin not emailed again', 'wallet_signup_full' === t_code( $res ) && 1 === $wc_caught );
+	t_browser( false );
+	$res = t_wallet_signin( $wa );
+	t( 'wallet ceiling: an existing wallet still signs in', is_array( $res ) && empty( $res['new_account'] ) && get_current_user_id() > 0, t_code( $res ) );
+	remove_filter( 'lc_auth_wallet_signup_daily_cap', $wc_cap );
+	remove_filter( 'pre_wp_mail', $wc_catch, -1 );
+	delete_transient( 'lc_auth_wallet_signup_alerted' );
+	t_browser();
+
 	$report( 'Wallet: link / unlink' );
 	t_browser();
 	$a = t_user();
@@ -412,12 +464,19 @@ try {
 	$old = t_user( 'subscriber', false, md5( $w3['stake'] ) );
 	$cid = wp_insert_comment( array( 'comment_post_ID' => (int) get_option( 'page_on_front' ) ?: 1, 'comment_content' => 'lc-test', 'user_id' => $old->ID, 'comment_author' => md5( $w3['stake'] ), 'comment_approved' => 1 ) );
 	$GLOBALS['lc_t']['comments'][] = $cid;
+	update_user_meta( $old->ID, 'cardanopress_payment_address', 'addr1' . bin2hex( random_bytes( 8 ) ) );
+	update_user_meta( $old->ID, 'cardanopress_assets', array( 'policy' => 1 ) );
+	update_user_meta( $old->ID, 'cardanopress_handles', array( 'x' ) );
+	update_user_meta( $old->ID, 'cardanopress_account_info', array( 'a' => 1 ) );
 	$b = t_user();
 	t_session( $b->ID );
 	$res = t_wallet_link( $w3 );
 	t( 'claim: unadopted legacy account without email hands over its wallet', is_array( $res ) && array( $w3['stake'] ) === lc_auth_wallets( $b->ID ), t_code( $res ) );
 	t( 'claim: comments reassigned', (int) get_comment( $cid )->user_id === $b->ID );
 	t( 'claim: old account marked merged, no roles, wallet gone', (int) get_user_meta( $old->ID, 'lc_merged_into', true ) === $b->ID && ! get_userdata( $old->ID )->roles && ! lc_auth_wallets( $old->ID ) );
+	global $wpdb;
+	$cp_left = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->usermeta} WHERE user_id = %d AND meta_key LIKE %s", $old->ID, $wpdb->esc_like( 'cardanopress_' ) . '%' ) );
+	t( "claim: the old account's cardanopress_* meta is dropped, the merge record stays", 0 === $cp_left && (int) get_user_meta( $old->ID, 'lc_merged_into', true ) === $b->ID );
 	t_browser();
 	$res = t_wallet_signin( $w3 );
 	t( 'claim: wallet now signs in to the new owner', is_array( $res ) && get_current_user_id() === $b->ID );
@@ -476,7 +535,18 @@ try {
 	for ( $i = 0; $i < 4; $i++ ) {
 		$r = t_request_link( $cap_addr );
 	}
-	t( 'per-address cap: same answer, 4th mail not sent', true === $r['ok'] && 3 === t_outbox_count( $cap_addr ) );
+	t( 'per-address-and-visitor cap: same answer, 4th mail from one visitor not sent', true === $r['ok'] && 3 === t_outbox_count( $cap_addr ) );
+	t_browser();
+	lc_auth_dev_outbox_clear();
+	$tag_base = 'tag' . bin2hex( random_bytes( 4 ) );
+	for ( $i = 0; $i < 4; $i++ ) {
+		$r = t_request_link( $tag_base . '+v' . $i . '@lc-test.invalid' ); // One visitor, four "different" +tag addresses.
+	}
+	$sum = 0;
+	for ( $i = 0; $i < 4; $i++ ) {
+		$sum += t_outbox_count( $tag_base . '+v' . $i . '@lc-test.invalid' );
+	}
+	t( 'per-address-and-visitor cap sees through +tags: 4 variants get 3 mails', true === $r['ok'] && 3 === $sum, (string) $sum );
 	t_browser();
 	$last = null;
 	for ( $i = 0; $i < 6; $i++ ) {
@@ -516,13 +586,18 @@ try {
 	$res   = t_confirm( $token );
 	t( 'existing member signs in with the link', is_array( $res ) && get_current_user_id() === $member->ID, t_code( $res ) );
 
+	$multi = 'multi' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid';
+	$toks  = array();
+	for ( $i = 0; $i < 3; $i++ ) {
+		t_browser();
+		t_request_link( $multi );
+		$toks[] = t_link_token( $multi );
+	}
+	t( 'up to 3 sign-in links stay live for one address', 3 === count( array_unique( $toks ) ) && ! array_filter( $toks, fn( $x ) => null === lc_auth_store_get( 'ml', $x ) ) );
 	t_browser();
-	t_request_link( $member->user_email );
-	$token_a = t_link_token( $member->user_email );
-	t_browser();
-	t_request_link( $member->user_email );
-	$token_b = t_link_token( $member->user_email );
-	t( 'a newer link replaces the older one', $token_a !== $token_b && null === lc_auth_store_get( 'ml', $token_a ) && null !== lc_auth_store_get( 'ml', $token_b ) );
+	t_request_link( $multi );
+	$toks[] = t_link_token( $multi );
+	t( 'a 4th link drops the oldest, keeps the other 3', null === lc_auth_store_get( 'ml', $toks[0] ) && null !== lc_auth_store_get( 'ml', $toks[1] ) && null !== lc_auth_store_get( 'ml', $toks[2] ) && null !== lc_auth_store_get( 'ml', $toks[3] ) );
 
 	t_browser();
 	lc_auth_dev_outbox_clear();
@@ -596,6 +671,16 @@ try {
 	$r = lc_auth_email_change_request( $u, $member->user_email );
 	t( 'change to a taken address: same answer, no mail', true === $r['ok'] && 0 === t_outbox_count( $member->user_email ) );
 
+	// The pending change is kept per user AND address.
+	$ea     = t_user();
+	$eb     = t_user();
+	$shared = 'slot' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid';
+	$ta     = lc_auth_email_issue( 'email_change', $shared, $ea->ID, '' );
+	$tb     = lc_auth_email_issue( 'email_change', $shared, $eb->ID, '' );
+	t( 'email_change slot: another member asking for the same address does not cancel mine', null !== lc_auth_store_get( 'ml', $ta ) && null !== lc_auth_store_get( 'ml', $tb ) );
+	$ta2 = lc_auth_email_issue( 'email_change', $shared, $ea->ID, '' );
+	t( 'email_change slot: my own newer request replaces only my older one', null === lc_auth_store_get( 'ml', $ta ) && null !== lc_auth_store_get( 'ml', $ta2 ) && null !== lc_auth_store_get( 'ml', $tb ) );
+
 	// Verify an unverified address.
 	$v = t_user();
 	t_session( $v->ID );
@@ -614,6 +699,178 @@ try {
 	lc_auth_mark_email_verified( $un->ID, $un->user_email );
 	$r = lc_auth_password_link( get_userdata( $un->ID ) );
 	t( 'password link sends core reset mail to a verified address', true === $r['ok'] && 1 === t_outbox_count( $un->user_email ), $r['code'] );
+
+	/* ============================================================ mail gate == */
+	$report( 'Mail gate' );
+	// Anything addressed to the site admin (the "cap reached" alerts) is captured, never sent.
+	$admin_mails = 0;
+	$catch_admin = function ( $return, $atts ) use ( &$admin_mails ) {
+		$to = is_array( $atts['to'] ) ? implode( ',', $atts['to'] ) : (string) $atts['to'];
+		if ( false !== stripos( $to, (string) get_option( 'admin_email' ) ) ) {
+			++$admin_mails;
+			return true;
+		}
+		return $return;
+	};
+	add_filter( 'pre_wp_mail', $catch_admin, -1, 2 );
+	delete_transient( 'lc_auth_mail_cap_alerted' );
+
+	// Normalised address keys.
+	t( 'email key: lowercase, +tag removed', 'jo.smith@example.com' === lc_auth_email_key( ' Jo.Smith+news@Example.COM ' ) );
+	t( 'email key: gmail dots dropped, googlemail is gmail', 'josmith@gmail.com' === lc_auth_email_key( 'Jo.Smith+x@googlemail.com' ) && lc_auth_email_key( 'j.o@gmail.com' ) === lc_auth_email_key( 'jo+2@googlemail.com' ) );
+	t( 'email key: dots kept on other domains', 'a.b@lc-test.invalid' === lc_auth_email_key( 'a.b+c@lc-test.invalid' ) );
+
+	// Per-recipient cap across every kind, including email_change.
+	t_browser();
+	lc_auth_dev_outbox_clear();
+	$gm    = 'gate' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid';
+	$kinds = array( 'signin', 'wallet_first', 'password', 'email_verify', 'wallet_linked', 'email_change' );
+	$ret   = array();
+	foreach ( $kinds as $k ) {
+		$ret[] = lc_auth_email_send( $gm, 'subject', 'body', $k );
+	}
+	t( 'recipient cap: 5 an hour over all kinds, the 6th (email_change) is skipped', 5 === t_outbox_count( $gm ), (string) t_outbox_count( $gm ) );
+	t( 'recipient cap: the caller gets the same success for a skipped mail', ! in_array( false, $ret, true ) );
+	$chg = t_user();
+	lc_auth_dev_outbox_clear();
+	$r = lc_auth_email_change_request( $chg, $gm );
+	t( 'recipient cap holds for the email-change request (same answer, no mail)', true === $r['ok'] && 'email_check' === $r['code'] && 0 === t_outbox_count( $gm ) );
+	$base = 'rc' . bin2hex( random_bytes( 4 ) );
+	t_browser();
+	lc_auth_dev_outbox_clear();
+	$sum = 0;
+	foreach ( array( '', '+a', '+b', '+c', '+d', '+e', '+f' ) as $tag ) {
+		lc_auth_email_send( $base . $tag . '@lc-test.invalid', 's', 'b', 'signin' );
+		$sum += t_outbox_count( $base . $tag . '@lc-test.invalid' );
+		lc_auth_dev_outbox_clear();
+	}
+	t( 'recipient cap: +tag variants share one bucket (5 of 7 delivered)', 5 === $sum, (string) $sum );
+
+	// Gmail aliases share a bucket (checked on the gate itself: gmail mail is not captured).
+	t_browser();
+	$f_lim = t_limits( array( 'rcpt_h' => 2 ) );
+	lc_auth_mail_count( 'first.last@gmail.com' );
+	lc_auth_mail_count( 'firstlast+x@googlemail.com' );
+	t( 'gmail: dotted, +tagged and googlemail forms share the recipient bucket', 'rcpt_hour' === lc_auth_mail_check( 'f.i.r.s.t.l.a.s.t@gmail.com' ) && '' === lc_auth_mail_check( 'someone.else@gmail.com' ) );
+	remove_filter( 'lc_auth_mail_limits', $f_lim );
+
+	// Per-visitor and coarse buckets.
+	t_browser();
+	lc_auth_dev_outbox_clear();
+	$f_lim = t_limits( array( 'ip' => 3 ) );
+	$sum   = 0;
+	for ( $i = 0; $i < 5; $i++ ) {
+		$a = 'v' . $i . bin2hex( random_bytes( 3 ) ) . '@lc-test.invalid';
+		lc_auth_email_send( $a, 's', 'b', 'signin' );
+		$sum += t_outbox_count( $a );
+	}
+	remove_filter( 'lc_auth_mail_limits', $f_lim );
+	t( 'visitor cap: only 3 mails per 15 min from one visitor', 3 === $sum, (string) $sum );
+	t_browser();
+	lc_auth_dev_outbox_clear();
+	$f_lim = t_limits( array( 'ip_coarse' => 2 ) );
+	$sum   = 0;
+	for ( $i = 0; $i < 4; $i++ ) {
+		$a = 'c' . $i . bin2hex( random_bytes( 3 ) ) . '@lc-test.invalid';
+		lc_auth_email_send( $a, 's', 'b', 'signin' );
+		$sum += t_outbox_count( $a );
+	}
+	remove_filter( 'lc_auth_mail_limits', $f_lim );
+	t( 'coarse cap: only 2 mails per 15 min from one /24 or /48', 2 === $sum, (string) $sum );
+
+	// Coarse subject: IPv4 /24, IPv6 /48.
+	t( 'coarse subject: IPv4 is its /24', '203.0.113.0/24' === lc_auth_coarse_subject( '203.0.113.77' ) && lc_auth_coarse_subject( '203.0.113.5' ) === lc_auth_coarse_subject( '203.0.113.250' ) && lc_auth_coarse_subject( '203.0.114.5' ) !== lc_auth_coarse_subject( '203.0.113.5' ) );
+	t( 'coarse subject: IPv6 is its /48 (two /64s inside it share it)', lc_auth_coarse_subject( '2001:db8:1:2::1' ) === lc_auth_coarse_subject( '2001:db8:1:ffff::9' ) && lc_auth_coarse_subject( '2001:db8:2:2::1' ) !== lc_auth_coarse_subject( '2001:db8:1:2::1' ) && '/48' === substr( lc_auth_coarse_subject( '2001:db8:1:2::1' ), -3 ) );
+	t( 'coarse subject: IPv4-mapped IPv6 counts as IPv4', '203.0.113.0/24' === lc_auth_coarse_subject( '::ffff:203.0.113.9' ) );
+	t_browser();
+	for ( $i = 0; $i < 25; $i++ ) {
+		lc_auth_rate( 'ml_coarse', lc_auth_coarse_subject(), 25, 15 * MINUTE_IN_SECONDS );
+	}
+	$r = t_request_link( 'co' . bin2hex( random_bytes( 3 ) ) . '@lc-test.invalid' );
+	t( 'magic-link requests: the coarse bucket answers 429 (about 5x the per-IP limit)', 'rate' === $r['code'] && 429 === ( $r['status'] ?? 0 ) );
+
+	// A skipped mail makes no token and uses no budget.
+	t_browser();
+	lc_auth_dev_outbox_clear();
+	$f_lim  = t_limits( array( 'rcpt_h' => 0 ) );
+	$before = t_live_tokens();
+	t_request_link( 'skip' . bin2hex( random_bytes( 3 ) ) . '@lc-test.invalid' );
+	t( 'a request whose mail is skipped issues no link token', t_live_tokens() === $before );
+	remove_filter( 'lc_auth_mail_limits', $f_lim );
+
+	// Global cap.
+	t_browser();
+	lc_auth_dev_outbox_clear();
+	$cap0 = fn() => 0;
+	add_filter( 'lc_auth_email_daily_cap', $cap0 );
+	$gver = t_user();
+	lc_auth_mark_email_verified( $gver->ID, $gver->user_email );
+	$gunv = t_user();
+	$gnew = 'gnew' . bin2hex( random_bytes( 3 ) ) . '@lc-test.invalid';
+	$admin_mails = 0;
+	lc_auth_email_send( $gver->user_email, 's', 'b', 'signin' );
+	lc_auth_email_send( $gnew, 's', 'b', 'signin' );
+	lc_auth_email_send( $gunv->user_email, 's', 'b', 'signin' );
+	t( 'global cap reached: a verified existing account still gets its mail', 1 === t_outbox_count( $gver->user_email ) );
+	t( 'global cap reached: an unknown address gets nothing', 0 === t_outbox_count( $gnew ) );
+	t( 'global cap reached: an existing but unverified address gets nothing', 0 === t_outbox_count( $gunv->user_email ) );
+	t( 'global cap reached: the admin is emailed once (not per blocked mail)', 1 === $admin_mails, (string) $admin_mails );
+	t( 'global cap reached: same for core reset mail (verified yes, unverified no)', true === apply_filters( 'send_retrieve_password_email', true, $gver->user_login, get_userdata( $gver->ID ) ) && false === apply_filters( 'send_retrieve_password_email', true, $gunv->user_login, get_userdata( $gunv->ID ) ) );
+	t_browser();
+	lc_auth_dev_outbox_clear();
+	$r = t_request_link( $gver->user_email );
+	t( 'global cap reached: a verified member can still request a sign-in link', true === $r['ok'] && '' !== t_link_token( $gver->user_email ) );
+	remove_filter( 'lc_auth_email_daily_cap', $cap0 );
+
+	// Skipped mails do not use the global budget.
+	t_browser();
+	lc_auth_dev_outbox_clear();
+	$cap2 = fn() => 2;
+	add_filter( 'lc_auth_email_daily_cap', $cap2 );
+	$f_lim = t_limits( array( 'rcpt_h' => 1 ) );
+	$ga    = 'ga' . bin2hex( random_bytes( 3 ) ) . '@lc-test.invalid';
+	$gb    = 'gb' . bin2hex( random_bytes( 3 ) ) . '@lc-test.invalid';
+	$gc    = 'gc' . bin2hex( random_bytes( 3 ) ) . '@lc-test.invalid';
+	lc_auth_email_send( $ga, 's', 'b', 'signin' );
+	lc_auth_email_send( $ga, 's', 'b', 'signin' ); // Skipped by the recipient cap.
+	lc_auth_email_send( $ga, 's', 'b', 'signin' ); // Skipped again.
+	lc_auth_email_send( $gb, 's', 'b', 'signin' );
+	lc_auth_email_send( $gc, 's', 'b', 'signin' ); // Third real mail: over the cap of 2.
+	t( 'skipped mails use no global budget (A once, B sent, C stopped by the cap of 2)', 1 === t_outbox_count( $ga ) && 1 === t_outbox_count( $gb ) && 0 === t_outbox_count( $gc ) );
+	remove_filter( 'lc_auth_mail_limits', $f_lim );
+	remove_filter( 'lc_auth_email_daily_cap', $cap2 );
+
+	// Core's lost-password form.
+	t_browser();
+	lc_auth_dev_outbox_clear();
+	$lp = t_user();
+	lc_auth_mark_email_verified( $lp->ID, $lp->user_email );
+	$errs = array();
+	for ( $i = 0; $i < 4; $i++ ) {
+		$e = new WP_Error();
+		do_action( 'lostpassword_post', $e, get_userdata( $lp->ID ) );
+		$errs[] = $e->has_errors();
+	}
+	t( 'lostpassword_post: the 4th request for one account in an hour adds an error', array( false, false, false, true ) === $errs );
+	t_browser();
+	$errs = array();
+	for ( $i = 0; $i < 6; $i++ ) {
+		$e = new WP_Error();
+		do_action( 'lostpassword_post', $e, false ); // Unknown account: only the visitor bucket applies.
+		$errs[] = $e->has_errors();
+	}
+	t( 'lostpassword_post: the 6th request from one visitor in 15 min adds an error', array( false, false, false, false, false, true ) === $errs );
+	t_browser();
+	lc_auth_dev_outbox_clear();
+	$n = 0;
+	for ( $i = 0; $i < 4; $i++ ) {
+		$res = retrieve_password( get_userdata( $lp->ID )->user_login );
+		$n  += is_wp_error( $res ) ? 0 : 1;
+	}
+	t( 'core retrieve_password: 3 reset mails go, the 4th is refused and sends nothing', 3 === $n && 3 === t_outbox_count( $lp->user_email ), $n . '/' . t_outbox_count( $lp->user_email ) );
+
+	remove_filter( 'pre_wp_mail', $catch_admin, -1 );
+	delete_transient( 'lc_auth_mail_cap_alerted' );
 
 	/* ======================================== REST, recency, lockdown, CSRF == */
 	$report( 'REST users endpoint' );
@@ -694,12 +951,43 @@ try {
 	t( 'public name: a real name is kept', 'Real Name' === lc_public_name( get_userdata( $mach->ID ) ) );
 
 	$d  = t_user();
-	$cm = wp_insert_comment( array( 'comment_post_ID' => (int) get_option( 'page_on_front' ) ?: 1, 'comment_content' => 'lc-test-delete', 'user_id' => $d->ID, 'comment_author' => 'Dee', 'comment_author_email' => $d->user_email, 'comment_author_IP' => '203.0.113.9', 'comment_approved' => 1 ) );
+	$cm = wp_insert_comment( array( 'comment_post_ID' => (int) get_option( 'page_on_front' ) ?: 1, 'comment_content' => 'lc-test-delete', 'user_id' => $d->ID, 'comment_author' => 'Dee', 'comment_author_email' => $d->user_email, 'comment_author_IP' => '203.0.113.9', 'comment_agent' => 'Mozilla/5.0 lc-test', 'comment_approved' => 1 ) );
 	$GLOBALS['lc_t']['comments'][] = $cm;
 	lc_auth_delete_account( $d );
 	$c = get_comment( $cm );
 	t( 'delete: user gone', false === get_userdata( $d->ID ) );
-	t( 'delete: comment kept but anonymised', $c && 0 === (int) $c->user_id && 'Former member' === $c->comment_author && '' === $c->comment_author_email && '' === $c->comment_author_IP );
+	t( 'delete: comment kept but anonymised', $c && 0 === (int) $c->user_id && 'Former member' === $c->comment_author && '' === $c->comment_author_email && '' === $c->comment_author_IP && '' === $c->comment_agent );
+
+
+	// Deleting a member also deletes the legacy wallet accounts merged into them (and only those).
+	t_browser();
+	$dw   = t_wallet();
+	$dold = t_user( 'subscriber', false, md5( $dw['stake'] ) );
+	$dnew = t_user();
+	t_session( $dnew->ID );
+	$res = t_wallet_link( $dw );
+	t( 'delete setup: legacy account merged into the member', is_array( $res ) && (int) get_user_meta( $dold->ID, 'lc_merged_into', true ) === $dnew->ID && ! get_userdata( $dold->ID )->roles, t_code( $res ) );
+	$dkeep = t_user(); // Not a legacy account, merely pointing at the member: stays.
+	update_user_meta( $dkeep->ID, 'lc_merged_into', $dnew->ID );
+	$dkeep2 = t_user( 'subscriber', false, md5( 'keep-' . bin2hex( random_bytes( 4 ) ) ) ); // Legacy login but still has a role: stays.
+	update_user_meta( $dkeep2->ID, 'lc_merged_into', $dnew->ID );
+	wp_set_current_user( 0 );
+	lc_auth_delete_account( get_userdata( $dnew->ID ) );
+	t( 'delete: the member and the merged legacy account are both gone', false === get_userdata( $dnew->ID ) && false === get_userdata( $dold->ID ) );
+	t( 'delete: other users are left alone (no legacy login, or still has a role)', false !== get_userdata( $dkeep->ID ) && false !== get_userdata( $dkeep2->ID ) );
+
+	// The verified flag is not a second copy of the address.
+	$ev = t_user();
+	lc_auth_mark_email_verified( $ev->ID, $ev->user_email );
+	$raw = (string) get_user_meta( $ev->ID, 'lc_email_verified', true );
+	t( 'lc_email_verified is an HMAC, not the address', false === strpos( $raw, '@' ) && false === stripos( $raw, explode( '@', $ev->user_email )[0] ) && 64 === strlen( $raw ) && lc_auth_email_verified( $ev->ID ) );
+	update_user_meta( $ev->ID, 'lc_email_verified', strtoupper( $ev->user_email ) ); // Written by the old code.
+	t( 'legacy plaintext value still verifies the same address...', lc_auth_email_verified( $ev->ID ) );
+	t( '...and was rewritten as an HMAC by that check', false === strpos( (string) get_user_meta( $ev->ID, 'lc_email_verified', true ), '@' ) && lc_auth_email_verified( $ev->ID ) );
+	update_user_meta( $ev->ID, 'lc_email_verified', 'someone-else@lc-test.invalid' );
+	t( 'legacy plaintext for another address does not verify and is not rewritten', ! lc_auth_email_verified( $ev->ID ) && false !== strpos( (string) get_user_meta( $ev->ID, 'lc_email_verified', true ), '@' ) );
+	wp_update_user( array( 'ID' => $ev->ID, 'user_email' => 'ev2' . $ev->ID . '@lc-test.invalid' ) );
+	t( 'a changed address is unverified (HMAC no longer matches)', ! lc_auth_email_verified( $ev->ID ) );
 
 	$sess = t_user();
 	t_session( $sess->ID );
@@ -725,6 +1013,8 @@ try {
 		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_{$prefix}%' OR option_name LIKE '\\_transient\\_timeout\\_{$prefix}%'" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- fixed strings.
 	}
 	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'lc\\_lock\\_%'" );
+	delete_transient( 'lc_auth_mail_cap_alerted' );
+	delete_transient( 'lc_auth_wallet_signup_alerted' );
 	lc_auth_dev_outbox_clear();
 	echo "\nCleaned up " . count( $ids ) . " test users.\n";
 	printf( "\n%d passed, %d failed\n", $GLOBALS['lc_t']['pass'], $GLOBALS['lc_t']['fail'] );
