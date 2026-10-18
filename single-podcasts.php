@@ -78,13 +78,32 @@ $lc_spotify_id = function_exists('lc_spotify_id') ? lc_spotify_id(get_field('spo
                                     // YouTube facade: the episode thumbnail and a play button stand in
                                     // for the player, which is ~1MB of third-party script. Clicking
                                     // swaps in the real iframe (autoplaying); without JS the link
-                                    // opens the video on YouTube.
-                                    $lc_yt_thumb = 'https://i.ytimg.com/vi/' . $lc_youtube_id . '/hqdefault.jpg';
+                                    // opens the video on YouTube. The thumbnail is the episode's
+                                    // featured image (the YouTube thumbnail, imported into the
+                                    // media library: same-origin, WebP, responsive), falling back
+                                    // to YouTube's own still. functions.php preloads the same image.
+                                    $lc_yt_thumb_id = get_post_thumbnail_id();
+                                    $lc_yt_thumb    = $lc_yt_thumb_id ? wp_get_attachment_image(
+                                        $lc_yt_thumb_id,
+                                        'large',
+                                        false,
+                                        array(
+                                            'class'         => 'lc-yt__thumb skip-lazy',
+                                            'alt'           => '',
+                                            'sizes'         => LC_PODCAST_PLAYER_SIZES,
+                                            'loading'       => 'eager',
+                                            'fetchpriority' => 'high',
+                                            'decoding'      => 'async',
+                                        )
+                                    ) : '';
+                                    if ( ! $lc_yt_thumb ) {
+                                        $lc_yt_thumb = '<img class="lc-yt__thumb" src="' . esc_url('https://i.ytimg.com/vi/' . $lc_youtube_id . '/hqdefault.jpg') . '" width="480" height="360" alt="" fetchpriority="high" decoding="async">';
+                                    }
                                     ?>
                                     <div class="youtube-embed col-md-10 mb-2 offset-md-1">
                                         <div class="embed-container">
                                             <a class="lc-yt" href="<?php echo esc_url('https://www.youtube.com/watch?v=' . $lc_youtube_id); ?>" data-id="<?php echo esc_attr($lc_youtube_id); ?>" data-title="<?php echo esc_attr(get_the_title()); ?>" target="_blank" rel="noopener">
-                                                <img class="lc-yt__thumb" src="<?php echo esc_url($lc_yt_thumb); ?>" width="480" height="360" alt="" fetchpriority="high" decoding="async">
+                                                <?php echo $lc_yt_thumb; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by wp_get_attachment_image() or escaped above. ?>
                                                 <span class="lc-yt__play" aria-hidden="true"><?php echo lc_icon('play'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG. ?></span>
                                                 <span class="visually-hidden"><?php echo esc_html(sprintf(__('Play video: %s', 'learncardano'), get_the_title())); ?></span>
                                             </a>
@@ -95,14 +114,15 @@ $lc_spotify_id = function_exists('lc_spotify_id') ? lc_spotify_id(get_field('spo
                                         var link = document.querySelector('.lc-yt');
                                         if (!link) { return; }
                                         var id = link.getAttribute('data-id');
-                                        // hqdefault is 480px wide; on larger screens swap in the HD still
-                                        // once the page has loaded, if the video has one (YouTube serves
-                                        // a 120px placeholder when it doesn't).
-                                        if (window.innerWidth >= 768) {
+                                        // YouTube fallback still: hqdefault is 480px wide; on larger
+                                        // screens swap in the HD still once the page has loaded, if the
+                                        // video has one (YouTube serves a 120px placeholder when it doesn't).
+                                        var thumb = link.querySelector('img');
+                                        if (window.innerWidth >= 768 && thumb && !thumb.srcset) {
                                             window.addEventListener('load', function () {
                                                 var hd = new Image();
                                                 hd.onload = function () {
-                                                    if (hd.naturalWidth > 120) { link.querySelector('img').src = hd.src; }
+                                                    if (hd.naturalWidth > 120) { thumb.src = hd.src; }
                                                 };
                                                 hd.src = 'https://i.ytimg.com/vi/' + id + '/maxresdefault.jpg';
                                             });

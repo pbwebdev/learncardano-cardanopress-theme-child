@@ -294,18 +294,23 @@ function lc_preload_fonts() {
 }
 add_action( 'wp_head', 'lc_preload_fonts', 2 );
 
+/** `sizes` of the podcast episode's video thumbnail (single-podcasts.php). */
+define( 'LC_PODCAST_PLAYER_SIZES', '(max-width: 767px) 100vw, 700px' );
+
 /**
  * Preload the LCP image where we know it in advance, so it starts with the
  * stylesheets instead of after the parser reaches it:
- * - front page: the newest episode's featured image (template-parts/home-podcasts.php),
- *   with the same srcset/sizes, as WebP when includes/webp.php will serve WebP;
- * - podcast episode: the YouTube facade thumbnail (single-podcasts.php).
+ * - front page: the newest episode's featured image (template-parts/home-podcasts.php);
+ * - podcast episode: the video facade thumbnail (single-podcasts.php), which
+ *   is the featured image, or YouTube's still when there is none.
  */
 function lc_preload_lcp_image() {
 	if ( is_singular( 'podcasts' ) ) {
 		$id = function_exists( 'lc_youtube_id' ) ? lc_youtube_id( get_field( 'youtube_video', get_queried_object_id(), false ) ) : '';
-		if ( $id ) {
-			echo '<link rel="preconnect" href="https://i.ytimg.com">' . "\n";
+		if ( ! $id ) {
+			return;
+		}
+		if ( ! lc_preload_attachment( get_post_thumbnail_id( get_queried_object_id() ), LC_PODCAST_PLAYER_SIZES ) ) {
 			printf( '<link rel="preload" as="image" href="%s" fetchpriority="high">' . "\n", esc_url( 'https://i.ytimg.com/vi/' . $id . '/hqdefault.jpg' ) );
 		}
 		return;
@@ -320,10 +325,25 @@ function lc_preload_lcp_image() {
 			'fields'         => 'ids',
 		)
 	);
-	$thumb_id = $newest ? get_post_thumbnail_id( $newest[0] ) : 0;
-	$srcset   = $thumb_id ? wp_get_attachment_image_srcset( $thumb_id, 'large' ) : '';
+	if ( $newest ) {
+		lc_preload_attachment( get_post_thumbnail_id( $newest[0] ), '(max-width: 899px) 100vw, 610px' );
+	}
+}
+add_action( 'wp_head', 'lc_preload_lcp_image', 2 );
+
+/**
+ * Print a high-priority preload for an attachment's 'large' srcset, matching
+ * what wp_get_attachment_image() + includes/webp.php put in the page (the WebP
+ * <source> when every size has a WebP copy). Returns false if nothing printed.
+ *
+ * @param int    $thumb_id Attachment ID.
+ * @param string $sizes    The image's sizes attribute.
+ * @return bool
+ */
+function lc_preload_attachment( $thumb_id, $sizes ) {
+	$srcset = $thumb_id ? wp_get_attachment_image_srcset( $thumb_id, 'large' ) : '';
 	if ( ! $srcset ) {
-		return;
+		return false;
 	}
 	$type = '';
 	if ( function_exists( 'lc_webp_url' ) ) {
@@ -345,11 +365,11 @@ function lc_preload_lcp_image() {
 	printf(
 		'<link rel="preload" as="image" imagesrcset="%s" imagesizes="%s"%s fetchpriority="high">' . "\n",
 		esc_attr( $srcset ),
-		esc_attr( '(max-width: 899px) 100vw, 610px' ),
+		esc_attr( $sizes ),
 		$type // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static attribute.
 	);
+	return true;
 }
-add_action( 'wp_head', 'lc_preload_lcp_image', 2 );
 
 /**
  * A post's primary category: Rank Math's primary pick when set, otherwise the
