@@ -10,6 +10,14 @@
  * updated in one place; the markup further down only loops over them. The
  * page's own editor content is not used.
  *
+ * Gated numbers: the real audience figures and prices are only in the media
+ * kit (DocSend, behind an email wall). Every metric and price in this file is
+ * a deliberately WRONG same-shape placeholder, rendered blurred inside
+ * `.pk__gated` blocks with an overlay linking to the media kit. Never put the
+ * real figures here: this file ships in a public repo and in the page HTML.
+ * Strings with `%s` / `%1$s` placeholders take their masked numbers from the
+ * matching `nums` array.
+ *
  * Styles: assets/css/partner.css (`.pk__`). Assets and the Calendly script are
  * enqueued by includes/partner.php on this template only.
  *
@@ -21,14 +29,17 @@
  * Editable content
  * ---------------------------------------------------------------- */
 
-// Hero stat strip. `count` drives the count-up; `text` is what is printed.
+// The media kit (DocSend, email-gated): where every real figure lives.
+$lc_media_kit_url = 'https://link.learncardano.io/learncardano-media-kit';
+
+// Hero stat strip (placeholders): number, label, numbers inside the label.
 $lc_stats = array(
-	// YouTube Studio, lifetime to 16 Oct 2026 (CTR and impressions from the 2026 media kit).
-	array( 'text' => '32,434', 'count' => 32434, 'decimals' => 0, 'suffix' => '', 'label' => __( 'subscribers', 'learncardano' ) ),
-	array( 'text' => '3,198,706', 'count' => 3198706, 'decimals' => 0, 'suffix' => '', 'label' => __( 'lifetime views', 'learncardano' ) ),
-	array( 'text' => '265.1K', 'count' => 265.1, 'decimals' => 1, 'suffix' => 'K', 'label' => __( 'hours watched', 'learncardano' ) ),
-	array( 'text' => '53.4K', 'count' => 53.4, 'decimals' => 1, 'suffix' => 'K', 'label' => __( 'monthly audience', 'learncardano' ) ),
-	array( 'text' => '4.78%', 'count' => 4.78, 'decimals' => 2, 'suffix' => '%', 'label' => __( 'lifetime CTR · 32.5M impressions', 'learncardano' ) ),
+	array( 'num' => '48,915', 'label' => __( 'subscribers', 'learncardano' ) ),
+	array( 'num' => '5,267,481', 'label' => __( 'lifetime views', 'learncardano' ) ),
+	array( 'num' => '412.8K', 'label' => __( 'hours watched', 'learncardano' ) ),
+	array( 'num' => '87.6K', 'label' => __( 'monthly audience', 'learncardano' ) ),
+	/* translators: %s: impressions */
+	array( 'num' => '7.36%', 'label' => __( 'lifetime CTR · %s impressions', 'learncardano' ), 'nums' => array( '58.4M' ) ),
 );
 $lc_distribution = __( 'Podcast — Spotify, Apple, iHeart, Spreaker · learncardano.io indexed archive · newsletter · Discord · X · Facebook', 'learncardano' );
 
@@ -51,55 +62,72 @@ $lc_pillars = array(
 );
 $lc_cadence = __( 'Publishing runs three times a week — Monday brief, Wednesday feature, Friday deep dive — so a campaign can be sequenced against a known calendar rather than hoping for a slot.', 'learncardano' );
 
-// Audience comparison: metric, AU tax & ruling videos, everything else.
+// Audience comparison (placeholders): metric, AU tax & ruling videos, everything else.
 $lc_compare = array(
-	array( __( 'Average views', 'learncardano' ), '26,413', '5,436' ),
-	array( __( 'Median views', 'learncardano' ), '21,081', '3,952' ),
-	array( __( 'Watch hours / video', 'learncardano' ), '1,462', '482' ),
-	array( __( 'New subscribers / video', 'learncardano' ), '484', '41' ),
-	array( __( 'Click-through rate', 'learncardano' ), '5.9%', '5.4%' ),
+	array( __( 'Average views', 'learncardano' ), '38,276', '7,918' ),
+	array( __( 'Median views', 'learncardano' ), '29,654', '6,127' ),
+	array( __( 'Watch hours / video', 'learncardano' ), '2,318', '761' ),
+	array( __( 'New subscribers / video', 'learncardano' ), '693', '58' ),
+	array( __( 'Click-through rate', 'learncardano' ), '8.3%', '6.7%' ),
 );
 $lc_multipliers = array(
-	array( '4.9×', __( 'the views', 'learncardano' ), false ),
-	array( '3.0×', __( 'the watch hours', 'learncardano' ), false ),
-	array( '11.8×', __( 'the subscribers', 'learncardano' ), true ),
+	array( '6.2×', __( 'the views', 'learncardano' ), false ),
+	array( '4.1×', __( 'the watch hours', 'learncardano' ), false ),
+	array( '15.4×', __( 'the subscribers', 'learncardano' ), true ),
 );
+// Cohort totals in the summary sentence: views, watch hours, new subscribers.
+$lc_compare_totals = array( '318,452', '19,847', '6,093' );
 
-// Demographics: figure, label, highlight.
+// Australian share (placeholders): lifetime, last 90 days; then the two callouts.
+$lc_au_share    = array( '9.3%', '58.7%' );
+$lc_au_callouts = array( '64.8%', '83.5%' );
+
+// Demographics (placeholders): figure, label.
 $lc_demo = array(
-	// YouTube Studio, views, lifetime to 16 Oct 2026.
-	array( '80.5%', __( 'aged 25–54', 'learncardano' ) ),
-	array( '57.5%', __( 'aged 35–54 — the largest cohort', 'learncardano' ) ),
-	array( '96.6%', __( 'male', 'learncardano' ) ),
-	array( '0.2%', __( 'aged 13–17', 'learncardano' ) ),
+	array( '36.2%', __( 'aged 25–54', 'learncardano' ) ),
+	array( '24.9%', __( 'aged 35–54 — the largest cohort', 'learncardano' ) ),
+	array( '71.4%', __( 'male', 'learncardano' ) ),
+	array( '3.8%', __( 'aged 13–17', 'learncardano' ) ),
 );
 
-// How they watch (YouTube Studio, 16 Oct 2026): figure, label.
+// How they watch (placeholders): figure, label, numbers inside the label.
 $lc_habits = array(
-	array( '17.1%', __( 'of subscribers have “All notifications” on (5.5K people) — YouTube’s typical range is 10–30%', 'learncardano' ) ),
-	array( '47.8%', __( 'of all watch time comes from subscribers', 'learncardano' ) ),
-	array( '54.6%', __( 'of the monthly audience are new viewers — reach beyond the existing base', 'learncardano' ) ),
-	array( '13.6%', __( 'of watch time is on TV screens; 35.3% on computers, 46.6% on mobile', 'learncardano' ) ),
+	/* translators: %s: number of people */
+	array( '26.3%', __( 'of subscribers have “All notifications” on (%s people) — YouTube’s typical range is 10–30%%', 'learncardano' ), array( '7.9K' ) ),
+	array( '63.2%', __( 'of all watch time comes from subscribers', 'learncardano' ), array() ),
+	array( '38.7%', __( 'of the monthly audience are new viewers — reach beyond the existing base', 'learncardano' ), array() ),
+	/* translators: 1: computer share, 2: mobile share */
+	array( '22.4%', __( 'of watch time is on TV screens; %1$s on computers, %2$s on mobile', 'learncardano' ), array( '41.9%', '35.7%' ) ),
 );
 $lc_also_watches = __( 'Viewers also watch Altcoin Daily, Paul Barron Network and Crypto Capital Venture.', 'learncardano' );
 
 // Proof: title, date/context, views, average view duration, thumbnail (file, w, h) or null.
-// Top videos by lifetime views, YouTube Studio 16 Oct 2026.
+// Top videos by lifetime views; views and durations are placeholders.
 $lc_proof = array(
-	array( __( 'Bitcoin Tax Free in Australia? Landmark Bitcoin Ruling', 'learncardano' ), __( 'May 2025', 'learncardano' ), '99,833', '3:12 (33.8%)', array( 'proof-bitcoin-tax-free.jpg', 1120, 630 ) ),
-	array( __( 'Australia’s New Crypto Regulations: What AFSL & AUSTRAC Mean for You', 'learncardano' ), __( 'Sep 2026', 'learncardano' ), '56,244', '3:33 (33.0%)', array( 'proof-afsl-austrac.jpg', 640, 360 ) ),
-	array( __( 'Why the ATO Is Panicking Over This Crypto Case', 'learncardano' ), __( 'Jun 2026', 'learncardano' ), '45,029', '2:43 (38.3%)', array( 'proof-ato-panicking.jpg', 640, 360 ) ),
-	array( __( 'Elon Musk and Charles Are Up to Something… 3 Big Rumours', 'learncardano' ), __( 'Nov 2024', 'learncardano' ), '54,173', '6:00 (37.1%)', null ),
-	array( __( 'Ledger Hardware Implant Confirmed: What Wallet Users Should Check', 'learncardano' ), __( 'Oct 2026 · published 12 Oct', 'learncardano' ), '36,747', '2:49 (33.5%)', null ),
+	array( __( 'Bitcoin Tax Free in Australia? Landmark Bitcoin Ruling', 'learncardano' ), __( 'May 2025', 'learncardano' ), '142,617', '5:47 (61.3%)', array( 'proof-bitcoin-tax-free.jpg', 1120, 630 ) ),
+	array( __( 'Australia’s New Crypto Regulations: What AFSL & AUSTRAC Mean for You', 'learncardano' ), __( 'Sep 2026', 'learncardano' ), '81,395', '4:58 (52.6%)', array( 'proof-afsl-austrac.jpg', 640, 360 ) ),
+	array( __( 'Why the ATO Is Panicking Over This Crypto Case', 'learncardano' ), __( 'Jun 2026', 'learncardano' ), '67,812', '6:21 (57.9%)', array( 'proof-ato-panicking.jpg', 640, 360 ) ),
+	array( __( 'Elon Musk and Charles Are Up to Something… 3 Big Rumours', 'learncardano' ), __( 'Nov 2024', 'learncardano' ), '73,946', '3:46 (44.2%)', null ),
+	array( __( 'Ledger Hardware Implant Confirmed: What Wallet Users Should Check', 'learncardano' ), __( 'Oct 2026 · published 12 Oct', 'learncardano' ), '52,308', '5:14 (49.8%)', null ),
 );
+// Monthly views sentence (placeholders): June, July, Jan–May average.
+$lc_monthly = array( '196,804', '178,562', '52,000' );
 
-// Click-through case: figure, explanation.
+// Click-through case (placeholders): figure, explanation, numbers inside the explanation.
 $lc_conversion = array(
-	array( '68', __( 'link clicks on the day of publication, against a 2–5/day baseline', 'learncardano' ) ),
-	array( '398', __( 'human clicks of 858 recorded. We quote the filtered number', 'learncardano' ) ),
-	array( '5–10%', __( 'click-to-purchase in the 72-hour window. Typical e-commerce: 2–3%', 'learncardano' ) ),
-	array( '72hrs', __( 'from publication to every recorded purchase', 'learncardano' ) ),
+	/* translators: %s: daily baseline */
+	array( '114', __( 'link clicks on the day of publication, against a %s baseline', 'learncardano' ), array( '4–9/day' ) ),
+	/* translators: %s: recorded clicks */
+	array( '627', __( 'human clicks of %s recorded. We quote the filtered number', 'learncardano' ), array( '1,342' ) ),
+	/* translators: %s: window length */
+	array( '12–18%', __( 'click-to-purchase in the %s window. Typical e-commerce: 2–3%%', 'learncardano' ), array( '41-hour' ) ),
+	array( '41hrs', __( 'from publication to every recorded purchase', 'learncardano' ), array() ),
 );
+// The case text (placeholders): baseline, clicks in a day, purchases, window, order value, average order.
+$lc_case = array( '4–9', '114', '7', '41 hours', '$1,437', '$205' );
+
+// Front-load chart caption (placeholders): ATO Is Panicking, Bitcoin Tax Free at day 7.
+$lc_front_load = array( '78%', '81%' );
 
 // Editorial calendar: month, arc, topics.
 $lc_calendar = array(
@@ -116,39 +144,43 @@ $lc_fits = array(
 	array( __( 'Hold a rapid-response slot', 'learncardano' ), __( 'Retain capacity for the unscheduled. When a ruling, court decision or Treasury announcement lands, we publish within 48 hours with you already integrated — where the biggest numbers come from.', 'learncardano' ), __( 'Best for share of voice', 'learncardano' ) ),
 );
 
-// Rate card: placement, detail, price, row style ('' | 'feature' | 'hot').
+// Rate card (placeholder prices): placement, detail, price, row style ('' | 'feature' | 'hot').
 $lc_rates_single = array(
-	array( __( 'Dedicated video', 'learncardano' ), __( 'AU regulation format, 6–8 min, sponsor is the subject', 'learncardano' ), '$5,500', 'feature' ),
-	array( __( 'Rapid-response slot', 'learncardano' ), __( 'published within 48h of a qualifying event', 'learncardano' ), '$3,500', 'hot' ),
-	array( __( 'Mid-roll integration, 60–90 sec', 'learncardano' ), __( 'inside an AU regulation / tax video', 'learncardano' ), '$2,200', '' ),
-	array( __( 'Mid-roll integration, 60–90 sec', 'learncardano' ), __( 'inside standard weekly content', 'learncardano' ), '$850', '' ),
-	array( __( 'Opening mention, 20–30 sec', 'learncardano' ), __( 'plus pinned comment & description link', 'learncardano' ), '$700', '' ),
-	array( __( 'YouTube Short, dedicated', 'learncardano' ), '', '$400', '' ),
-	array( __( 'Podcast audio read', 'learncardano' ), __( 'all feeds', 'learncardano' ), '$450', '' ),
-	array( __( 'Sponsored article on learncardano.io', 'learncardano' ), __( 'permanent & indexed', 'learncardano' ), '$1,200', '' ),
-	array( __( 'Newsletter feature', 'learncardano' ), __( 'dedicated section', 'learncardano' ), '$400', '' ),
-	array( __( 'Social amplification', 'learncardano' ), __( 'X and Facebook', 'learncardano' ), '$300', '' ),
+	array( __( 'Dedicated video', 'learncardano' ), __( 'AU regulation format, 6–8 min, sponsor is the subject', 'learncardano' ), '$8,800', 'feature' ),
+	array( __( 'Rapid-response slot', 'learncardano' ), __( 'published within 48h of a qualifying event', 'learncardano' ), '$5,900', 'hot' ),
+	array( __( 'Mid-roll integration, 60–90 sec', 'learncardano' ), __( 'inside an AU regulation / tax video', 'learncardano' ), '$3,650', '' ),
+	array( __( 'Mid-roll integration, 60–90 sec', 'learncardano' ), __( 'inside standard weekly content', 'learncardano' ), '$1,400', '' ),
+	array( __( 'Opening mention, 20–30 sec', 'learncardano' ), __( 'plus pinned comment & description link', 'learncardano' ), '$1,150', '' ),
+	array( __( 'YouTube Short, dedicated', 'learncardano' ), '', '$650', '' ),
+	array( __( 'Podcast audio read', 'learncardano' ), __( 'all feeds', 'learncardano' ), '$720', '' ),
+	array( __( 'Sponsored article on learncardano.io', 'learncardano' ), __( 'permanent & indexed', 'learncardano' ), '$1,950', '' ),
+	array( __( 'Newsletter feature', 'learncardano' ), __( 'dedicated section', 'learncardano' ), '$680', '' ),
+	array( __( 'Social amplification', 'learncardano' ), __( 'X and Facebook', 'learncardano' ), '$480', '' ),
 );
 $lc_rates_addons = array(
-	array( __( 'Category exclusivity', 'learncardano' ), __( 'crypto credit & lending, per month', 'learncardano' ), '$1,200', '' ),
-	array( __( 'Paid usage & whitelisting rights, 90 days', 'learncardano' ), '', '+40%', '' ),
-	array( __( 'Usage extended beyond 12 months', 'learncardano' ), '', '+25%', '' ),
-	array( __( 'Rush turnaround on non rapid-response', 'learncardano' ), __( 'under 7 days', 'learncardano' ), '+20%', '' ),
-	array( __( 'Additional script revision round', 'learncardano' ), __( 'beyond the two included', 'learncardano' ), '$250', '' ),
-	array( __( 'On-camera talent for your own channels', 'learncardano' ), __( 'per day', 'learncardano' ), '$2,500', '' ),
-	array( __( 'Live appearance, webinar or event', 'learncardano' ), __( 'per session', 'learncardano' ), '$1,500', '' ),
+	array( __( 'Category exclusivity', 'learncardano' ), __( 'crypto credit & lending, per month', 'learncardano' ), '$1,900', '' ),
+	array( __( 'Paid usage & whitelisting rights, 90 days', 'learncardano' ), '', '+55%', '' ),
+	array( __( 'Usage extended beyond 12 months', 'learncardano' ), '', '+35%', '' ),
+	array( __( 'Rush turnaround on non rapid-response', 'learncardano' ), __( 'under 7 days', 'learncardano' ), '+30%', '' ),
+	array( __( 'Additional script revision round', 'learncardano' ), __( 'beyond the two included', 'learncardano' ), '$390', '' ),
+	array( __( 'On-camera talent for your own channels', 'learncardano' ), __( 'per day', 'learncardano' ), '$3,900', '' ),
+	array( __( 'Live appearance, webinar or event', 'learncardano' ), __( 'per session', 'learncardano' ), '$2,350', '' ),
 );
-$lc_cpm_note = __( 'Pricing is calculated on average views for the specific content category being bought, not subscriber count. At the category median of 21,081 views, the $2,200 integration equates to an AUD CPM of $104 (~USD $75) — inside the published 2026 finance-sponsorship band, before any premium for CTR, watch time or subscriber acquisition.', 'learncardano' );
+/* translators: 1: median views, 2: integration price, 3: AUD CPM, 4: USD CPM */
+$lc_cpm_note      = __( 'Pricing is calculated on average views for the specific content category being bought, not subscriber count. At the category median of %1$s views, the %2$s integration equates to an AUD CPM of %3$s (~USD %4$s) — inside the published 2026 finance-sponsorship band, before any premium for CTR, watch time or subscriber acquisition.', 'learncardano' );
+$lc_cpm_note_nums = array( '29,654', '$3,650', '$123', '$80' );
 
-// "Why $5,500" value box. Inputs are media-kit figures; the results are
-// straight division, so update both together if a rate or figure changes.
-$lc_dedicated_price = 5500;
+// "Why $X" value box (placeholders). The results are straight division of the
+// placeholder inputs, so update both together if a placeholder changes.
+$lc_dedicated_price = '$8,800';
+$lc_value_planning  = '28–30K';                         // "planned against the category median of roughly …"
+$lc_value_cohort    = array( '38,276', '2,318', '693' ); // cohort averages: views, watch hours, new subscribers
 $lc_value_math      = array(
-	array( __( 'CPM at the category median', 'learncardano' ), __( '$5,500 ÷ 21,081 views × 1,000', 'learncardano' ), '≈ $261' ),
-	array( __( 'CPM at the 30-day planning figure', 'learncardano' ), __( '$5,500 ÷ 20,000 views × 1,000', 'learncardano' ), '≈ $275' ),
-	array( __( 'CPM at the cohort average', 'learncardano' ), __( '$5,500 ÷ 26,413 views × 1,000', 'learncardano' ), '≈ $208' ),
-	array( __( 'Cost per watch hour', 'learncardano' ), __( '$5,500 ÷ 1,462 hours', 'learncardano' ), '≈ $3.76' ),
-	array( __( 'Cost per new subscriber', 'learncardano' ), __( '$5,500 ÷ 484 subscribers', 'learncardano' ), '≈ $11.36' ),
+	array( __( 'CPM at the category median', 'learncardano' ), '$8,800 ÷ 29,654 views × 1,000', '≈ $297' ),
+	array( __( 'CPM at the 30-day planning figure', 'learncardano' ), '$8,800 ÷ 28,000 views × 1,000', '≈ $314' ),
+	array( __( 'CPM at the cohort average', 'learncardano' ), '$8,800 ÷ 38,276 views × 1,000', '≈ $230' ),
+	array( __( 'Cost per watch hour', 'learncardano' ), '$8,800 ÷ 2,318 hours', '≈ $3.80' ),
+	array( __( 'Cost per new subscriber', 'learncardano' ), '$8,800 ÷ 693 subscribers', '≈ $12.70' ),
 );
 
 // Campaign packages.
@@ -158,8 +190,8 @@ $lc_packages = array(
 		'name'        => __( 'Market Test', 'learncardano' ),
 		'term'        => __( '4 weeks', 'learncardano' ),
 		'items'       => array( __( '1 dedicated video', 'learncardano' ), __( '1 integration', 'learncardano' ), __( '1 Short', 'learncardano' ), __( '1 podcast read', 'learncardano' ), __( '1 newsletter feature', 'learncardano' ), __( 'social amplification', 'learncardano' ) ),
-		'a_la_carte'  => '$9,250',
-		'price'       => '$7,900',
+		'a_la_carte'  => '$14,650',
+		'price'       => '$12,400',
 		'recommended' => false,
 	),
 	array(
@@ -167,8 +199,8 @@ $lc_packages = array(
 		'name'        => __( 'Australian Launch', 'learncardano' ),
 		'term'        => __( '12 weeks', 'learncardano' ),
 		'items'       => array( __( '3 dedicated videos', 'learncardano' ), __( '2 rapid-response slots', 'learncardano' ), __( '3 integrations', 'learncardano' ), __( '4 Shorts', 'learncardano' ), __( '2 articles', 'learncardano' ), __( '3 podcast reads', 'learncardano' ), __( '3 newsletter features', 'learncardano' ), __( '6 social posts', 'learncardano' ), __( 'category exclusivity', 'learncardano' ) ),
-		'a_la_carte'  => '$42,050',
-		'price'       => '$35,500',
+		'a_la_carte'  => '$66,900',
+		'price'       => '$56,800',
 		'recommended' => true,
 	),
 	array(
@@ -176,11 +208,19 @@ $lc_packages = array(
 		'name'        => __( 'Always On', 'learncardano' ),
 		'term'        => __( '6 months', 'learncardano' ),
 		'items'       => array( __( '4 dedicated videos', 'learncardano' ), __( '4 rapid-response slots', 'learncardano' ), __( '6 integrations', 'learncardano' ), __( '6 Shorts', 'learncardano' ), __( '3 articles', 'learncardano' ), __( '6 podcast reads', 'learncardano' ), __( '6 newsletter features', 'learncardano' ), __( '12 social posts', 'learncardano' ), __( 'category exclusivity', 'learncardano' ), __( 'quarterly reporting', 'learncardano' ) ),
-		'a_la_carte'  => '$71,100',
-		'price'       => '$59,500',
+		'a_la_carte'  => '$112,600',
+		'price'       => '$94,500',
 		'recommended' => false,
 	),
 );
+// Rapid-response box and delivery guarantee (placeholders): slot price, ATO
+// case views in 7 days; planning figure, guaranteed floor per placement.
+$lc_rr_price  = '$5,900';
+$lc_rr_views  = '41,950';
+$lc_guarantee = array( '28,000', '18,000' );
+
+// Interviews lede (placeholders): Interviews playlist views, podcast views.
+$lc_interview_reach = array( '734.6K', '2.9M' );
 
 // Compliance regimes: label, text.
 $lc_regimes = array(
@@ -302,9 +342,62 @@ $lc_img = function ( $file, $width, $height, $alt, $class = '', $eager = false )
 };
 
 /**
+ * A masked (placeholder) number: blurred by CSS inside `.pk__gated` and hidden
+ * from screen readers, which get the block's "in the media kit" line instead.
+ */
+$lc_num = function ( $text ) {
+	return '<span class="pk__num" aria-hidden="true">' . esc_html( $text ) . '</span>';
+};
+
+/**
+ * A translatable string with `%s` / `%1$s` slots filled by masked numbers.
+ * Only <strong> survives in the string itself.
+ */
+$lc_mask = function ( $text, $nums = array() ) use ( $lc_num ) {
+	return vsprintf( wp_kses( $text, array( 'strong' => array() ) ), array_map( $lc_num, $nums ) );
+};
+
+/**
+ * Opens a gated block: blurred numbers plus a media-kit overlay (closed by
+ * $lc_gate_close). $mods are `pk__gated--` modifiers: dark, slim, inline.
+ */
+$lc_gate_open = function ( $mods = array() ) {
+	$class = 'pk__gated';
+	foreach ( (array) $mods as $mod ) {
+		$class .= ' pk__gated--' . $mod;
+	}
+	printf( '<div class="%s"><div class="pk__gated-body"><p class="pk__sr">%s</p>', esc_attr( $class ), esc_html__( 'Figures available in the media kit.', 'learncardano' ) );
+};
+
+/**
+ * Closes a gated block with its overlay card. $variant 'slim' prints the
+ * one-line card (hero stat strip); 'inline' just the link (a single sentence).
+ */
+$lc_gate_close = function ( $variant = '' ) use ( $lc_media_kit_url ) {
+	$lock = '<svg class="pk__unlock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+	$link = sprintf(
+		'<a class="pk__btn pk__btn--kit pk__unlock" href="%1$s" target="_blank" rel="noopener">%2$s <span aria-hidden="true">→</span><span class="pk__sr"> %3$s</span></a>',
+		esc_url( $lc_media_kit_url ),
+		esc_html__( 'Get the media kit', 'learncardano' ),
+		esc_html__( '(opens in a new tab)', 'learncardano' )
+	);
+	echo '</div>'; // .pk__gated-body
+	if ( 'inline' === $variant ) {
+		echo $link; // phpcs:ignore WordPress.Security.EscapeOutput -- escaped above.
+	} else {
+		echo '<div class="pk__unlock-card">' . $lock . '<div class="pk__unlock-copy"><p class="pk__unlock-title">' . esc_html__( 'Unlock the real numbers', 'learncardano' ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput -- static SVG.
+		if ( 'slim' !== $variant ) {
+			echo '<p class="pk__unlock-text">' . esc_html__( 'Full audience data, rates and packages are in the media kit — enter your email to view it.', 'learncardano' ) . '</p>';
+		}
+		echo '</div>' . $link . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput -- escaped above.
+	}
+	echo '</div>'; // .pk__gated
+};
+
+/**
  * A rate-card table (single placements or add-ons).
  */
-$lc_rate_table = function ( $caption, $rows ) {
+$lc_rate_table = function ( $caption, $rows ) use ( $lc_num ) {
 	?>
 	<table class="pk__rates">
 		<caption><?php echo esc_html( $caption ); ?></caption>
@@ -320,7 +413,7 @@ $lc_rate_table = function ( $caption, $rows ) {
 							<span class="pk__rate-detail">— <?php echo esc_html( $row[1] ); ?></span>
 						<?php endif; ?>
 					</th>
-					<td><?php echo esc_html( $row[2] ); ?></td>
+					<td><?php echo $lc_num( $row[2] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></td>
 				</tr>
 			<?php endforeach; ?>
 		</tbody>
@@ -345,28 +438,28 @@ get_header();
 				<h1 id="pk-title" class="pk__h1"><span class="pk__grad"><?php esc_html_e( 'Learn Cardano', 'learncardano' ); ?></span> <?php esc_html_e( 'Partnership Opportunities', 'learncardano' ); ?></h1>
 				<p class="pk__hero-sub"><?php esc_html_e( 'Australia’s crypto education channel — audience, rates and packages', 'learncardano' ); ?></p>
 				<p class="pk__ctas">
+					<a class="pk__btn pk__btn--kit" href="<?php echo esc_url( $lc_media_kit_url ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Get the media kit', 'learncardano' ); ?><span class="pk__sr"> <?php esc_html_e( '(opens in a new tab)', 'learncardano' ); ?></span></a>
 					<a class="pk__btn" href="#book"><?php esc_html_e( 'Book a 15-min call', 'learncardano' ); ?></a>
 					<a class="pk__btn pk__btn--ghost" href="#rates"><?php esc_html_e( 'See rates', 'learncardano' ); ?></a>
 				</p>
 			</div>
 			<figure class="pk__device">
-				<?php echo $lc_img( 'youtube-channel.jpg', 1090, 860, __( 'The Learn Cardano YouTube channel page, showing the channel banner, subscriber count and recent videos on Australian crypto tax and regulation.', 'learncardano' ), 'pk__device-img', true ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img. ?>
+				<?php echo $lc_img( 'youtube-channel.jpg', 1090, 860, __( 'The Learn Cardano YouTube channel page, showing the channel banner and recent videos on Australian crypto tax and regulation.', 'learncardano' ), 'pk__device-img', true ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img. ?>
 			</figure>
 		</div>
 
 		<div class="pk__container">
 			<h2 class="pk__sr"><?php esc_html_e( 'The channel in numbers', 'learncardano' ); ?></h2>
-			<ul class="pk__stats">
-				<?php foreach ( $lc_stats as $lc_stat ) : ?>
-					<li class="pk__stat">
-						<span class="pk__stat-num">
-							<span class="pk__sr"><?php echo esc_html( $lc_stat['text'] ); ?></span>
-							<span aria-hidden="true" data-pk-count="<?php echo esc_attr( $lc_stat['count'] ); ?>" data-pk-decimals="<?php echo esc_attr( $lc_stat['decimals'] ); ?>" data-pk-suffix="<?php echo esc_attr( $lc_stat['suffix'] ); ?>"><?php echo esc_html( $lc_stat['text'] ); ?></span>
-						</span>
-						<span class="pk__stat-label"><?php echo esc_html( $lc_stat['label'] ); ?></span>
-					</li>
-				<?php endforeach; ?>
-			</ul>
+			<?php $lc_gate_open( array( 'dark', 'slim', 'stats' ) ); ?>
+				<ul class="pk__stats">
+					<?php foreach ( $lc_stats as $lc_stat ) : ?>
+						<li class="pk__stat">
+							<span class="pk__stat-num"><?php echo $lc_num( $lc_stat['num'] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></span>
+							<span class="pk__stat-label"><?php echo $lc_mask( $lc_stat['label'], isset( $lc_stat['nums'] ) ? $lc_stat['nums'] : array() ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask. ?></span>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			<?php $lc_gate_close( 'slim' ); ?>
 			<p class="pk__distribution"><strong><?php esc_html_e( 'Distribution beyond YouTube:', 'learncardano' ); ?></strong> <?php echo esc_html( $lc_distribution ); ?></p>
 		</div>
 	</section>
@@ -421,43 +514,43 @@ get_header();
 				</div>
 				<p class="pk__lede"><?php esc_html_e( '9 long-form videos on Australian crypto tax & court rulings, measured against the other 181 published in the same period.', 'learncardano' ); ?></p>
 			</header>
-			<div class="pk__table-wrap">
-				<table class="pk__table pk__compare">
-					<caption class="pk__sr"><?php esc_html_e( 'Australian tax and ruling videos compared with everything else published in the same period', 'learncardano' ); ?></caption>
-					<thead>
-						<tr>
-							<td></td>
-							<th scope="col" class="pk__compare-hi"><?php esc_html_e( 'AU tax & ruling videos', 'learncardano' ); ?></th>
-							<th scope="col"><?php esc_html_e( 'Everything else', 'learncardano' ); ?></th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php foreach ( $lc_compare as $lc_row ) : ?>
+			<?php $lc_gate_open(); ?>
+				<div class="pk__table-wrap">
+					<table class="pk__table pk__compare">
+						<caption class="pk__sr"><?php esc_html_e( 'Australian tax and ruling videos compared with everything else published in the same period', 'learncardano' ); ?></caption>
+						<thead>
 							<tr>
-								<th scope="row"><?php echo esc_html( $lc_row[0] ); ?></th>
-								<td class="pk__compare-hi"><?php echo esc_html( $lc_row[1] ); ?></td>
-								<td><?php echo esc_html( $lc_row[2] ); ?></td>
+								<td></td>
+								<th scope="col" class="pk__compare-hi"><?php esc_html_e( 'AU tax & ruling videos', 'learncardano' ); ?></th>
+								<th scope="col"><?php esc_html_e( 'Everything else', 'learncardano' ); ?></th>
 							</tr>
-						<?php endforeach; ?>
-					</tbody>
-				</table>
-			</div>
-			<ul class="pk__multis">
-				<?php foreach ( $lc_multipliers as $lc_multi ) : ?>
-					<li class="pk__multi<?php echo $lc_multi[2] ? ' pk__multi--hi' : ''; ?>">
-						<span class="pk__multi-num"><?php echo esc_html( $lc_multi[0] ); ?></span>
-						<span class="pk__multi-label"><?php echo esc_html( $lc_multi[1] ); ?></span>
-					</li>
-				<?php endforeach; ?>
-			</ul>
-			<p class="pk__note">
-				<?php
-				echo wp_kses(
-					__( 'Those nine have delivered <strong>237,714 views, 13,159 watch hours and 4,356 new subscribers</strong>. The subscriber multiple is the one to sit with — this content converts strangers into an audience at nearly twelve times the rate of anything else on the channel.', 'learncardano' ),
-					array( 'strong' => array() )
-				);
-				?>
-			</p>
+						</thead>
+						<tbody>
+							<?php foreach ( $lc_compare as $lc_row ) : ?>
+								<tr>
+									<th scope="row"><?php echo esc_html( $lc_row[0] ); ?></th>
+									<td class="pk__compare-hi"><?php echo $lc_num( $lc_row[1] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></td>
+									<td><?php echo $lc_num( $lc_row[2] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				</div>
+				<ul class="pk__multis">
+					<?php foreach ( $lc_multipliers as $lc_multi ) : ?>
+						<li class="pk__multi<?php echo $lc_multi[2] ? ' pk__multi--hi' : ''; ?>">
+							<span class="pk__multi-num"><?php echo $lc_num( $lc_multi[0] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></span>
+							<span class="pk__multi-label"><?php echo esc_html( $lc_multi[1] ); ?></span>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+				<p class="pk__note">
+					<?php
+					/* translators: 1: views, 2: watch hours, 3: new subscribers */
+					echo $lc_mask( __( 'Those nine have delivered <strong>%1$s views, %2$s watch hours and %3$s new subscribers</strong>. The subscriber multiple is the one to sit with — this content converts strangers into an audience at a multiple of the rate of anything else on the channel.', 'learncardano' ), $lc_compare_totals ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask.
+					?>
+				</p>
+			<?php $lc_gate_close(); ?>
 		</div>
 	</section>
 
@@ -468,49 +561,59 @@ get_header();
 				<p class="pk__kicker"><?php esc_html_e( 'Where the audience actually is', 'learncardano' ); ?></p>
 				<h2 id="pk-where" class="pk__h2"><?php esc_html_e( 'Australia is now the channel’s #1 market — and has been for six months.', 'learncardano' ); ?></h2>
 			</header>
-			<div class="pk__split">
-				<figure class="pk__chart">
-					<?php echo $lc_img( 'australian-share-chart.jpg', 1400, 683, __( 'Chart of the Australian share of channel views, rising from 16.8% lifetime to 42.4% over the last 90 days.', 'learncardano' ), 'pk__chart-img' ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img. ?>
-					<figcaption><?php esc_html_e( 'Australian share of views: 16.8% lifetime → 42.4% in the last 90 days.', 'learncardano' ); ?></figcaption>
-				</figure>
-				<div>
-					<p class="pk__lede"><?php esc_html_e( 'And during the exact content a sponsor would appear in, it goes further:', 'learncardano' ); ?></p>
-					<div class="pk__callouts">
-						<div class="pk__callout">
-							<span class="pk__big">52.1%</span>
-							<span><strong><?php esc_html_e( 'Australian', 'learncardano' ); ?></strong> · <?php esc_html_e( '18 Jun–18 Jul 2026', 'learncardano' ); ?><br><?php esc_html_e( 'ATO case + High Court ruling', 'learncardano' ); ?></span>
+			<?php $lc_gate_open(); ?>
+				<div class="pk__split">
+					<figure class="pk__chart">
+						<?php echo $lc_img( 'australian-share-chart-blurred.jpg', 700, 341, __( 'Blurred chart of the Australian share of channel views over time. The figures are in the media kit.', 'learncardano' ), 'pk__chart-img' ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img. ?>
+						<figcaption>
+							<?php
+							/* translators: 1: lifetime share, 2: last-90-days share */
+							echo $lc_mask( __( 'Australian share of views: %1$s lifetime → %2$s in the last 90 days.', 'learncardano' ), $lc_au_share ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask.
+							?>
+						</figcaption>
+					</figure>
+					<div>
+						<p class="pk__lede"><?php esc_html_e( 'And during the exact content a sponsor would appear in, it goes further:', 'learncardano' ); ?></p>
+						<div class="pk__callouts">
+							<div class="pk__callout">
+								<span class="pk__big"><?php echo $lc_num( $lc_au_callouts[0] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></span>
+								<span><strong><?php esc_html_e( 'Australian', 'learncardano' ); ?></strong> · <?php esc_html_e( '18 Jun–18 Jul 2026', 'learncardano' ); ?><br><?php esc_html_e( 'ATO case + High Court ruling', 'learncardano' ); ?></span>
+							</div>
+							<div class="pk__callout">
+								<span class="pk__big"><?php echo $lc_num( $lc_au_callouts[1] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></span>
+								<span><strong><?php esc_html_e( 'Australian', 'learncardano' ); ?></strong> · <?php esc_html_e( '22 May–21 Jun 2025', 'learncardano' ); ?><br><?php esc_html_e( 'Landmark Bitcoin tax ruling', 'learncardano' ); ?></span>
+							</div>
 						</div>
-						<div class="pk__callout">
-							<span class="pk__big">71.9%</span>
-							<span><strong><?php esc_html_e( 'Australian', 'learncardano' ); ?></strong> · <?php esc_html_e( '22 May–21 Jun 2025', 'learncardano' ); ?><br><?php esc_html_e( 'Landmark Bitcoin tax ruling', 'learncardano' ); ?></span>
-						</div>
+						<p class="pk__note"><?php esc_html_e( 'Channel-wide the Australian share is smaller — but it climbs sharply during exactly the content a sponsor would appear in. You wouldn’t be buying a global channel and hoping for Australian spill — you’d be buying the slot where Australians are the majority of the room.', 'learncardano' ); ?></p>
 					</div>
-					<p class="pk__note"><?php esc_html_e( 'Channel-wide the Australian share is smaller — but it climbs sharply during exactly the content a sponsor would appear in. You wouldn’t be buying a global channel and hoping for Australian spill — you’d be buying the slot where Australians are the majority of the room.', 'learncardano' ); ?></p>				</div>
-			</div>
+				</div>
+			<?php $lc_gate_close(); ?>
 
 			<h3 class="pk__subhead" id="pk-who"><?php esc_html_e( 'Who they are', 'learncardano' ); ?></h3>
-			<ul class="pk__grid pk__grid--4 pk__demo">
-				<?php foreach ( $lc_demo as $lc_d ) : ?>
-					<li class="pk__card pk__card--stat">
-						<span class="pk__big"><?php echo esc_html( $lc_d[0] ); ?></span>
-						<span><?php echo esc_html( $lc_d[1] ); ?></span>
-					</li>
-				<?php endforeach; ?>
-			</ul>
-			<div class="pk__cols-2">
-				<p><?php esc_html_e( 'The age profile is the point. This is an audience with assets to borrow against and income to service a facility — the 35–54 bracket, the biggest block of this audience by both views and watch time.', 'learncardano' ); ?></p>
-				<p><?php esc_html_e( 'The gender skew is stated plainly rather than buried: a narrow, precisely-targeted audience, not a broad one. And effectively no under-18 viewership — which matters for any regulated financial advertiser.', 'learncardano' ); ?></p>
-			</div>
+			<?php $lc_gate_open(); ?>
+				<ul class="pk__grid pk__grid--4 pk__demo">
+					<?php foreach ( $lc_demo as $lc_d ) : ?>
+						<li class="pk__card pk__card--stat">
+							<span class="pk__big"><?php echo $lc_num( $lc_d[0] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></span>
+							<span><?php echo esc_html( $lc_d[1] ); ?></span>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+				<div class="pk__cols-2">
+					<p><?php esc_html_e( 'The age profile is the point. This is an audience with assets to borrow against and income to service a facility — the 35–54 bracket, the biggest block of this audience by both views and watch time.', 'learncardano' ); ?></p>
+					<p><?php esc_html_e( 'The gender skew is stated plainly rather than buried: a narrow, precisely-targeted audience, not a broad one. And effectively no under-18 viewership — which matters for any regulated financial advertiser.', 'learncardano' ); ?></p>
+				</div>
 
-			<h3 class="pk__subhead"><?php esc_html_e( 'How they watch', 'learncardano' ); ?></h3>
-			<ul class="pk__grid pk__grid--4 pk__demo">
-				<?php foreach ( $lc_habits as $lc_h ) : ?>
-					<li class="pk__card pk__card--stat">
-						<span class="pk__big"><?php echo esc_html( $lc_h[0] ); ?></span>
-						<span><?php echo esc_html( $lc_h[1] ); ?></span>
-					</li>
-				<?php endforeach; ?>
-			</ul>
+				<h3 class="pk__subhead"><?php esc_html_e( 'How they watch', 'learncardano' ); ?></h3>
+				<ul class="pk__grid pk__grid--4 pk__demo">
+					<?php foreach ( $lc_habits as $lc_h ) : ?>
+						<li class="pk__card pk__card--stat">
+							<span class="pk__big"><?php echo $lc_num( $lc_h[0] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></span>
+							<span><?php echo $lc_mask( $lc_h[1], $lc_h[2] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask. ?></span>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			<?php $lc_gate_close(); ?>
 			<p class="pk__note"><?php echo esc_html( $lc_also_watches ); ?></p>
 		</div>
 	</section>
@@ -522,56 +625,56 @@ get_header();
 				<p class="pk__kicker"><?php esc_html_e( 'Proof', 'learncardano' ); ?></p>
 				<h2 id="pk-proof" class="pk__h2"><?php esc_html_e( 'The videos a sponsor would sit inside', 'learncardano' ); ?></h2>
 			</header>
-			<ul class="pk__grid pk__grid--3 pk__thumbs">
-				<?php foreach ( $lc_proof as $lc_p ) : ?>
-					<?php
-					if ( ! $lc_p[4] ) {
-						continue;
-					}
-					?>
-					<li class="pk__thumb">
+			<?php $lc_gate_open(); ?>
+				<ul class="pk__grid pk__grid--3 pk__thumbs">
+					<?php foreach ( $lc_proof as $lc_p ) : ?>
 						<?php
-						/* translators: %s: video title */
-						echo $lc_img( $lc_p[4][0], $lc_p[4][1], $lc_p[4][2], sprintf( __( 'YouTube thumbnail for “%s”', 'learncardano' ), $lc_p[0] ), 'pk__thumb-img' ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img.
+						if ( ! $lc_p[4] ) {
+							continue;
+						}
 						?>
-						<p><span class="pk__thumb-title"><?php echo esc_html( $lc_p[0] ); ?></span> <strong>
-						<?php
-						/* translators: %s: view count */
-						echo esc_html( sprintf( __( '%s views', 'learncardano' ), $lc_p[2] ) );
-						?>
-						</strong></p>
-					</li>
-				<?php endforeach; ?>
-			</ul>
-			<div class="pk__table-wrap">
-				<table class="pk__table pk__proof">
-					<caption class="pk__sr"><?php esc_html_e( 'Top videos by lifetime views, with average view duration', 'learncardano' ); ?></caption>
-					<thead>
-						<tr>
-							<th scope="col"><?php esc_html_e( 'Video', 'learncardano' ); ?></th>
-							<th scope="col"><?php esc_html_e( 'Views', 'learncardano' ); ?></th>
-							<th scope="col"><?php esc_html_e( 'Avg view duration', 'learncardano' ); ?></th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php foreach ( $lc_proof as $lc_p ) : ?>
+						<li class="pk__thumb">
+							<?php
+							/* translators: %s: video title */
+							echo $lc_img( $lc_p[4][0], $lc_p[4][1], $lc_p[4][2], sprintf( __( 'YouTube thumbnail for “%s”', 'learncardano' ), $lc_p[0] ), 'pk__thumb-img' ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img.
+							?>
+							<p><span class="pk__thumb-title"><?php echo esc_html( $lc_p[0] ); ?></span> <strong>
+							<?php
+							/* translators: %s: view count */
+							echo $lc_mask( __( '%s views', 'learncardano' ), array( $lc_p[2] ) ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask.
+							?>
+							</strong></p>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+				<div class="pk__table-wrap">
+					<table class="pk__table pk__proof">
+						<caption class="pk__sr"><?php esc_html_e( 'Top videos by lifetime views, with average view duration', 'learncardano' ); ?></caption>
+						<thead>
 							<tr>
-								<th scope="row"><?php echo esc_html( $lc_p[0] ); ?> <span class="pk__muted">· <?php echo esc_html( $lc_p[1] ); ?></span></th>
-								<td class="pk__strong"><?php echo esc_html( $lc_p[2] ); ?></td>
-								<td><?php echo esc_html( $lc_p[3] ); ?></td>
+								<th scope="col"><?php esc_html_e( 'Video', 'learncardano' ); ?></th>
+								<th scope="col"><?php esc_html_e( 'Views', 'learncardano' ); ?></th>
+								<th scope="col"><?php esc_html_e( 'Avg view duration', 'learncardano' ); ?></th>
 							</tr>
-						<?php endforeach; ?>
-					</tbody>
-				</table>
-			</div>
-			<p class="pk__note">
-				<?php
-				echo wp_kses(
-					__( 'In June & July 2026 — the ATO case, the High Court ruling and the new tax rules — the channel recorded <strong>141,331</strong> and <strong>131,299</strong> monthly views, against a Jan–May average near 36,000.', 'learncardano' ),
-					array( 'strong' => array() )
-				);
-				?>
-			</p>
+						</thead>
+						<tbody>
+							<?php foreach ( $lc_proof as $lc_p ) : ?>
+								<tr>
+									<th scope="row"><?php echo esc_html( $lc_p[0] ); ?> <span class="pk__muted">· <?php echo esc_html( $lc_p[1] ); ?></span></th>
+									<td class="pk__strong"><?php echo $lc_num( $lc_p[2] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></td>
+									<td><?php echo $lc_num( $lc_p[3] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				</div>
+				<p class="pk__note">
+					<?php
+					/* translators: 1: June views, 2: July views, 3: Jan–May average */
+					echo $lc_mask( __( 'In June & July 2026 — the ATO case, the High Court ruling and the new tax rules — the channel recorded <strong>%1$s</strong> and <strong>%2$s</strong> monthly views, against a Jan–May average near %3$s.', 'learncardano' ), $lc_monthly ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask.
+					?>
+				</p>
+			<?php $lc_gate_close(); ?>
 		</div>
 	</section>
 
@@ -582,35 +685,35 @@ get_header();
 				<p class="pk__kicker"><?php esc_html_e( 'Click-through & conversion', 'learncardano' ); ?></p>
 				<h2 id="pk-ctr" class="pk__h2"><?php esc_html_e( 'One documented case. The rate and the speed are the story, not the volume.', 'learncardano' ); ?></h2>
 			</header>
-			<ul class="pk__grid pk__grid--4 pk__bigstats">
-				<?php foreach ( $lc_conversion as $lc_c ) : ?>
-					<li>
-						<span class="pk__big"><?php echo esc_html( $lc_c[0] ); ?></span>
-						<span><?php echo esc_html( $lc_c[1] ); ?></span>
-					</li>
-				<?php endforeach; ?>
-			</ul>
-			<div class="pk__grid pk__grid--3 pk__case">
-				<div class="pk__card pk__card--dark">
-					<h3 class="pk__label"><?php esc_html_e( 'The case', 'learncardano' ); ?></h3>
-					<p>
-						<?php
-						echo wp_kses(
-							__( 'July 2026. The Cardano DeFi exploits broke and Learn Cardano published coverage the same week, with hardware wallet links in the description. Click-throughs went from a two-to-five-a-day baseline to <strong>68 in a single day</strong>. Five verified purchases landed at the merchant inside 72 hours: USD $868 in order value, average order USD $157.', 'learncardano' ),
-							array( 'strong' => array() )
-						);
-						?>
-					</p>
+			<?php $lc_gate_open( 'dark' ); ?>
+				<ul class="pk__grid pk__grid--4 pk__bigstats">
+					<?php foreach ( $lc_conversion as $lc_c ) : ?>
+						<li>
+							<span class="pk__big"><?php echo $lc_num( $lc_c[0] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></span>
+							<span><?php echo $lc_mask( $lc_c[1], $lc_c[2] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask. ?></span>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+				<div class="pk__grid pk__grid--3 pk__case">
+					<div class="pk__card pk__card--dark">
+						<h3 class="pk__label"><?php esc_html_e( 'The case', 'learncardano' ); ?></h3>
+						<p>
+							<?php
+							/* translators: 1: daily baseline, 2: clicks in a day, 3: purchases, 4: window, 5: order value, 6: average order */
+							echo $lc_mask( __( 'July 2026. The Cardano DeFi exploits broke and Learn Cardano published coverage the same week, with hardware wallet links in the description. Click-throughs went from a %1$s-a-day baseline to <strong>%2$s in a single day</strong>. %3$s verified purchases landed at the merchant inside %4$s: USD %5$s in order value, average order USD %6$s.', 'learncardano' ), $lc_case ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask.
+							?>
+						</p>
+					</div>
+					<div class="pk__card pk__card--dark">
+						<h3 class="pk__label"><?php esc_html_e( 'What it does show', 'learncardano' ); ?></h3>
+						<p><?php esc_html_e( 'Given a reason to act during a news moment, this audience acts within days, not weeks. It is the clearest available evidence for the rapid-response slot — the same 48-hour window that produces the biggest view numbers also produces the buying.', 'learncardano' ); ?></p>
+					</div>
+					<div class="pk__card pk__card--dark pk__card--caveat">
+						<h3 class="pk__label"><?php esc_html_e( 'What this is not', 'learncardano' ); ?></h3>
+						<p><?php esc_html_e( 'A campaign. There was no brief, no budget, no on-screen mention and no call to action beyond a URL in a description. It is one product category and a low-consideration purchase. Treat it as a directional signal on audience behaviour, not a forecast.', 'learncardano' ); ?></p>
+					</div>
 				</div>
-				<div class="pk__card pk__card--dark">
-					<h3 class="pk__label"><?php esc_html_e( 'What it does show', 'learncardano' ); ?></h3>
-					<p><?php esc_html_e( 'Given a reason to act during a news moment, this audience acts within days, not weeks. It is the clearest available evidence for the rapid-response slot — the same 48-hour window that produces the biggest view numbers also produces the buying.', 'learncardano' ); ?></p>
-				</div>
-				<div class="pk__card pk__card--dark pk__card--caveat">
-					<h3 class="pk__label"><?php esc_html_e( 'What this is not', 'learncardano' ); ?></h3>
-					<p><?php esc_html_e( 'A campaign. There was no brief, no budget, no on-screen mention and no call to action beyond a URL in a description. It is one product category and a low-consideration purchase. Treat it as a directional signal on audience behaviour, not a forecast.', 'learncardano' ); ?></p>
-				</div>
-			</div>
+			<?php $lc_gate_close(); ?>
 		</div>
 	</section>
 
@@ -622,10 +725,17 @@ get_header();
 				<h2 id="pk-fast" class="pk__h2"><?php esc_html_e( 'Australian regulatory news front-loads harder than anything else on the channel.', 'learncardano' ); ?></h2>
 			</header>
 			<div class="pk__split">
-				<figure class="pk__chart">
-					<?php echo $lc_img( 'views-front-load-chart.jpg', 1400, 683, __( 'Cumulative share of total views by day since publication: “Why the ATO Is Panicking” reached 62% of its views by day 7 and “Bitcoin Tax Free” 65%.', 'learncardano' ), 'pk__chart-img' ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img. ?>
-					<figcaption><?php esc_html_e( 'Cumulative share of total views: ATO Is Panicking — 62% at day 7 · Bitcoin Tax Free — 65% at day 7.', 'learncardano' ); ?></figcaption>
-				</figure>
+				<?php $lc_gate_open(); ?>
+					<figure class="pk__chart">
+						<?php echo $lc_img( 'views-front-load-chart-blurred.jpg', 700, 341, __( 'Blurred chart of the cumulative share of total views by day since publication for two Australian regulatory videos. The figures are in the media kit.', 'learncardano' ), 'pk__chart-img' ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img. ?>
+						<figcaption>
+							<?php
+							/* translators: 1: ATO Is Panicking share at day 7, 2: Bitcoin Tax Free share at day 7 */
+							echo $lc_mask( __( 'Cumulative share of total views: ATO Is Panicking — %1$s at day 7 · Bitcoin Tax Free — %2$s at day 7.', 'learncardano' ), $lc_front_load ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask.
+							?>
+						</figcaption>
+					</figure>
+				<?php $lc_gate_close(); ?>
 				<ol class="pk__points">
 					<li><?php esc_html_e( 'Results are measurable inside 30 days — which is why the delivery guarantee is written against a 30-day window.', 'learncardano' ); ?></li>
 					<li><?php esc_html_e( 'The biggest numbers come from reacting to news, not a fixed calendar — which is why this proposal includes retained rapid-response slots.', 'learncardano' ); ?></li>
@@ -706,54 +816,69 @@ get_header();
 				</div>
 				<p class="pk__lede pk__strong"><?php esc_html_e( 'All rates AUD, excluding GST', 'learncardano' ); ?></p>
 			</header>
-			<div class="pk__rate-cols">
-				<?php
-				$lc_rate_table( __( 'Single placements', 'learncardano' ), $lc_rates_single );
-				$lc_rate_table( __( 'Add-ons', 'learncardano' ), $lc_rates_addons );
-				?>
-			</div>
-			<p class="pk__fineprint"><?php echo esc_html( $lc_cpm_note ); ?></p>
+			<?php $lc_gate_open(); ?>
+				<div class="pk__rate-cols">
+					<?php
+					$lc_rate_table( __( 'Single placements', 'learncardano' ), $lc_rates_single );
+					$lc_rate_table( __( 'Add-ons', 'learncardano' ), $lc_rates_addons );
+					?>
+				</div>
+				<p class="pk__fineprint"><?php echo $lc_mask( $lc_cpm_note, $lc_cpm_note_nums ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask. ?></p>
+			<?php $lc_gate_close(); ?>
 
-			<div class="pk__value">
-				<div class="pk__value-intro">
-					<p class="pk__kicker"><?php esc_html_e( 'The dedicated video', 'learncardano' ); ?></p>
-					<h3 id="pk-value" class="pk__h3">
-						<?php
-						/* translators: %s: dedicated video price */
-						echo esc_html( sprintf( __( 'Why %s is worth it', 'learncardano' ), '$' . number_format_i18n( $lc_dedicated_price ) ) );
-						?>
-					</h3>
-					<p><?php esc_html_e( 'A 6–8 minute video where your brand is the subject — not a 60-second segment — planned against the category median of roughly 20–21K views in the first 30 days. Here is the arithmetic, done in the open.', 'learncardano' ); ?></p>
-					<ul class="pk__ticks">
-						<li><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput -- static SVG. ?><?php esc_html_e( 'Cohort averages: 26,413 views, 1,462 watch hours and 484 new subscribers per video', 'learncardano' ); ?></li>
-						<li><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput ?><?php esc_html_e( 'Evergreen search traffic keeps adding views for years after the 30-day window', 'learncardano' ); ?></li>
-						<li><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput ?><?php esc_html_e( 'Your compliance team signs off the script, with two revision rounds included', 'learncardano' ); ?></li>
-						<li><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput ?><?php esc_html_e( 'Backed by the written 30-day delivery guarantee', 'learncardano' ); ?></li>
-					</ul>
-				</div>
-				<div class="pk__table-wrap">
-					<table class="pk__table pk__math">
-						<caption><?php esc_html_e( 'What $5,500 buys, per unit (AUD)', 'learncardano' ); ?></caption>
-						<thead>
-							<tr>
-								<th scope="col"><?php esc_html_e( 'Measure', 'learncardano' ); ?></th>
-								<th scope="col"><?php esc_html_e( 'Sum', 'learncardano' ); ?></th>
-								<th scope="col"><?php esc_html_e( 'Result', 'learncardano' ); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php foreach ( $lc_value_math as $lc_m ) : ?>
+			<?php $lc_gate_open( array( 'dark', 'value' ) ); ?>
+				<div class="pk__value">
+					<div class="pk__value-intro">
+						<p class="pk__kicker"><?php esc_html_e( 'The dedicated video', 'learncardano' ); ?></p>
+						<h3 id="pk-value" class="pk__h3">
+							<?php
+							/* translators: %s: dedicated video price */
+							echo $lc_mask( __( 'Why %s is worth it', 'learncardano' ), array( $lc_dedicated_price ) ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask.
+							?>
+						</h3>
+						<p>
+							<?php
+							/* translators: %s: planning views */
+							echo $lc_mask( __( 'A 6–8 minute video where your brand is the subject — not a 60-second segment — planned against the category median of roughly %s views in the first 30 days. Here is the arithmetic, done in the open.', 'learncardano' ), array( $lc_value_planning ) ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask.
+							?>
+						</p>
+						<ul class="pk__ticks">
+							<?php /* translators: 1: views, 2: watch hours, 3: new subscribers */ ?>
+							<li><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput -- static SVG. ?><span><?php echo $lc_mask( __( 'Cohort averages: %1$s views, %2$s watch hours and %3$s new subscribers per video', 'learncardano' ), $lc_value_cohort ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask. ?></span></li>
+							<li><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput ?><?php esc_html_e( 'Evergreen search traffic keeps adding views for years after the 30-day window', 'learncardano' ); ?></li>
+							<li><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput ?><?php esc_html_e( 'Your compliance team signs off the script, with two revision rounds included', 'learncardano' ); ?></li>
+							<li><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput ?><?php esc_html_e( 'Backed by the written 30-day delivery guarantee', 'learncardano' ); ?></li>
+						</ul>
+					</div>
+					<div class="pk__table-wrap">
+						<table class="pk__table pk__math">
+							<caption>
+								<?php
+								/* translators: %s: dedicated video price */
+								echo $lc_mask( __( 'What %s buys, per unit (AUD)', 'learncardano' ), array( $lc_dedicated_price ) ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask.
+								?>
+							</caption>
+							<thead>
 								<tr>
-									<th scope="row"><?php echo esc_html( $lc_m[0] ); ?></th>
-									<td class="pk__muted"><?php echo esc_html( $lc_m[1] ); ?></td>
-									<td class="pk__strong"><?php echo esc_html( $lc_m[2] ); ?></td>
+									<th scope="col"><?php esc_html_e( 'Measure', 'learncardano' ); ?></th>
+									<th scope="col"><?php esc_html_e( 'Sum', 'learncardano' ); ?></th>
+									<th scope="col"><?php esc_html_e( 'Result', 'learncardano' ); ?></th>
 								</tr>
-							<?php endforeach; ?>
-						</tbody>
-					</table>
-					<p class="pk__fineprint"><?php esc_html_e( 'Derived from the media kit figures above (Australian tax & ruling cohort averages and medians); results rounded. Past performance of the cohort, not a forecast for any single video — the delivery guarantee is the commitment.', 'learncardano' ); ?></p>
+							</thead>
+							<tbody>
+								<?php foreach ( $lc_value_math as $lc_m ) : ?>
+									<tr>
+										<th scope="row"><?php echo esc_html( $lc_m[0] ); ?></th>
+										<td class="pk__muted"><?php echo $lc_num( $lc_m[1] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></td>
+										<td class="pk__strong"><?php echo $lc_num( $lc_m[2] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></td>
+									</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+						<p class="pk__fineprint"><?php esc_html_e( 'Derived from the media kit figures (Australian tax & ruling cohort averages and medians); results rounded. Past performance of the cohort, not a forecast for any single video — the delivery guarantee is the commitment.', 'learncardano' ); ?></p>
+					</div>
 				</div>
-			</div>
+			<?php $lc_gate_close(); ?>
 		</div>
 	</section>
 
@@ -764,57 +889,55 @@ get_header();
 				<p class="pk__kicker"><?php esc_html_e( 'Campaign packages', 'learncardano' ); ?></p>
 				<h2 id="pk-packages" class="pk__h2"><?php esc_html_e( 'Three packages, each priced below à la carte.', 'learncardano' ); ?></h2>
 			</header>
-			<div class="pk__grid pk__grid--3 pk__packages">
-				<?php foreach ( $lc_packages as $lc_pkg ) : ?>
-					<div class="pk__pkg<?php echo $lc_pkg['recommended'] ? ' pk__pkg--hi' : ''; ?>">
-						<?php if ( $lc_pkg['recommended'] ) : ?>
-							<span class="pk__badge"><?php esc_html_e( 'Recommended', 'learncardano' ); ?></span>
-						<?php endif; ?>
-						<p class="pk__pkg-letter">
+			<?php $lc_gate_open(); ?>
+				<div class="pk__grid pk__grid--3 pk__packages">
+					<?php foreach ( $lc_packages as $lc_pkg ) : ?>
+						<div class="pk__pkg<?php echo $lc_pkg['recommended'] ? ' pk__pkg--hi' : ''; ?>">
+							<?php if ( $lc_pkg['recommended'] ) : ?>
+								<span class="pk__badge"><?php esc_html_e( 'Recommended', 'learncardano' ); ?></span>
+							<?php endif; ?>
+							<p class="pk__pkg-letter">
+								<?php
+								/* translators: %s: package letter */
+								echo esc_html( sprintf( __( 'Package %s', 'learncardano' ), $lc_pkg['letter'] ) );
+								?>
+							</p>
+							<h3 class="pk__pkg-name"><?php echo esc_html( $lc_pkg['name'] ); ?></h3>
+							<p class="pk__pkg-term"><?php echo esc_html( $lc_pkg['term'] ); ?></p>
+							<ul class="pk__ticks">
+								<?php foreach ( $lc_pkg['items'] as $lc_item ) : ?>
+									<li><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput -- static SVG. ?><?php echo esc_html( $lc_item ); ?></li>
+								<?php endforeach; ?>
+							</ul>
+							<p class="pk__pkg-price">
+								<span class="pk__pkg-was"><?php esc_html_e( 'À la carte', 'learncardano' ); ?> <s><?php echo $lc_num( $lc_pkg['a_la_carte'] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></s></span>
+								<span class="pk__pkg-now"><?php echo $lc_num( $lc_pkg['price'] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></span>
+							</p>
+						</div>
+					<?php endforeach; ?>
+				</div>
+
+				<div class="pk__grid pk__grid--2 pk__terms-boxes">
+					<div class="pk__rr">
+						<h3 class="pk__label"><?php esc_html_e( 'The rapid-response slot', 'learncardano' ); ?> <span class="pk__rr-price"><?php echo $lc_num( $lc_rr_price ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></span></h3>
+						<p>
 							<?php
-							/* translators: %s: package letter */
-							echo esc_html( sprintf( __( 'Package %s', 'learncardano' ), $lc_pkg['letter'] ) );
+								/* translators: %s: ATO case views in 7 days */
+								echo $lc_mask( __( 'The highest-value item on the card, and no other creator in this market sells it. When the next ATO ruling or Treasury announcement lands, Learn Cardano publishes <strong>within 48 hours</strong> with the sponsor already integrated — not waiting on a content calendar. The ATO case took %s views in 7 days. Slots are retained, not scheduled; unused slots roll forward.', 'learncardano' ), array( $lc_rr_views ) ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask.
 							?>
 						</p>
-						<h3 class="pk__pkg-name"><?php echo esc_html( $lc_pkg['name'] ); ?></h3>
-						<p class="pk__pkg-term"><?php echo esc_html( $lc_pkg['term'] ); ?></p>
-						<ul class="pk__ticks">
-							<?php foreach ( $lc_pkg['items'] as $lc_item ) : ?>
-								<li><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput -- static SVG. ?><?php echo esc_html( $lc_item ); ?></li>
-							<?php endforeach; ?>
-						</ul>
-						<p class="pk__pkg-price">
-							<span class="pk__pkg-was"><?php esc_html_e( 'À la carte', 'learncardano' ); ?> <s><?php echo esc_html( $lc_pkg['a_la_carte'] ); ?></s></span>
-							<span class="pk__pkg-now"><?php echo esc_html( $lc_pkg['price'] ); ?></span>
+					</div>
+					<div class="pk__guarantee">
+						<h3 class="pk__label"><?php esc_html_e( 'Delivery guarantee', 'learncardano' ); ?></h3>
+						<p>
+							<?php
+								/* translators: 1: planning views, 2: guaranteed views per placement */
+								echo $lc_mask( __( 'Dedicated placements are planned against <strong>%1$s views in the first 30 days</strong> (the category median). Across a package, Learn Cardano guarantees <strong>%2$s views per dedicated placement in aggregate over the term</strong>, within 30 days of each publication — or supplies additional dedicated content at no charge until it is met. A floor almost no creator at this size will put in writing.', 'learncardano' ), $lc_guarantee ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask.
+							?>
 						</p>
 					</div>
-				<?php endforeach; ?>
-			</div>
-
-			<div class="pk__grid pk__grid--2 pk__terms-boxes">
-				<div class="pk__rr">
-					<h3 class="pk__label"><?php esc_html_e( 'The rapid-response slot', 'learncardano' ); ?> <span class="pk__rr-price">$3,500</span></h3>
-					<p>
-						<?php
-						echo wp_kses(
-							__( 'The highest-value item on the card, and no other creator in this market sells it. When the next ATO ruling or Treasury announcement lands, Learn Cardano publishes <strong>within 48 hours</strong> with the sponsor already integrated — not waiting on a content calendar. The ATO case took 27,628 views in 7 days. Slots are retained, not scheduled; unused slots roll forward.', 'learncardano' ),
-							array( 'strong' => array() )
-						);
-						?>
-					</p>
 				</div>
-				<div class="pk__guarantee">
-					<h3 class="pk__label"><?php esc_html_e( 'Delivery guarantee', 'learncardano' ); ?></h3>
-					<p>
-						<?php
-						echo wp_kses(
-							__( 'Dedicated placements are planned against <strong>20,000 views in the first 30 days</strong> (the category median). Across a package, Learn Cardano guarantees <strong>12,000 views per dedicated placement in aggregate over the term</strong>, within 30 days of each publication — or supplies additional dedicated content at no charge until it is met. A floor almost no creator at this size will put in writing.', 'learncardano' ),
-							array( 'strong' => array() )
-						);
-						?>
-					</p>
-				</div>
-			</div>
+			<?php $lc_gate_close(); ?>
 		</div>
 	</section>
 
@@ -873,11 +996,9 @@ get_header();
 						<li><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput -- static SVG. ?><?php echo esc_html( $lc_item ); ?></li>
 					<?php endforeach; ?>
 				</ul>
-				<div class="pk__draper">
-					<?php echo $lc_img( 'draper-dragon-logo.jpg', 300, 300, __( 'Draper Dragon logo', 'learncardano' ), 'pk__draper-logo' ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img. ?>
-					<p><?php esc_html_e( 'Backed by the Draper network — founder training at Draper University, San Mateo; seed backing from Draper Dragon, the venture fund Tim Draper co-founded in 2006.', 'learncardano' ); ?></p>
-				</div>
-				<p class="pk__statement"><?php esc_html_e( 'Not a trader. Not a signals account. An educator with a decade of published work, a public track record, and institutional backing.', 'learncardano' ); ?></p>
+				<?php // Keep this to the personal training fact (owner's decision, Oct 2026). ?>
+				<p class="pk__note"><?php esc_html_e( 'Completed founder training at Draper University (Cardano Genesis program).', 'learncardano' ); ?></p>
+				<p class="pk__statement"><?php esc_html_e( 'Not a trader. Not a signals account. An educator with a decade of published work and a public track record.', 'learncardano' ); ?></p>
 			</div>
 		</div>
 	</section>
@@ -912,7 +1033,17 @@ get_header();
 					<p class="pk__kicker"><?php esc_html_e( 'Project interviews', 'learncardano' ); ?></p>
 					<h2 id="pk-interviews" class="pk__h2"><?php esc_html_e( 'Building on Cardano or Midnight?', 'learncardano' ); ?></h2>
 				</div>
-				<p class="pk__lede"><?php esc_html_e( 'Separate from sponsorship: credible projects with a track record of delivering real value can join our free editorial interview queue. We publish roughly 3 a month, and vetting takes 1–2 weeks. The Interviews playlist has drawn 497.2K views, and the Cardano News & Crypto Update podcast 1.8M.', 'learncardano' ); ?></p>
+				<div>
+					<p class="pk__lede"><?php esc_html_e( 'Separate from sponsorship: credible projects with a track record of delivering real value can join our free editorial interview queue. We publish roughly 3 a month, and vetting takes 1–2 weeks.', 'learncardano' ); ?></p>
+					<?php $lc_gate_open( 'inline' ); ?>
+						<p class="pk__lede">
+							<?php
+							/* translators: 1: Interviews playlist views, 2: podcast views */
+							echo $lc_mask( __( 'The Interviews playlist has drawn %1$s views, and the Cardano News & Crypto Update podcast %2$s.', 'learncardano' ), $lc_interview_reach ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask.
+							?>
+						</p>
+					<?php $lc_gate_close( 'inline' ); ?>
+				</div>
 			</header>
 
 			<h3 class="pk__subhead"><?php esc_html_e( 'What’s included', 'learncardano' ); ?></h3>
@@ -1020,6 +1151,10 @@ get_header();
 				<div class="pk__booking-copy">
 					<h3 class="pk__h3"><?php esc_html_e( 'Book a 15-min call', 'learncardano' ); ?></h3>
 					<p><?php esc_html_e( 'Sponsors and projects alike: pick a time and tell us what you want to achieve. We’ll come prepared.', 'learncardano' ); ?></p>
+					<div class="pk__kit-cta">
+						<p><?php esc_html_e( 'Want the full audience data, rates and packages first? The media kit has every real number.', 'learncardano' ); ?></p>
+						<a class="pk__btn pk__btn--kit" href="<?php echo esc_url( $lc_media_kit_url ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Get the media kit', 'learncardano' ); ?> <span aria-hidden="true">→</span><span class="pk__sr"> <?php esc_html_e( '(opens in a new tab)', 'learncardano' ); ?></span></a>
+					</div>
 					<p class="pk__contact">
 						<strong><?php esc_html_e( 'Peter Bui', 'learncardano' ); ?></strong><br>
 						<a href="<?php echo esc_url( 'mailto:' . $lc_email ); ?>"><?php echo esc_html( $lc_email ); ?></a> · <a href="<?php echo esc_url( home_url( '/' ) ); ?>">learncardano.io</a>

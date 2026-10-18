@@ -2,7 +2,9 @@
 /**
  * Partner / media kit page (template-partner.php): assets that load only on
  * pages using that template. Styles live in assets/css/partner.css under
- * `.pk__`; assets/js/partner.js only adds the stat count-up.
+ * `.pk__`. The page has no script of its own: its numbers are masked
+ * placeholders (the real ones are in the gated media kit), so the old stat
+ * count-up was removed.
  *
  * @package CardanoPress Bootstrap
  */
@@ -15,8 +17,8 @@ function lc_is_partner_view() {
 }
 
 /**
- * Partner styles, the count-up script and Calendly's embed script, on the
- * partner page only, so no other page pays for them.
+ * Partner styles and Calendly's embed script, on the partner page only, so no
+ * other page pays for them.
  */
 function lc_partner_enqueue() {
 	if ( is_admin() || ! lc_is_partner_view() ) {
@@ -25,11 +27,8 @@ function lc_partner_enqueue() {
 	$dir = get_stylesheet_directory();
 	$uri = get_stylesheet_directory_uri();
 	$css = '/assets/css/partner.css';
-	$js  = '/assets/js/partner.js';
 
 	wp_enqueue_style( 'lc-partner', $uri . $css, array(), file_exists( $dir . $css ) ? (string) filemtime( $dir . $css ) : null );
-	wp_enqueue_script( 'lc-partner', $uri . $js, array(), file_exists( $dir . $js ) ? (string) filemtime( $dir . $js ) : null, true );
-	wp_script_add_data( 'lc-partner', 'strategy', 'defer' );
 
 	// The booking section's inline scheduler. Async: it only fills the embed box.
 	wp_enqueue_script( 'lc-calendly', 'https://assets.calendly.com/assets/external/widget.js', array(), null, true );
@@ -39,22 +38,20 @@ add_action( 'wp_enqueue_scripts', 'lc_partner_enqueue' );
 
 /**
  * SiteGround Speed Optimizer strips ?ver= and serves a year-cached minified
- * copy, so edits to partner.css/js would never reach browsers. Keep the
- * filemtime version and leave both files out of SG's minifier (as courses.php).
+ * copy, so edits to partner.css would never reach browsers. Keep the filemtime
+ * version and leave the file out of SG's minifier (as courses.php).
  */
 add_filter(
 	'sgo_rqs_exclude',
 	function ( $list ) {
-		$list[] = 'assets/(css|js)/partner\.(css|js)';
+		$list[] = 'assets/css/partner\.css';
 		return $list;
 	}
 );
-foreach ( array( 'sgo_css_minify_exclude', 'sgo_js_minify_exclude' ) as $lc_sgo_filter ) {
-	add_filter(
-		$lc_sgo_filter,
-		function ( $list ) {
-			$list[] = 'lc-partner';
-			return $list;
-		}
-	);
-}
+add_filter(
+	'sgo_css_minify_exclude',
+	function ( $list ) {
+		$list[] = 'lc-partner';
+		return $list;
+	}
+);
