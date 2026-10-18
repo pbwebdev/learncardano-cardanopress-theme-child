@@ -13,6 +13,7 @@ require_once 'includes/svg-uploads.php';
 require_once 'includes/rest-meta.php';
 require_once 'includes/mail.php';
 require_once 'includes/admin-tweaks.php';
+require_once 'includes/seo.php';
 
 // Forms and the newsletter popup (replace Gravity Forms and WP Popups).
 foreach ( array( 'includes/forms.php', 'includes/newsletter-popup.php' ) as $lc_include ) {
@@ -280,7 +281,6 @@ function lc_preload_fonts() {
 		|| is_404()
 		|| is_singular( array( 'podcasts', 'proposal' ) )
 		|| is_post_type_archive( 'proposal' )
-		|| is_tax( array( 'pcategory', 'ptag' ) )
 		|| ( is_page() && ! get_page_template_slug() )
 	) {
 		return;

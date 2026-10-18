@@ -33,6 +33,7 @@ $lc_spotify_id = function_exists('lc_spotify_id') ? lc_spotify_id(get_field('spo
             $lc_schema = array(
                 '@context'      => 'https://schema.org',
                 '@type'         => 'PodcastEpisode',
+                '@id'           => get_permalink() . '#episode',
                 'name'          => get_the_title(),
                 'url'           => get_permalink(),
                 'datePublished' => get_the_date('Y-m-d'),
@@ -62,8 +63,25 @@ $lc_spotify_id = function_exists('lc_spotify_id') ? lc_spotify_id(get_field('spo
                 }
             }
 
+            if ( has_post_thumbnail() ) {
+                $lc_schema['image'] = wp_get_attachment_image_url( get_post_thumbnail_id(), 'full' );
+            }
+
+            // The episode's YouTube video as a VideoObject (includes/seo.php),
+            // linked from the episode, so it can show in Google's video results.
+            $lc_graph = array( $lc_schema );
+            if ( $lc_youtube_id && function_exists( 'lc_episode_video_schema' ) ) {
+                $lc_video = lc_episode_video_schema(
+                    get_the_ID(),
+                    $lc_youtube_id,
+                    isset( $lc_schema['description'] ) ? lc_trim_description( $lc_schema['description'], 300 ) : ''
+                );
+                $lc_graph[0]['video'] = array( '@id' => $lc_video['@id'] );
+                $lc_graph[]           = $lc_video;
+            }
+
             echo '<script type="application/ld+json">'
-                . wp_json_encode( $lc_schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE )
+                . wp_json_encode( array( '@context' => 'https://schema.org', '@graph' => array_map( function ( $node ) { unset( $node['@context'] ); return $node; }, $lc_graph ) ), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE )
                 . '</script>' . "\n";
             ?>
 

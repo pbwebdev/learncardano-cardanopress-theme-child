@@ -9,8 +9,21 @@
 
 get_header();
 
+$lc_term_sub = term_description();
+if ( ! $lc_term_sub ) {
+	/* translators: %s: podcast category name */
+	$lc_term_sub = sprintf( __( 'Every Learn Cardano Podcast episode filed under %s.', 'learncardano' ), single_term_title( '', false ) );
+}
 ?>
     <main class="<?php echo cardanopress_bootstrap_class( 'content-full' ); ?>">
+
+        <section class="pa__hero">
+            <h1 class="pa__h1"><?php
+                /* translators: %s: podcast category name */
+                echo esc_html( sprintf( __( '%s Episodes', 'learncardano' ), single_term_title( '', false ) ) );
+            ?></h1>
+            <div class="pa__sub"><?php echo wp_kses_post( wpautop( $lc_term_sub ) ); ?></div>
+        </section>
 
         <div class="latest section">
             <div class="container">
