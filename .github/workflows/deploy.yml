@@ -59,8 +59,12 @@ jobs:
           SSH_USER: ${{ secrets.SITEGROUND_SSH_USER }}
           SSH_PORT: ${{ secrets.SITEGROUND_SSH_PORT }}
           REMOTE_PATH: ${{ secrets.SITEGROUND_REMOTE_PATH }}
+        # --delay-updates stages every changed file and renames them all into
+        # place at the end, so visitors never get a new functions.php with an
+        # include that hasn't arrived yet (a fatal error mid-deploy).
+        # --delete-after removes deleted files only once the new code is in.
         run: |
-          rsync -avz --delete \
+          rsync -avz --delete --delete-after --delay-updates \
             --exclude='.git' \
             --exclude='.github' \
             --exclude='.gitignore' \
