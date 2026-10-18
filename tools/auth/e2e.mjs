@@ -93,6 +93,8 @@ const ssh = (cmd) => execFileSync('ssh', ['learncardano', cmd], { encoding: 'utf
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const POST_PATH = process.env.LC_E2E_POST || '/courses/using-the-minswap-dex/';
 
+// Start from clean rate-limit counters (staging only): repeated runs from one IP trip the limits.
+ssh(`wp --path=${WP} eval-file ~/lc-tools/r2/auth/reset-limits.php`);
 const browser = await puppeteer.launch({ executablePath: Launcher.getInstallations()[0], headless: 'new', args: ['--no-sandbox'] });
 const page = await browser.newPage();
 await page.setViewport({ width: 1280, height: 900 });
