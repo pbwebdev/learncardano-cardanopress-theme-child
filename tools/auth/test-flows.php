@@ -62,6 +62,18 @@ function t_session( $user_id ) {
 	wp_set_current_user( $user_id );
 }
 
+/** Like t_session(), but the sign-in is $age seconds old (for the "recent sign-in" rules). */
+function t_session_aged( $user_id, $age ) {
+	$mgr     = WP_Session_Tokens::get_instance( $user_id );
+	$token   = $mgr->create( time() + DAY_IN_SECONDS );
+	$session = $mgr->get( $token );
+	$session['login'] = time() - (int) $age;
+	$mgr->update( $token, $session );
+	$_COOKIE[ LOGGED_IN_COOKIE ] = wp_generate_auth_cookie( $user_id, time() + DAY_IN_SECONDS, 'logged_in', $token );
+	wp_set_current_user( $user_id );
+	return $token;
+}
+
 function t_user( $role = 'subscriber', $with_email = true, $login = null ) {
 	$n  = bin2hex( random_bytes( 5 ) );
 	$id = wp_insert_user(
@@ -531,6 +543,33 @@ try {
 	$res   = t_confirm( $token );
 	t( 'unverified legacy token refused at confirm too', 'link_failed' === t_code( $res ) && 0 === get_current_user_id() );
 
+	// An address set another way (REST, admin) on an account that has a wallet: wallet first, never a link.
+	t_browser();
+	lc_auth_dev_outbox_clear();
+	$hj = t_user( 'subscriber', false );
+	$hj_addr = 'hj' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid';
+	wp_update_user( array( 'ID' => $hj->ID, 'user_email' => $hj_addr ) );
+	add_user_meta( $hj->ID, 'lc_wallet', t_wallet()['stake'] );
+	t_request_link( $hj_addr );
+	$m = lc_auth_dev_outbox_latest( $hj_addr );
+	t( 'unverified email on a wallet account: "wallet first" mail, NO link', '' === t_link_token( $hj_addr ) && $m && false === strpos( $m['message'], '/account/email-link/' ) );
+	$token = lc_auth_email_issue( 'signin', strtolower( $hj_addr ), $hj->ID, '' );
+	t( 'unverified email on a wallet account: forced token refused at confirm', 'link_failed' === t_code( t_confirm( $token ) ) && 0 === get_current_user_id() );
+
+	// Same address, no wallet: the real owner may sign in, but every other way in is revoked first.
+	t_browser();
+	lc_auth_dev_outbox_clear();
+	$pw = t_user();
+	wp_set_password( 'attacker-pass-123', $pw->ID );
+	$old_tok = WP_Session_Tokens::get_instance( $pw->ID )->create( time() + DAY_IN_SECONDS );
+	t( 'pre-hijack setup: old password works, old session exists', wp_check_password( 'attacker-pass-123', get_userdata( $pw->ID )->user_pass, $pw->ID ) && null !== WP_Session_Tokens::get_instance( $pw->ID )->get( $old_tok ) );
+	t_request_link( $pw->user_email );
+	$token = t_link_token( $pw->user_email );
+	$res   = t_confirm( $token );
+	t( 'unverified address, no wallet: email link still signs the owner in', is_array( $res ) && get_current_user_id() === $pw->ID && lc_auth_email_verified( $pw->ID ), t_code( $res ) );
+	t( 'sign-in revoked the old password', ! wp_check_password( 'attacker-pass-123', get_userdata( $pw->ID )->user_pass, $pw->ID ) );
+	t( 'sign-in revoked the old session', null === WP_Session_Tokens::get_instance( $pw->ID )->get( $old_tok ) );
+
 	$report( 'Email change / verify / password' );
 	t_browser();
 	lc_auth_dev_outbox_clear();
@@ -575,6 +614,70 @@ try {
 	lc_auth_mark_email_verified( $un->ID, $un->user_email );
 	$r = lc_auth_password_link( get_userdata( $un->ID ) );
 	t( 'password link sends core reset mail to a verified address', true === $r['ok'] && 1 === t_outbox_count( $un->user_email ), $r['code'] );
+
+	/* ======================================== REST, recency, lockdown, CSRF == */
+	$report( 'REST users endpoint' );
+	$rest = function ( $user_id, $method, $route, array $params = array() ) {
+		$GLOBALS['wp_rest_server'] = null; // rest_endpoints is filtered once per server: rebuild it for this user.
+		wp_set_current_user( $user_id );
+		$req = new WP_REST_Request( $method, $route );
+		foreach ( $params as $k => $v ) {
+			$req->set_param( $k, $v );
+		}
+		$res = rest_do_request( $req );
+		$GLOBALS['wp_rest_server'] = null;
+		return $res->get_status();
+	};
+	t_browser();
+	$rs = t_user();
+	$st = $rest( $rs->ID, 'POST', '/wp/v2/users/me', array( 'email' => 'steal' . $rs->ID . '@lc-test.invalid' ) );
+	t( 'subscriber cannot update /wp/v2/users/me (403 or 404)', in_array( $st, array( 403, 404 ), true ), (string) $st );
+	t( 'subscriber email unchanged', strtolower( get_userdata( $rs->ID )->user_email ) === strtolower( $rs->user_email ) );
+	$st = $rest( $rs->ID, 'POST', '/wp/v2/users/' . $rs->ID, array( 'email' => 'steal' . $rs->ID . '@lc-test.invalid' ) );
+	t( 'subscriber cannot update /wp/v2/users/<own id> (403 or 404)', in_array( $st, array( 403, 404 ), true ), (string) $st );
+	$st = $rest( 0, 'GET', '/wp/v2/users' );
+	t( 'visitor cannot list users (401, 403 or 404)', in_array( $st, array( 401, 403, 404 ), true ), (string) $st );
+	$st = $rest( $editor->ID, 'GET', '/wp/v2/users/me' );
+	t( 'editor can still GET /wp/v2/users/me', 200 === $st, (string) $st );
+	wp_set_current_user( 0 );
+
+	$report( 'Recent sign-in for sensitive changes' );
+	t_browser();
+	$ra = t_user();
+	lc_auth_mark_email_verified( $ra->ID, $ra->user_email );
+	t_session_aged( $ra->ID, 31 * MINUTE_IN_SECONDS );
+	t( 'wallet link needs a recent sign-in (31 min old refused)', 'delete_recent' === t_code( t_challenge( t_wallet(), 'link', wp_create_nonce( 'lc_wallet_link' ) ) ) );
+	t_session_aged( $ra->ID, 5 * MINUTE_IN_SECONDS );
+	$rw = t_wallet();
+	$ch = t_challenge( $rw, 'link', wp_create_nonce( 'lc_wallet_link' ) );
+	t( 'wallet link with a 5 min old sign-in works', is_array( $ch ), t_code( $ch ) );
+	t( 'link challenge names the account', is_array( $ch ) && false !== strpos( $ch['message'], 'Learn Cardano account “' . lc_public_name( get_userdata( $ra->ID ) ) . '”.' ) );
+	lc_auth_dev_outbox_clear();
+	if ( is_array( $ch ) ) {
+		list( $sig, $key ) = t_sign( $rw, $ch['message'] );
+		$res = lc_auth_wallet_verify( array( 'nonce' => $ch['nonce'], 'signature' => $sig, 'key' => $key ) );
+		t( 'wallet link succeeds and emails the verified address', is_array( $res ) && 1 === t_outbox_count( $ra->user_email ), t_code( $res ) );
+	}
+
+	$report( 'CardanoPress lockdown lifts after adoption + verified email' );
+	t_browser();
+	$lw = t_wallet();
+	$lu = t_user( 'subscriber', true, md5( $lw['stake'] ) );
+	if ( function_exists( 'lc_cardanopress_account_locked' ) ) {
+		t( 'legacy account: password reset refused while locked', ! apply_filters( 'allow_password_reset', true, $lu->ID ) );
+		t( 'legacy account: password login refused while locked', is_wp_error( apply_filters( 'wp_authenticate_user', get_userdata( $lu->ID ), '' ) ) );
+	}
+	$res = t_wallet_signin( $lw );
+	t( 'legacy account adopted by wallet sign-in', is_array( $res ) && get_current_user_id() === $lu->ID, t_code( $res ) );
+	t_browser();
+	lc_auth_dev_outbox_clear();
+	lc_auth_email_verify_request( get_userdata( $lu->ID ) );
+	$token = t_link_token( $lu->user_email );
+	$res   = t_confirm( $token );
+	t( 'legacy account verifies its email', is_array( $res ) && lc_auth_email_verified( $lu->ID ), t_code( $res ) );
+	$pl = lc_auth_password_link( get_userdata( $lu->ID ) );
+	t( 'legacy account then gets a password email (password_sent)', 'password_sent' === ( $pl['code'] ?? '' ), (string) ( $pl['code'] ?? '' ) );
+	t( 'core email-changed notice stays on for staff', true === apply_filters( 'send_email_change_email', true, array( 'ID' => $editor->ID, 'user_email' => $editor->user_email ), array() ) );
 
 	/* ============================================================ account == */
 	$report( 'Account' );
