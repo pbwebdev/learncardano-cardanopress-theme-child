@@ -9,18 +9,47 @@
  */
 
 /**
- * Hide the user list and user lookups from visitors: they leak author
- * logins (slugs) for brute-force attempts. Logged-in users (and the
- * publishing automation's application passwords) keep them.
+ * Hide the user list and user lookups from everyone who cannot already see
+ * users: they leak author logins (slugs) for brute-force attempts, and
+ * /wp/v2/users/me lets any member rewrite their own user_email with no
+ * verification (an account pre-hijack: a later email sign-in for that
+ * address would land in the attacker's account). Gated on capability, not on
+ * login state; the publishing editor (edit_posts, application password)
+ * keeps everything.
  */
 add_filter(
 	'rest_endpoints',
 	function ( $endpoints ) {
-		if ( ! is_user_logged_in() ) {
-			unset( $endpoints['/wp/v2/users'], $endpoints['/wp/v2/users/(?P<id>[\d]+)'] );
+		if ( ! current_user_can( 'edit_posts' ) && ! current_user_can( 'list_users' ) ) {
+			unset(
+				$endpoints['/wp/v2/users'],
+				$endpoints['/wp/v2/users/(?P<id>[\d]+)'],
+				$endpoints['/wp/v2/users/me']
+			);
 		}
 		return $endpoints;
 	}
+);
+
+/**
+ * Belt and braces for the filter above (routes can come back through other
+ * plugins): refuse every write to /wp/v2/users* from a non-staff user.
+ */
+add_filter(
+	'rest_pre_dispatch',
+	function ( $result, $server, $request ) {
+		if ( null !== $result || 'GET' === $request->get_method() || 0 !== strpos( $request->get_route(), '/wp/v2/users' ) ) {
+			return $result;
+		}
+		$user       = wp_get_current_user();
+		$privileged = function_exists( 'lc_auth_is_privileged' ) ? lc_auth_is_privileged( $user ) : current_user_can( 'edit_posts' );
+		if ( $privileged ) {
+			return $result;
+		}
+		return new WP_Error( 'rest_forbidden', __( 'Sorry, you are not allowed to do that.', 'learncardano' ), array( 'status' => 403 ) );
+	},
+	10,
+	3
 );
 
 /**

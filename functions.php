@@ -37,7 +37,6 @@ if ( 'production' !== wp_get_environment_type() ) {
 }
 
 add_theme_support('responsive-embeds');
-add_filter('rest_enabled', '__return_false');
 add_filter( 'wp_is_application_passwords_available', '__return_true' ); 
 
 

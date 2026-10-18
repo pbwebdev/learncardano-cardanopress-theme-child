@@ -91,6 +91,21 @@ function lc_auth_email_link_url( $token ) {
 /* --------------------------------------------------------------- the request */
 
 /**
+ * Must this address sign in with a wallet first? True for a not-yet-reclaimed
+ * CardanoPress account, and for any account that has a wallet but whose email
+ * was never verified (it was set some other way, so it may not be the
+ * owner's). Staff are handled separately (password-only).
+ *
+ * @param WP_User $user Account found by email.
+ */
+function lc_auth_email_needs_wallet( WP_User $user ) {
+	if ( lc_auth_email_verified( $user ) ) {
+		return false;
+	}
+	return lc_is_legacy_wallet_account( $user ) || (bool) lc_auth_wallets( $user->ID );
+}
+
+/**
  * Handle "email me a sign-in link".
  *
  * @param array $in email, lc_hp, lc_token, redirect_to.
@@ -138,13 +153,13 @@ function lc_auth_email_request( array $in ) {
 			),
 			'password'
 		);
-	} elseif ( $user && lc_is_legacy_wallet_account( $user ) && ! lc_auth_email_verified( $user ) ) {
+	} elseif ( $user && lc_auth_email_needs_wallet( $user ) ) {
 		lc_auth_email_send(
 			$email,
 			__( 'Signing in to Learn Cardano', 'learncardano' ),
 			sprintf(
 				/* translators: %s: sign-in page URL */
-				__( "This email address is on a Learn Cardano account that was created with a Cardano wallet.\n\nSign in with that wallet first, then verify this address on your account page:\n%s\n\nIf you didn't ask for this, you can ignore this email.", 'learncardano' ),
+				__( "This email address is on a Learn Cardano account that signs in with a Cardano wallet.\n\nSign in with that wallet first, then verify this address on your account page:\n%s\n\nIf you didn't ask for this, you can ignore this email.", 'learncardano' ),
 				lc_auth_account_url()
 			),
 			'wallet_first'
@@ -321,8 +336,16 @@ function lc_auth_email_confirm( $token, $c ) {
 				if ( lc_auth_is_privileged( $user ) ) {
 					return new WP_Error( 'password_only' );
 				}
-				if ( lc_is_legacy_wallet_account( $user ) && ! lc_auth_email_verified( $user ) ) {
+				if ( lc_auth_email_needs_wallet( $user ) ) {
 					return new WP_Error( 'link_failed' ); // Could have been set by an attacker: wallet first.
+				}
+				if ( ! lc_auth_email_verified( $user ) ) {
+					// Unverified address on a plain account: someone may have put it there
+					// (REST/admin) and kept a password or session. Whoever opens this link is
+					// the real owner, so cut every other way in before signing them in.
+					WP_Session_Tokens::get_instance( $user->ID )->destroy_all();
+					wp_set_password( wp_generate_password( 48, true, true ), $user->ID );
+					lc_auth_log( 'email_takeover_revoked', array( 'user' => $user->ID ) );
 				}
 				lc_auth_mark_email_verified( $user->ID, $email );
 			} else {
