@@ -536,7 +536,43 @@ get_header();
 			</header>
 			<div class="pk__split">
 				<figure class="pk__chart">
-					<?php echo $lc_img( 'australian-share-chart.jpg', 1400, 683, __( 'Chart of the Australian share of channel views, rising from 16.8% lifetime to 42.4% over the last 90 days.', 'learncardano' ), 'pk__chart-img' ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img. ?>
+					<?php
+					// Drawn as SVG (not the deck image) so the labels stay legible and the scale is true.
+					$lc_au_points = array(
+						array( __( 'Lifetime', 'learncardano' ), 16.8 ),
+						array( __( 'Last 12 mo', 'learncardano' ), 27.1 ),
+						array( __( 'Last 6 mo', 'learncardano' ), 34.6 ),
+						array( __( 'Last 90 days', 'learncardano' ), 42.4 ),
+					);
+					$lc_y      = function ( $v ) {
+						return 290 - $v / 60 * 250;
+					};
+					$lc_coords = array();
+					foreach ( $lc_au_points as $lc_i => $lc_pt ) {
+						$lc_coords[] = array( 110 + $lc_i * 180, $lc_y( $lc_pt[1] ) );
+					}
+					$lc_line = implode( ' ', array_map( fn( $c ) => $c[0] . ',' . round( $c[1], 1 ), $lc_coords ) );
+					?>
+					<svg class="pk__chart-svg" viewBox="0 0 700 340" role="img" aria-label="<?php esc_attr_e( 'Chart of the Australian share of channel views, rising from 16.8% lifetime to 42.4% over the last 90 days.', 'learncardano' ); ?>">
+						<defs>
+							<linearGradient id="pk-au-fill" x1="0" y1="0" x2="0" y2="1">
+								<stop offset="0" stop-color="#a855f7" stop-opacity="0.95"/>
+								<stop offset="1" stop-color="#7b2cbf" stop-opacity="0.75"/>
+							</linearGradient>
+						</defs>
+						<rect width="700" height="340" rx="14" fill="#0b0d1a"/>
+						<?php foreach ( array( 0, 25, 50 ) as $lc_g ) : ?>
+							<line x1="70" x2="670" y1="<?php echo esc_attr( $lc_y( $lc_g ) ); ?>" y2="<?php echo esc_attr( $lc_y( $lc_g ) ); ?>" stroke="#ffffff" stroke-opacity="0.18"/>
+							<text x="58" y="<?php echo esc_attr( $lc_y( $lc_g ) + 4 ); ?>" text-anchor="end" fill="#b9b9c6" font-size="13"><?php echo esc_html( $lc_g . '%' ); ?></text>
+						<?php endforeach; ?>
+						<polygon points="<?php echo esc_attr( '110,' . $lc_y( 0 ) . ' ' . $lc_line . ' 650,' . $lc_y( 0 ) ); ?>" fill="url(#pk-au-fill)"/>
+						<polyline points="<?php echo esc_attr( $lc_line ); ?>" fill="none" stroke="#e9d5ff" stroke-width="3"/>
+						<?php foreach ( $lc_au_points as $lc_i => $lc_pt ) : ?>
+							<circle cx="<?php echo esc_attr( $lc_coords[ $lc_i ][0] ); ?>" cy="<?php echo esc_attr( round( $lc_coords[ $lc_i ][1], 1 ) ); ?>" r="7" fill="#ffffff" stroke="#7b2cbf" stroke-width="3"/>
+							<text x="<?php echo esc_attr( $lc_coords[ $lc_i ][0] ); ?>" y="<?php echo esc_attr( round( $lc_coords[ $lc_i ][1] - 16, 1 ) ); ?>" text-anchor="middle" fill="#ffffff" font-size="22" font-weight="800" font-family="Chivo, sans-serif"><?php echo esc_html( $lc_pt[1] . '%' ); ?></text>
+							<text x="<?php echo esc_attr( $lc_coords[ $lc_i ][0] ); ?>" y="320" text-anchor="middle" fill="<?php echo 3 === $lc_i ? '#e9d5ff' : '#b9b9c6'; ?>" font-size="14" font-weight="<?php echo 3 === $lc_i ? '700' : '400'; ?>"><?php echo esc_html( $lc_pt[0] ); ?></text>
+						<?php endforeach; ?>
+					</svg>
 					<figcaption><?php esc_html_e( 'Australian share of views: 16.8% lifetime → 42.4% in the last 90 days.', 'learncardano' ); ?></figcaption>
 				</figure>
 				<div>
