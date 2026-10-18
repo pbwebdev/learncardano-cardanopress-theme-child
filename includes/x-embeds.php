@@ -36,6 +36,10 @@ add_filter(
 			return $html;
 		}
 		$html = preg_replace( '#<script[^>]*widgets\.js[^>]*>\s*</script>#i', '', $html );
+		// Not "twitter-tweet" until clicked: widgets.js renders every
+		// .twitter-tweet on the page as soon as it loads, so one click would
+		// otherwise pull in every post on the page.
+		$html = str_replace( 'class="twitter-tweet"', 'class="lc-x__tweet"', $html );
 		lc_x_embeds_used( true );
 		return '<div class="lc-x">' . $html
 			. '<button type="button" class="lc-x__load">'
@@ -75,20 +79,58 @@ add_action(
 		}
 		return loading;
 	}
+	// A plain link to the post on X, in place of the button.
+	function openLink(card) {
+		var links = card.querySelectorAll('blockquote a');
+		var a = document.createElement('a');
+		a.className = 'lc-x__load lc-x__open';
+		a.href = links.length ? links[links.length - 1].href : 'https://x.com/';
+		a.target = '_blank';
+		a.rel = 'noopener';
+		a.textContent = <?php echo wp_json_encode( __( 'Open this post on X', 'learncardano' ) ); ?>;
+		return a;
+	}
 	document.addEventListener('click', function (e) {
-		var btn = e.target.closest ? e.target.closest('.lc-x__load') : null;
+		var btn = e.target.closest ? e.target.closest('button.lc-x__load') : null;
 		if (!btn) { return; }
 		var card = btn.parentNode;
+		var quote = card.querySelector('.lc-x__tweet');
+		if (!quote) { return; }
 		btn.disabled = true;
 		btn.classList.add('is-loading');
+		btn.lastChild.textContent = <?php echo wp_json_encode( __( 'Loading post…', 'learncardano' ) ); ?>;
+		quote.className = 'twitter-tweet';
+
+		// widgets.js may render the post itself as it initialises, so watch
+		// for X's iframe rather than trusting load()'s promise alone. It only
+		// counts once it has height: for a deleted or unavailable post X
+		// leaves an empty iframe and the text card in place.
+		var started = Date.now();
+		var poll = setInterval(function () {
+			var f = card.querySelector('iframe');
+			if (f && f.offsetHeight > 0) {
+				clearInterval(poll);
+				var link = card.querySelector('.lc-x__open');
+				if (link) { link.remove(); }
+				if (btn.parentNode) { btn.remove(); }
+				card.classList.add('is-loaded');
+			} else if (btn.parentNode && Date.now() - started > 15000 && !document.hidden) {
+				// Still nothing after 15s on screen: offer the post on X, but
+				// keep watching in case X's embed arrives late.
+				btn.replaceWith(openLink(card));
+			} else if (Date.now() - started > 120000) {
+				clearInterval(poll);
+			}
+		}, 250);
+
 		widgets().then(function (twttr) {
 			return twttr.widgets.load(card);
-		}).then(function () {
-			btn.remove();
-			card.classList.add('is-loaded');
-		}, function () {
-			btn.disabled = false;
-			btn.classList.remove('is-loading');
+		}).catch(function () {
+			// X's script is blocked (tracking protection, ad blockers):
+			// put the text card back and link to the post.
+			clearInterval(poll);
+			quote.className = 'lc-x__tweet';
+			if (btn.parentNode) { btn.replaceWith(openLink(card)); }
 		});
 	});
 })();
