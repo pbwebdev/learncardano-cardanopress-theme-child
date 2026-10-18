@@ -141,8 +141,10 @@ add_action(
 					'stake' => array(
 						'required'          => true,
 						'validate_callback' => function ( $value ) {
-							// Mainnet stake address: stake1 + 53 bech32 characters.
-							return (bool) preg_match( '/^stake1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{53}$/', (string) $value );
+							// Mainnet stake address: stake1 + 53 bech32 characters,
+							// and the checksum must hold (typos never reach Koios).
+							return (bool) preg_match( '/^stake1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{53}$/', (string) $value )
+								&& lc_bech32_valid( (string) $value, 'stake' );
 						},
 					),
 				),
@@ -151,7 +153,90 @@ add_action(
 	}
 );
 
+/**
+ * Bech32 (BIP-173) checksum check for a lowercase address with the given
+ * human-readable part, e.g. "stake". Cardano addresses use plain bech32
+ * (not bech32m) and are longer than BIP-173's 90 characters, so no length cap.
+ */
+function lc_bech32_valid( $address, $hrp ) {
+	$charset = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+	$sep     = strrpos( $address, '1' );
+	if ( false === $sep || substr( $address, 0, $sep ) !== $hrp || strlen( $address ) - $sep - 1 < 6 ) {
+		return false;
+	}
+
+	// hrp expansion: high bits of each character, a zero, then the low bits.
+	$values = array();
+	foreach ( str_split( $hrp ) as $c ) {
+		$values[] = ord( $c ) >> 5;
+	}
+	$values[] = 0;
+	foreach ( str_split( $hrp ) as $c ) {
+		$values[] = ord( $c ) & 31;
+	}
+	foreach ( str_split( substr( $address, $sep + 1 ) ) as $c ) {
+		$pos = strpos( $charset, $c );
+		if ( false === $pos ) {
+			return false;
+		}
+		$values[] = $pos;
+	}
+
+	$gen = array( 0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3 );
+	$chk = 1;
+	foreach ( $values as $v ) {
+		$top = $chk >> 25;
+		$chk = ( ( $chk & 0x1ffffff ) << 5 ) ^ $v;
+		for ( $i = 0; $i < 5; $i++ ) {
+			if ( ( $top >> $i ) & 1 ) {
+				$chk ^= $gen[ $i ];
+			}
+		}
+	}
+	return 1 === $chk;
+}
+
+/**
+ * Per-IP rate limit for the public delegation endpoint: each request can cost
+ * Koios calls, so 20 per 5 minutes per IP (hashed, never stored in clear).
+ *
+ * @return int 0 when allowed, else seconds until the window resets.
+ */
+function lc_delegation_rate_limited() {
+	$ip    = function_exists( 'lc_client_ip' ) ? lc_client_ip() : ( isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '' );
+	$key   = 'lc_deleg_rl_' . substr( hash_hmac( 'sha256', $ip, wp_salt( 'auth' ) ), 0, 32 );
+	$now   = time();
+	$state = get_transient( $key );
+	if ( ! is_array( $state ) || empty( $state['reset'] ) || $state['reset'] <= $now ) {
+		$state = array(
+			'count' => 0,
+			'reset' => $now + 5 * MINUTE_IN_SECONDS,
+		);
+	}
+	if ( $state['count'] >= (int) apply_filters( 'lc_delegation_rate_limit', 20 ) ) {
+		return max( 1, $state['reset'] - $now );
+	}
+	++$state['count'];
+	set_transient( $key, $state, $state['reset'] - $now );
+	return 0;
+}
+
 function lc_rest_delegation( WP_REST_Request $request ) {
+	$retry = lc_delegation_rate_limited();
+	if ( $retry ) {
+		$response = new WP_REST_Response(
+			array(
+				'code'    => 'rate_limited',
+				'message' => 'Too many requests. Try again in a few minutes.',
+				'data'    => array( 'status' => 429 ),
+			),
+			429
+		);
+		$response->header( 'Retry-After', (string) $retry );
+		$response->header( 'Cache-Control', 'no-store' );
+		return $response;
+	}
+
 	$stake  = (string) $request['stake'];
 	$params = lc_protocol_params();
 	if ( ! $params ) {
@@ -160,11 +245,17 @@ function lc_rest_delegation( WP_REST_Request $request ) {
 
 	// Short cache (30s): someone may check again right after delegating; the
 	// panel also remembers delegations it just submitted (sessionStorage).
+	// Failed and never-registered lookups are kept 60s so repeats of the same
+	// address don't keep hitting Koios.
 	$key     = 'lc_account_' . md5( $stake );
 	$account = get_transient( $key );
+	if ( 'unavailable' === $account ) {
+		return new WP_Error( 'chain_unavailable', 'Could not reach the Cardano network. Try again in a minute.', array( 'status' => 503 ) );
+	}
 	if ( false === $account ) {
 		$rows = lc_koios( 'account_info', array( '_stake_addresses' => array( $stake ) ) );
 		if ( null === $rows ) {
+			set_transient( $key, 'unavailable', MINUTE_IN_SECONDS );
 			return new WP_Error( 'chain_unavailable', 'Could not reach the Cardano network. Try again in a minute.', array( 'status' => 503 ) );
 		}
 		// Koios returns nothing (or status "not registered") for a stake key
@@ -177,7 +268,7 @@ function lc_rest_delegation( WP_REST_Request $request ) {
 			'is_delegated_to_pool' => lc_adaoz_pool_id() === $pool,
 			'total_balance_ada'    => isset( $acc['total_balance'] ) ? (int) round( (float) $acc['total_balance'] / 1000000 ) : null,
 		);
-		set_transient( $key, $account, 30 );
+		set_transient( $key, $account, $account['registered'] ? 30 : MINUTE_IN_SECONDS );
 	}
 
 	$response = rest_ensure_response(
