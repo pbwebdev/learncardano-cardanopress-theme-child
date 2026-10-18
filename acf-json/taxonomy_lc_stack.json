@@ -63,8 +63,9 @@
     "show_in_quick_edit": 1,
     "show_admin_column": 1,
     "rewrite": {
-        "permalink_rewrite": "taxonomy_key",
-        "with_front": "1",
+        "permalink_rewrite": "custom_permalink",
+        "slug": "kb\/stack",
+        "with_front": "0",
         "rewrite_hierarchical": "0"
     },
     "query_var": "post_type_key",
@@ -78,5 +79,5 @@
     "meta_box_sanitize_cb": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1778234465
+    "modified": 1792304310
 }
