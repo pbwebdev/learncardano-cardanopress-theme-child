@@ -3,3 +3,6 @@
 
 # Vendored, minified bundles: never convert line endings.
 assets/vendor/** -text
+
+# Parent Bootstrap build, copied byte-for-byte: never rewrite line endings.
+assets/css/bootstrap-base.min.css -text

@@ -22,7 +22,7 @@ get_header();
     </div>
 </div>
 
-    <main class="podcast-category <?php echo cardanopress_bootstrap_class( 'content-full' ); ?>">
+    <main class="podcast-category <?php echo lc_layout_class( 'content-full' ); ?>">
 
         <div class="latest section">
             <div class="container">

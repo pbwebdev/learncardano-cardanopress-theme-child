@@ -17,7 +17,7 @@
 get_header();
 ?>
 
-<main class="podcast-archive <?php echo cardanopress_bootstrap_class( 'content-full' ); ?>">
+<main class="podcast-archive <?php echo lc_layout_class( 'content-full' ); ?>">
 
 	<section class="pa__hero">
 		<h1 class="pa__h1">Learn Cardano Podcast Episode Archives</h1>
