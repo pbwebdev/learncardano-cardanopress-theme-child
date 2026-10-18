@@ -21,6 +21,8 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
                         <p>After years of trading and learning about crypto, I decided that Cardano was my chain of choice
                             and put all my efforts into understanding everything about Cardano. Learn Cardano is where I share
                             all that I learn with you.</p>
+                        <?php // Peter's personal links and contact live on his Chatsoon profile. ?>
+                        <p><a class="btn btn-primary" href="https://chatsoon.app/id/peter-bui-5ec50167" target="_blank" rel="noopener"><?php esc_html_e( 'Follow & contact Peter', 'learncardano' ); ?><span class="visually-hidden"> <?php esc_html_e( '(opens Chatsoon in a new tab)', 'learncardano' ); ?></span></a></p>
                     </div>
                     <div class="col-md-5 offset-md-1 text-center">
                         <picture class="about-image">
