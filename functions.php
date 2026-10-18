@@ -171,6 +171,32 @@ if ( ! function_exists( 'lc_episode_thumb_url' ) ) {
  *
  * Args: class, size, sizes, eager.
  */
+/**
+ * A 600px-wide size between medium (242) and medium_large (768). On phones a
+ * full-width card is ~330-380 CSS px, so at 1.5-2x the browser wanted ~600-
+ * 720px but could only pick the 768px file. WordPress adds it to every
+ * srcset automatically (same aspect ratio). Existing uploads got the size
+ * (plus SiteGround-style .webp copies) from a one-off regeneration.
+ */
+add_action(
+	'after_setup_theme',
+	function () {
+		add_image_size( 'lc_card', 600, 0 );
+	}
+);
+
+/**
+ * Gallery images: WordPress gives them the generic full-width sizes hint,
+ * so 3-across thumbnails loaded the 768px file. The core gallery is 2-across
+ * under 600px and 3-across in the 720px article column above that.
+ */
+add_filter(
+	'render_block_core/gallery',
+	function ( $html ) {
+		return preg_replace( '/<img(?![^>]*\ssizes=)/i', '<img sizes="(max-width: 600px) 50vw, 240px"', $html );
+	}
+);
+
 function lc_card_image( $args = array() ) {
 	$args = wp_parse_args(
 		$args,
@@ -253,6 +279,41 @@ function lc_enqueue_theme_styles() {
 }
 add_action( 'wp_enqueue_scripts', 'lc_enqueue_theme_styles', 50 );
 
+/**
+ * Inline the two small render-blocking stylesheets in place of their
+ * <link>s, so they cost no extra request before first paint:
+ * - CardanoPress's stylesheet (~9KB, ~3KB gzipped). The plugin also
+ *   preloaded a second build of the same CSS (style-*.css) that the page
+ *   never applied; with no src left to preload, that request goes too.
+ * - fonts.css (the @font-face rules, ~1.5KB).
+ * Each handle keeps its place in the queue, so the cascade order is
+ * unchanged. Skipped for anything larger, or with relative url()s that
+ * would break once the CSS no longer sits next to its file.
+ */
+function lc_inline_small_styles() {
+	$styles = wp_styles();
+	foreach ( array( 'cardanopress-style', 'cardanopress-bootstrap-child-theme-fonts' ) as $handle ) {
+		if ( empty( $styles->registered[ $handle ] ) || ! in_array( $handle, $styles->queue, true ) ) {
+			continue;
+		}
+		$src = strtok( (string) $styles->registered[ $handle ]->src, '?' );
+		if ( 0 !== strpos( $src, content_url() ) ) {
+			continue;
+		}
+		$path = WP_CONTENT_DIR . substr( $src, strlen( content_url() ) );
+		if ( ! is_readable( $path ) || filesize( $path ) > 12000 ) {
+			continue;
+		}
+		$css = file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local file.
+		if ( false === $css || preg_match( '/url\(\s*+[\'"]?+(?!data:|https?:|\/)/i', $css ) ) {
+			continue;
+		}
+		$styles->registered[ $handle ]->src = false;
+		wp_add_inline_style( $handle, $css );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'lc_inline_small_styles', 60 );
+
 add_filter(
 	'sgo_rqs_exclude',
 	function ( $list ) {
@@ -274,20 +335,20 @@ add_filter(
  * views, where the hero H1 is Chivo and the body text Mulish. Without it the
  * browser only finds them after style.css and fonts.css are parsed, and the
  * swap from the fallback font reflows the hero and pushes the cards down.
- * Skipped on the front page (its LCP image should not compete) and on the
- * older templates whose above-the-fold text is Open Sans / Rubik.
+ * The older templates (plain pages, 404, proposals) use Open Sans / Rubik
+ * above the fold instead, so they preload those. Skipped on the front page
+ * and podcast episodes, whose preloaded LCP image should not compete.
  */
 function lc_preload_fonts() {
-	if (
-		is_front_page()
-		|| is_404()
-		|| is_singular( array( 'podcasts', 'proposal' ) )
-		|| is_post_type_archive( 'proposal' )
-		|| ( is_page() && ! get_page_template_slug() )
-	) {
+	if ( is_front_page() || is_singular( 'podcasts' ) ) {
 		return;
 	}
-	foreach ( array( 'chivo-latin-var', 'mulish-latin-var' ) as $font ) {
+	$older = is_404()
+		|| is_singular( 'proposal' )
+		|| is_post_type_archive( 'proposal' )
+		|| ( is_page() && ! get_page_template_slug() );
+	$fonts = $older ? array( 'rubik-latin-var', 'open-sans-latin-var' ) : array( 'chivo-latin-var', 'mulish-latin-var' );
+	foreach ( $fonts as $font ) {
 		printf(
 			'<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n",
 			esc_url( get_stylesheet_directory_uri() . '/assets/fonts/' . $font . '.woff2' )
@@ -586,29 +647,27 @@ add_filter( 'script_loader_tag', function ( $tag, $handle ) {
 	return preg_replace( '/(?=><\/script>)/', ' defer', $tag, 1 );
 }, 10, 2 );
 
+// No third-party origin is needed for first render any more, so the site
+// adds no preconnect / dns-prefetch hints (a hint to an origin that isn't
+// used early only competes with the page's own requests):
+// - fonts are self-hosted (fonts.css), not fonts.gstatic.com;
+// - Tag Manager loads after the page is idle (footer.php);
+// - YouTube, Spotify and Spreaker players are click-to-load facades.
+// Episode pages still preload their own LCP image (lc_preload_lcp_image()).
+
 /**
- * Add preconnect / dns-prefetch hints for the third-party origins the
- * site loads on every page (analytics, embedded media). Lets the browser
- * warm DNS + TLS in parallel with HTML parsing instead of waiting until
- * it sees the <script>/<iframe>.
+ * The parent theme enqueues a Google Fonts stylesheet (Lato + Open Sans),
+ * which SiteGround Optimizer then inlined into every page as @font-face
+ * rules pointing at fonts.gstatic.com. Open Sans and Rubik are self-hosted
+ * in fonts.css; Lato isn't used.
  */
-add_filter( 'wp_resource_hints', function ( $urls, $relation_type ) {
-	if ( 'preconnect' === $relation_type ) {
-		$urls[] = array( 'href' => 'https://www.googletagmanager.com', 'crossorigin' );
-		// Open Sans / Rubik (fonts.css) and SG Optimizer's inlined Google
-		// Fonts are served from here.
-		$urls[] = array( 'href' => 'https://fonts.gstatic.com', 'crossorigin' );
-		// Note: cdn.jsdelivr.net preconnect was removed once Bootstrap was
-		// self-hosted (PR #10) — PSI flagged it as an unused preconnect.
-		// widget.spreaker.com was removed when the footer player became a
-		// click-to-load facade (footer.php): nothing connects there on load.
-	}
-	if ( 'dns-prefetch' === $relation_type ) {
-		$urls[] = 'https://i.ytimg.com';
-		$urls[] = 'https://www.youtube.com';
-	}
-	return $urls;
-}, 10, 2 );
+add_action(
+	'wp_enqueue_scripts',
+	function () {
+		wp_dequeue_style( 'cardanopress_bootstrap-fonts' );
+	},
+	6
+);
 
 
 // jQuery is intentionally left at WordPress's bundled version so it can be
