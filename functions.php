@@ -15,6 +15,7 @@ require_once 'includes/rest-meta.php';
 require_once 'includes/mail.php';
 require_once 'includes/admin-tweaks.php';
 require_once 'includes/seo.php';
+require_once 'includes/author.php';
 
 // Forms and the newsletter popup (replace Gravity Forms and WP Popups).
 foreach ( array( 'includes/forms.php', 'includes/newsletter-popup.php' ) as $lc_include ) {
