@@ -220,30 +220,51 @@ function lc_auth_session_age() {
 	return isset( $session['login'] ) ? time() - (int) $session['login'] : PHP_INT_MAX;
 }
 
-/** Anonymise a member's comments, then delete the account. */
+/**
+ * Anonymise a member's comments, then delete the account. Legacy CardanoPress
+ * accounts that were merged into it (lc_merged_into, no role left) go too:
+ * they only hold the old wallet's name, address and comment history, which
+ * is personal data the member just asked us to erase.
+ */
 function lc_auth_delete_account( WP_User $user ) {
 	global $wpdb;
-	$comments = array_map( 'intval', $wpdb->get_col( $wpdb->prepare( "SELECT comment_ID FROM {$wpdb->comments} WHERE user_id = %d", $user->ID ) ) );
-	$wpdb->update(
-		$wpdb->comments,
-		array(
-			'user_id'              => 0,
-			'comment_author'       => 'Former member',
-			'comment_author_email' => '',
-			'comment_author_url'   => '',
-			'comment_author_IP'    => '',
-		),
-		array( 'user_id' => $user->ID )
-	);
+	$ids = array( $user->ID );
+	foreach ( get_users( array( 'meta_key' => 'lc_merged_into', 'meta_value' => $user->ID, 'fields' => 'ID' ) ) as $merged_id ) {
+		$merged = get_userdata( (int) $merged_id );
+		if ( $merged && lc_is_legacy_wallet_account( $merged ) && ! $merged->roles ) {
+			$ids[] = $merged->ID;
+		}
+	}
+	$comments = array();
+	foreach ( $ids as $id ) {
+		$comments = array_merge( $comments, array_map( 'intval', $wpdb->get_col( $wpdb->prepare( "SELECT comment_ID FROM {$wpdb->comments} WHERE user_id = %d", $id ) ) ) );
+		$wpdb->update(
+			$wpdb->comments,
+			array(
+				'user_id'              => 0,
+				'comment_author'       => 'Former member',
+				'comment_author_email' => '',
+				'comment_author_url'   => '',
+				'comment_author_IP'    => '',
+				'comment_agent'        => '',
+			),
+			array( 'user_id' => $id )
+		);
+	}
 	clean_comment_cache( $comments );
 	$email = lc_auth_email_verified( $user ) ? $user->user_email : '';
 	require_once ABSPATH . 'wp-admin/includes/user.php';
 	$reassign = defined( 'LC_PUBLISHING_AUTHOR_ID' ) ? (int) LC_PUBLISHING_AUTHOR_ID : null;
+	foreach ( array_slice( $ids, 1 ) as $merged_id ) {
+		wp_delete_user( $merged_id, $reassign );
+	}
 	wp_delete_user( $user->ID, $reassign );
 	if ( '' !== $email ) {
-		wp_mail( $email, __( 'Your Learn Cardano account was deleted', 'learncardano' ), __( "Your Learn Cardano account has been deleted, and your comments no longer carry your name.\n\nIf this wasn't you, reply to this email.", 'learncardano' ) );
+		wp_mail( $email, __( 'Your Learn Cardano account was deleted', 'learncardano' ), __( "Your Learn Cardano account has been deleted, and your comments no longer carry your name.
+
+If this wasn't you, reply to this email.", 'learncardano' ) );
 	}
-	lc_auth_log( 'account_deleted', array( 'user' => $user->ID, 'comments' => count( $comments ) ) );
+	lc_auth_log( 'account_deleted', array( 'user' => $user->ID, 'comments' => count( $comments ), 'merged' => count( $ids ) - 1 ) );
 }
 
 /** POST /account/ : every account action. */

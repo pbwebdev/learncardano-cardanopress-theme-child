@@ -71,7 +71,7 @@ function lc_auth_wallet_challenge( array $in ) {
 	if ( ! lc_auth_enabled() ) {
 		return lc_auth_wallet_error( 'disabled', 503 );
 	}
-	$retry = lc_auth_rate( 'wallet_ch', null, 20, 5 * MINUTE_IN_SECONDS );
+	$retry = lc_auth_rate( 'wallet_ch', null, 20, 5 * MINUTE_IN_SECONDS ) ?: lc_auth_rate( 'wallet_ch_coarse', lc_auth_coarse_subject(), 100, 5 * MINUTE_IN_SECONDS );
 	if ( $retry ) {
 		return lc_auth_wallet_error( 'rate', 429, array( 'retry' => $retry ) );
 	}
@@ -215,6 +215,12 @@ function lc_auth_wallet_claim( WP_User $old, WP_User $new, $stake ) {
 	$wpdb->update( $wpdb->comments, array( 'user_id' => $new->ID ), array( 'user_id' => $old->ID ) );
 	clean_comment_cache( $comments );
 
+	// The old plugin's data about this person (payment address, assets, handles,
+	// account info, transactions) has no use any more: drop it now. Only the
+	// merge record (lc_merged_into, lc_legacy_email) stays.
+	$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->usermeta} WHERE user_id = %d AND meta_key LIKE %s", $old->ID, $wpdb->esc_like( 'cardanopress_' ) . '%' ) );
+	wp_cache_delete( $old->ID, 'user_meta' );
+
 	update_user_meta( $old->ID, 'lc_merged_into', $new->ID );
 	if ( '' !== $old->user_email ) {
 		update_user_meta( $old->ID, 'lc_legacy_email', $old->user_email );
@@ -225,6 +231,21 @@ function lc_auth_wallet_claim( WP_User $old, WP_User $new, $stake ) {
 	WP_Session_Tokens::get_instance( $old->ID )->destroy_all();
 	lc_auth_log( 'wallet_claim', array( 'user' => $new->ID, 'from' => $old->ID, 'comments' => count( $comments ) ) );
 	lc_auth_wallet_notify( $new, $stake );
+}
+
+/** New wallet-only accounts allowed per day (filter lc_auth_wallet_signup_daily_cap). */
+function lc_auth_wallet_signup_cap() {
+	return (int) apply_filters( 'lc_auth_wallet_signup_daily_cap', 50 );
+}
+
+/** Email the site admin, once a day, that the wallet sign-up ceiling was hit. */
+function lc_auth_wallet_signup_alert( $ceiling ) {
+	if ( get_transient( 'lc_auth_wallet_signup_alerted' ) ) {
+		return;
+	}
+	set_transient( 'lc_auth_wallet_signup_alerted', 1, DAY_IN_SECONDS );
+	lc_auth_log( 'wallet_signup_ceiling' );
+	wp_mail( get_option( 'admin_email' ), 'Learn Cardano: wallet sign-up ceiling reached', sprintf( 'More than %d new wallet-only accounts were created in 24 hours, so new wallet sign-ups are refused until the window resets (wallets that already have an account still sign in). Raise it with the lc_auth_wallet_signup_daily_cap filter if this is real growth.', (int) $ceiling ) );
 }
 
 /**
@@ -252,11 +273,19 @@ function lc_auth_wallet_signin( $stake ) {
 			} elseif ( get_user_by( 'login', md5( $stake ) ) ) {
 				return lc_auth_wallet_error( 'wallet_failed', 403 ); // A merged-away account: never recreate.
 			} else {
+				// A hard daily ceiling on NEW wallet-only accounts (a wallet costs an attacker
+				// nothing to make). Existing wallets are not affected; the owner is told once a day.
+				$ceiling = lc_auth_wallet_signup_cap();
+				if ( lc_auth_rate( 'wallet_signup_day', 'all', $ceiling, DAY_IN_SECONDS, false ) ) {
+					lc_auth_wallet_signup_alert( $ceiling );
+					return lc_auth_wallet_error( 'wallet_signup_full', 403 );
+				}
 				$user = lc_auth_create_member( array( 'method' => 'wallet' ) );
 				if ( is_wp_error( $user ) ) {
 					$code = $user->get_error_code();
 					return lc_auth_wallet_error( 'lc_auth_rate' === $code ? 'rate' : ( 'lc_auth_signup_closed' === $code ? 'signup_closed' : 'wallet_failed' ), 'lc_auth_rate' === $code ? 429 : 403 );
 				}
+				lc_auth_rate( 'wallet_signup_day', 'all', $ceiling, DAY_IN_SECONDS ); // Count only a successful creation.
 				lc_auth_wallet_add( $user->ID, $stake );
 				$new_account = true;
 			}
@@ -323,7 +352,7 @@ function lc_auth_wallet_verify( array $in ) {
 	if ( ! lc_auth_enabled() ) {
 		return lc_auth_wallet_error( 'disabled', 503 );
 	}
-	$retry = lc_auth_rate( 'wallet_verify', null, 10, 5 * MINUTE_IN_SECONDS );
+	$retry = lc_auth_rate( 'wallet_verify', null, 10, 5 * MINUTE_IN_SECONDS ) ?: lc_auth_rate( 'wallet_verify_coarse', lc_auth_coarse_subject(), 50, 5 * MINUTE_IN_SECONDS );
 	if ( $retry ) {
 		return lc_auth_wallet_error( 'rate', 429, array( 'retry' => $retry ) );
 	}

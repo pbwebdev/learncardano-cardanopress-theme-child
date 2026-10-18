@@ -61,6 +61,19 @@ function lc_migrate_get_meta( $user_id, $key ) {
 	return null === $v ? null : (string) $v;
 }
 
+/** Is $email the verified address? lc_email_verified is an HMAC now (plaintext before that change). */
+function lc_migrate_email_verified( $user_id, $email ) {
+	$v     = (string) lc_migrate_get_meta( $user_id, 'lc_email_verified' );
+	$email = strtolower( trim( (string) $email ) );
+	if ( '' === $v || '' === $email ) {
+		return false;
+	}
+	if ( false !== strpos( $v, '@' ) ) {
+		return strtolower( $v ) === $email;
+	}
+	return function_exists( 'lc_auth_hmac' ) && hash_equals( lc_auth_hmac( 'ev', $email ), $v );
+}
+
 if ( 'restore' === $lc_mode ) {
 	$file = $lc_args[1] ?? '';
 	if ( ! $file || ! is_readable( $file ) ) {
@@ -148,7 +161,7 @@ foreach ( $lc_rows as $row ) {
 		'do_name'       => $row->display_name === $row->user_login && null === lc_migrate_get_meta( (int) $row->ID, 'lc_signup' ),
 		'do_nicename'   => 'member-' . $row->ID !== $row->user_nicename,
 		'do_email'      => '' !== $row->user_email
-			&& strtolower( (string) lc_migrate_get_meta( (int) $row->ID, 'lc_email_verified' ) ) !== strtolower( $row->user_email )
+			&& ! lc_migrate_email_verified( (int) $row->ID, $row->user_email )
 			&& null === lc_migrate_get_meta( (int) $row->ID, 'lc_wallet' ),
 	);
 	$lc_count['names']     += (int) $item['do_name'];
