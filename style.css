@@ -528,3 +528,6 @@ img.pa__media-img,img.lep__media-img{width:100%;height:100%;object-fit:cover;dis
 .lc-spreaker__play:hover .lc-spreaker__icon,.lc-spreaker__play:focus-visible .lc-spreaker__icon{background:#9333ea;color:#fff}
 .lc-spreaker__label{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lc-spreaker__meta{flex:none;font-size:12px;font-weight:400;color:#9a9aa2}
+
+/* <picture> wrappers from includes/webp.php must not change layout */
+.lc-picture{display:contents}

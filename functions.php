@@ -2,6 +2,7 @@
 
 require_once 'includes/security.php';
 require_once 'includes/social-feed.php';
+require_once 'includes/webp.php';
 require_once 'includes/lockbox.php';
 require_once 'includes/knowledge-base.php';
 require_once 'includes/delegate.php';
