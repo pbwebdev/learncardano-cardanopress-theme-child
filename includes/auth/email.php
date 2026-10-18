@@ -390,7 +390,13 @@ function lc_auth_email_confirm( $token, $c ) {
 					// the real owner, so cut every other way in before signing them in.
 					WP_Session_Tokens::get_instance( $user->ID )->destroy_all();
 					wp_set_password( wp_generate_password( 48, true, true ), $user->ID );
-					lc_auth_log( 'email_takeover_revoked', array( 'user' => $user->ID ) );
+					// A Google/Discord identity connected by that person would be a way back in too.
+					lc_auth_load( 'oauth' );
+					$idps = array_keys( lc_auth_idps( $user->ID ) );
+					foreach ( $idps as $provider ) {
+						lc_auth_idp_remove( $user->ID, $provider );
+					}
+					lc_auth_log( 'email_takeover_revoked', array( 'user' => $user->ID, 'idps_removed' => count( $idps ) ) );
 				}
 				lc_auth_mark_email_verified( $user->ID, $email );
 			} else {

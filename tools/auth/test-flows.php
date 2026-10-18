@@ -860,7 +860,7 @@ try {
 	t_browser();
 	lc_auth_dev_outbox_clear();
 	$gm    = 'gate' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid';
-	$kinds = array( 'signin', 'wallet_first', 'password', 'email_verify', 'wallet_linked', 'email_change' );
+	$kinds = array( 'signin', 'wallet_first', 'password', 'email_verify', 'signin', 'email_change' ); // Not wallet_linked: security notices have their own bucket.
 	$ret   = array();
 	foreach ( $kinds as $k ) {
 		$ret[] = lc_auth_email_send( $gm, 'subject', 'body', $k );
