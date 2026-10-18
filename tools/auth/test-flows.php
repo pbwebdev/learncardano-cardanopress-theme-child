@@ -1788,6 +1788,22 @@ try {
 	remove_action( 'lc_auth_cookie_set', $spy, 10 );
 	t( 'prefetch: start returns without creating a state record or a cookie', 'oauth_prefetch' === t_code( $res ) && t_live_states() === $before && array() === $sets && ! isset( $_COOKIE[ lc_auth_cookie_name( 'lcauth' ) ] ) );
 	t( 'prefetch: nothing is counted against the start limit', false === get_transient( 'lc_rl_' . substr( lc_auth_hmac( 'rl', 'oauth_start|' . lc_auth_ip_subject() ), 0, 32 ) ) );
+	// WordPress unsets $_GET['error'] in WP::parse_request(): notices and the provider's cancel must come from the raw query string.
+	$qs_before = $_SERVER['QUERY_STRING'] ?? null;
+	unset( $_GET['error'], $_GET['done'] );
+	$_SERVER['QUERY_STRING'] = 'redirect_to=https%3A%2F%2Fexample.com%2F&error=oauth_email_exists';
+	$nt                      = lc_auth_notice();
+	t( 'notice: ?error= is read from the query string when $_GET lost it', is_array( $nt ) && 'error' === $nt[0] && false !== strpos( $nt[1], 'email link first' ) );
+	$_SERVER['QUERY_STRING'] = 'error=%3Cscript%3E';
+	t( 'notice: an unknown or unsafe code shows nothing', null === lc_auth_notice() );
+	$_SERVER['QUERY_STRING'] = 'error=access_denied&state=abc';
+	$qa                      = lc_auth_query_args();
+	t( 'query args: the provider ?error= reaches the callback', 'access_denied' === ( $qa['error'] ?? '' ) && 'abc' === ( $qa['state'] ?? '' ) );
+	if ( null === $qs_before ) {
+		unset( $_SERVER['QUERY_STRING'] );
+	} else {
+		$_SERVER['QUERY_STRING'] = $qs_before;
+	}
 	t( 'panel anchors carry the no-prefetch class', 2 === substr_count( lc_auth_oauth_buttons( '' ), ' no-prefetch"' ) );
 
 	// Flow cookie is kept (same value) after a start.

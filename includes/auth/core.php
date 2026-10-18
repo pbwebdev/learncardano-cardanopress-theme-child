@@ -509,6 +509,24 @@ function lc_auth_flow_clear() {
 
 /* ----------------------------------------------------------- requests/responses */
 
+/**
+ * The request's query arguments, unslashed. Read from the raw query string
+ * because WP::parse_request() unsets $_GET['error'] ("error" is a reserved
+ * query var) before our router runs: our own ?error= notices and a
+ * provider's ?error=access_denied would otherwise never be seen. $_GET fills
+ * any gaps (CLI and tests set it directly).
+ *
+ * @return array
+ */
+function lc_auth_query_args() {
+	$args = array();
+	if ( isset( $_SERVER['QUERY_STRING'] ) && is_string( $_SERVER['QUERY_STRING'] ) && '' !== $_SERVER['QUERY_STRING'] ) {
+		wp_parse_str( (string) $_SERVER['QUERY_STRING'], $args );
+	}
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read only; every caller validates what it uses.
+	return $args + wp_unslash( $_GET );
+}
+
 /** Same-origin check for POSTs: Origin must be this site, else Sec-Fetch-Site must say so. */
 function lc_auth_same_origin() {
 	$home = wp_parse_url( home_url() );
@@ -583,7 +601,7 @@ function lc_auth_text( $code ) {
 		'oauth_cancelled' => __( 'Sign-in was cancelled. You can try again or use another way to sign in.', 'learncardano' ),
 		'oauth_failed'    => __( 'We could not complete that sign-in. Please try again.', 'learncardano' ),
 		'oauth_unavailable' => __( 'That sign-in method is not available right now.', 'learncardano' ),
-		'oauth_email_exists' => __( 'An account already uses this email address. Sign in with an email link first, then connect Google or Discord on your account page.', 'learncardano' ),
+		'oauth_email_exists' => __( 'This email address already has an account. Sign in with an email link first (below), then click Connect next to Google or Discord on your account page. After that, they sign you straight in.', 'learncardano' ),
 		'idp_in_use'      => __( 'That account is already connected to a different Learn Cardano account. Sign in with it there, or disconnect it from that account first.', 'learncardano' ),
 		'idp_has_other'   => __( 'You already have a different account connected for this provider. Disconnect it first.', 'learncardano' ),
 		'idp_conflict'    => __( 'That account is connected more than once. Please contact us so we can sort it out.', 'learncardano' ),

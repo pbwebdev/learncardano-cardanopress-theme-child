@@ -191,19 +191,23 @@ function lc_auth_get_home() {
 	return array( 'view' => 'home' );
 }
 
-/** A ?done= or ?error= code from a redirect, as array( type, text ), or null. */
+/**
+ * A ?done= or ?error= code from a redirect, as array( type, text ), or null.
+ *
+ * Read through lc_auth_query_args(): WordPress drops $_GET['error'] before
+ * our router runs.
+ */
 function lc_auth_notice() {
-	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- display only; the codes map to fixed text.
+	$args = lc_auth_query_args(); // Display only; the codes map to fixed text.
 	foreach ( array( 'error', 'done' ) as $type ) {
-		if ( isset( $_GET[ $type ] ) && is_string( $_GET[ $type ] ) && 1 === preg_match( '/^[a-z_]{3,20}$/', wp_unslash( $_GET[ $type ] ) ) ) {
-			$code = wp_unslash( $_GET[ $type ] );
+		if ( isset( $args[ $type ] ) && is_string( $args[ $type ] ) && 1 === preg_match( '/^[a-z_]{3,20}$/', $args[ $type ] ) ) {
+			$code = $args[ $type ];
 			$text = lc_auth_text( $code );
 			if ( 'unknown' === $code || $text !== lc_auth_text( 'unknown' ) ) {
 				return array( 'error' === $type ? 'error' : 'ok', $text );
 			}
 		}
 	}
-	// phpcs:enable
 	return null;
 }
 

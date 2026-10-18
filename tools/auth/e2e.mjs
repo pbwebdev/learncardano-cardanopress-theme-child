@@ -213,6 +213,14 @@ try {
   const reused = await page.content();
   t('a used link does not work again', /expired|already used/i.test(reused));
 
+  /* 8. ?error= notices on real page loads (WordPress drops $_GET['error'] before our router runs). */
+  await page.goto(BASE + '/account/?error=oauth_email_exists', { waitUntil: 'networkidle2' });
+  const n1 = await page.$eval('.lc-auth__notice--error', (e) => e.textContent.trim()).catch(() => '');
+  t('?error= notice is shown on /account/', /email link first/i.test(n1), n1 || 'no notice');
+  await page.goto(BASE + '/account/oauth/discord/callback/?error=access_denied&state=' + 'A'.repeat(43), { waitUntil: 'networkidle2' });
+  const n2 = await page.$eval('.lc-auth__notice--error', (e) => e.textContent.trim()).catch(() => '');
+  t('cancelling at the provider says "cancelled"', /cancelled/i.test(n2) && page.url().includes('error=oauth_cancelled'), page.url() + ' ' + (n2 || 'no notice'));
+
   t('no JavaScript errors (besides CardanoPress, if still present)', errors.length === 0, errors.join(' | '));
 } catch (e) {
   t('test run', false, e.message);

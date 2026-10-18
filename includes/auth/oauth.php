@@ -824,14 +824,13 @@ function lc_auth_get_oauth_start() {
 function lc_auth_get_oauth_callback() {
 	lc_auth_oauth_reject_subresource();
 	header( 'Referrer-Policy: no-referrer' ); // The code and state are in this URL.
-	$q = array();
-	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- the single-use state record is the check.
+	$q    = array();
+	$args = lc_auth_query_args(); // The single-use state record is the check. Includes the provider's ?error= (cancel).
 	foreach ( array( 'code', 'state', 'error', 'iss' ) as $k ) {
-		if ( isset( $_GET[ $k ] ) && is_string( $_GET[ $k ] ) ) {
-			$q[ $k ] = substr( wp_unslash( $_GET[ $k ] ), 0, 2100 );
+		if ( isset( $args[ $k ] ) && is_string( $args[ $k ] ) ) {
+			$q[ $k ] = substr( $args[ $k ], 0, 2100 );
 		}
 	}
-	// phpcs:enable
 	$res = lc_auth_oauth_callback( lc_auth_oauth_route_provider(), $q );
 	if ( is_wp_error( $res ) ) {
 		lc_auth_oauth_fail_redirect( $res );
