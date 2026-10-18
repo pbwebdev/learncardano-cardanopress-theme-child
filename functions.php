@@ -291,7 +291,7 @@ add_action( 'wp_enqueue_scripts', 'lc_enqueue_theme_styles', 50 );
  */
 function lc_inline_small_styles() {
 	$styles = wp_styles();
-	foreach ( array( 'cardanopress-bootstrap-child-theme-fonts' ) as $handle ) {
+	foreach ( array( 'cardanopress-style', 'cardanopress-bootstrap-child-theme-fonts' ) as $handle ) {
 		if ( empty( $styles->registered[ $handle ] ) || ! in_array( $handle, $styles->queue, true ) ) {
 			continue;
 		}
