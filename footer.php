@@ -113,6 +113,9 @@
                         		<span class="small">Powered by <a href="https://cardanopress.io" class="text-light">CardanoPress</a></span>
 							-
 							<span class="small">Built by <a href="https://meshwithus.com.au" target="_blank" rel="noopener" class="text-light" title="WordPress design and development, Gold Coast">Mesh With Us</a></span>
+							<?php if ( ! function_exists( 'lc_auth_is_private_view' ) || ! lc_auth_is_private_view() ) : ?>
+							- <span class="small"><a href="<?php echo esc_url( get_privacy_policy_url() ); ?>" class="text-light" data-lc-consent-open><?php esc_html_e( 'Cookie settings', 'learncardano' ); ?></a></span>
+							<?php endif; ?>
 							<?php
 							$lc_build = @include get_stylesheet_directory() . '/build-version.php';
 							if ( is_array( $lc_build ) && ! empty( $lc_build['sha'] ) ) {
@@ -162,35 +165,93 @@
 		<?php wp_footer(); ?>
 
 <?php if ( ! function_exists( 'lc_auth_is_private_view' ) || ! lc_auth_is_private_view() ) : // No tag manager on /account/* (it carries tokens and account details). ?>
-<!-- Google Tag Manager: loaded once the page has finished loading and the
-     browser is idle, so it never competes with first render. -->
+<!-- Cookie choice: Google Tag Manager (and the Google Analytics it loads) runs
+     only after the visitor clicks Accept. The choice is kept in the lc_consent
+     cookie for 180 days; "Cookie settings" in the footer reopens this box.
+     Decided in the browser, so cached pages stay correct. Without JS nothing loads. -->
+<div class="lc-consent" id="lc-consent" role="region" aria-label="<?php esc_attr_e( 'Cookie choice', 'learncardano' ); ?>" hidden>
+	<p class="lc-consent__text"><?php esc_html_e( 'Can we use Google Analytics cookies to see how the site is used? Nothing is tracked unless you accept.', 'learncardano' ); ?> <a href="<?php echo esc_url( get_privacy_policy_url() ); ?>"><?php esc_html_e( 'Privacy policy', 'learncardano' ); ?></a></p>
+	<div class="lc-consent__actions">
+		<button type="button" class="lc-consent__btn lc-consent__btn--yes" data-lc-consent="granted"><?php esc_html_e( 'Accept', 'learncardano' ); ?></button>
+		<button type="button" class="lc-consent__btn" data-lc-consent="denied"><?php esc_html_e( 'Decline', 'learncardano' ); ?></button>
+	</div>
+</div>
+<style>
+.lc-consent{position:fixed;z-index:1040;left:12px;right:12px;bottom:62px;max-width:560px;margin:0 auto;padding:14px 16px;background:#fff;color:#1f1f1f;border:1px solid #e3d5f7;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.18);display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;font-size:15px;line-height:1.45}
+.lc-consent[hidden]{display:none}
+.lc-consent__text{margin:0;flex:1 1 260px}
+.lc-consent__text a{color:#7e22ce}
+.lc-consent__actions{display:flex;gap:8px;flex:0 0 auto}
+.lc-consent__btn{min-width:96px;padding:8px 16px;border-radius:8px;border:2px solid #9333ea;background:#fff;color:#7e22ce;font-weight:600;cursor:pointer}
+.lc-consent__btn--yes{background:#9333ea;color:#fff}
+.lc-consent__btn:focus-visible{outline:3px solid #1f1f1f;outline-offset:2px}
+</style>
 <script>
 (function (w, d) {
+	var box = d.getElementById('lc-consent');
+	var loaded = false;
+	function choice() {
+		var m = d.cookie.match(/(?:^|; )lc_consent=(granted|denied)/);
+		return m ? m[1] : '';
+	}
+	function remember(v) {
+		d.cookie = 'lc_consent=' + v + '; Max-Age=' + (180 * 86400) + '; Path=/; SameSite=Lax' + ('https:' === location.protocol ? '; Secure' : '');
+	}
 	function gtm() {
+		if (loaded) { return; }
+		loaded = true;
 		(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 			'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 		})(w,d,'script','dataLayer','GTM-W49L88K8');
 	}
-	function idle() {
-		if ('requestIdleCallback' in w) {
-			w.requestIdleCallback(gtm, { timeout: 3000 });
-		} else {
-			setTimeout(gtm, 1500);
+	// Loaded once the page has finished loading and the browser is idle, so it never competes with first render.
+	function later() {
+		function idle() {
+			if ('requestIdleCallback' in w) { w.requestIdleCallback(gtm, { timeout: 3000 }); } else { setTimeout(gtm, 1500); }
 		}
+		if ('complete' === d.readyState) { idle(); } else { w.addEventListener('load', idle); }
 	}
-	if (d.readyState === 'complete') {
-		idle();
-	} else {
-		w.addEventListener('load', idle);
+	// Withdrawing consent: remove the Google Analytics cookies (set on this host and on the parent domain).
+	function forget() {
+		var host = location.hostname, parent = '.' + host.split('.').slice(-2).join('.');
+		d.cookie.split('; ').forEach(function (c) {
+			var name = c.split('=')[0];
+			if (/^_ga/.test(name) || '_gid' === name) {
+				[ '', '; domain=' + host, '; domain=' + parent ].forEach(function (dom) {
+					d.cookie = name + '=; Max-Age=0; Path=/' + dom;
+				});
+			}
+		});
+	}
+	box.addEventListener('click', function (e) {
+		var b = e.target.closest('[data-lc-consent]');
+		if (!b) { return; }
+		var v = b.getAttribute('data-lc-consent');
+		remember(v);
+		box.hidden = true;
+		if ('granted' === v) {
+			gtm();
+		} else {
+			forget();
+			if (loaded) { location.reload(); } // Tag manager is already running on this page: reload without it.
+		}
+	});
+	d.addEventListener('click', function (e) {
+		if (e.target.closest && e.target.closest('[data-lc-consent-open]')) {
+			e.preventDefault();
+			box.hidden = false;
+			box.querySelector('button').focus();
+		}
+	});
+	var c = choice();
+	if ('granted' === c) {
+		later();
+	} else if ('' === c) {
+		box.hidden = false;
 	}
 })(window, document);
 </script>
-<!-- End Google Tag Manager -->
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W49L88K8"
-                  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
 <?php endif; ?>
 </html>
