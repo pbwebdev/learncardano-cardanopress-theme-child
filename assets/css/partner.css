@@ -153,6 +153,7 @@
 .pk__split{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:48px;align-items:center}
 .pk__chart{margin:0;background:#fff;border:1px solid var(--pk-line);border-radius:18px;padding:14px}
 .pk__chart-img{border-radius:10px}
+.pk__chart-svg{display:block;width:100%;height:auto;border-radius:10px}
 .pk__chart figcaption{font-size:14px;color:var(--pk-muted);padding:12px 4px 2px}
 .pk__callouts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0 0}
 .pk__callout{background:#fff;border:1px solid var(--pk-line);border-radius:16px;padding:20px;font-size:14.5px;line-height:1.5}
