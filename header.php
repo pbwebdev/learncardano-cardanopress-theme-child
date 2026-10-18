@@ -72,16 +72,16 @@ https://meshwithus.com.au
 				</button>
 
 				<div class="collapse navbar-collapse flex-grow-0" id="navbarSupportedContent">
-					<?php cardanopress_bootstrap_primary_menu(); ?>
+					<?php lc_primary_menu(); ?>
 
 					<div class="d-none d-xl-block ms-xl-5">
-						<?php echo do_shortcode('[cardanopress_template name="part/modal-trigger" if="!isConnected"]'); ?>
-						<?php echo do_shortcode('[cardanopress_template name="menu-dropdown" if="isConnected"]'); ?>
+						<?php if ( shortcode_exists( 'cardanopress_template' ) ) { echo do_shortcode('[cardanopress_template name="part/modal-trigger" if="!isConnected"]'); } ?>
+						<?php if ( shortcode_exists( 'cardanopress_template' ) ) { echo do_shortcode('[cardanopress_template name="menu-dropdown" if="isConnected"]'); } ?>
 					</div>
 					
 					<div class="d-xl-none">
-						<?php echo do_shortcode('[cardanopress_template name="part/modal-trigger" if="!isConnected"]'); ?>
-						<?php echo do_shortcode('[cardanopress_template name="menu-dropdown" if="isConnected"]'); ?>
+						<?php if ( shortcode_exists( 'cardanopress_template' ) ) { echo do_shortcode('[cardanopress_template name="part/modal-trigger" if="!isConnected"]'); } ?>
+						<?php if ( shortcode_exists( 'cardanopress_template' ) ) { echo do_shortcode('[cardanopress_template name="menu-dropdown" if="isConnected"]'); } ?>
 					</div>
 					
 				</div>

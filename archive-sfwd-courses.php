@@ -16,7 +16,7 @@
 get_header();
 ?>
 
-<main class="resources-archive courses-archive <?php echo esc_attr( cardanopress_bootstrap_class( 'content-full' ) ); ?>">
+<main class="resources-archive courses-archive <?php echo esc_attr( lc_layout_class( 'content-full' ) ); ?>">
 
 	<?php
 	get_template_part(

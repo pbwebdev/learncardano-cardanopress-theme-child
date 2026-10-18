@@ -10,7 +10,7 @@
 get_header();
 
 ?>
-    <main class="<?php echo cardanopress_bootstrap_class( 'content-full' ); ?>">
+    <main class="<?php echo lc_layout_class( 'content-full' ); ?>">
 
         <section class="pa__hero">
             <h1 class="pa__h1"><?php

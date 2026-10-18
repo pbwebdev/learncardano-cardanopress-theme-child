@@ -1,5 +1,7 @@
 <?php
 
+require_once 'includes/theme-base.php';
+require_once 'includes/nav-walker.php';
 require_once 'includes/security.php';
 require_once 'includes/cardanopress-lockdown.php';
 require_once 'includes/social-feed.php';
@@ -270,7 +272,7 @@ function lc_theme_asset_url( $file ) {
  * its year-cached minified copy (see the filters below).
  */
 function lc_enqueue_theme_styles() {
-	$deps = wp_style_is( 'cardanopress_bootstrap-style', 'registered' ) ? array( 'cardanopress_bootstrap-style' ) : array();
+	$deps = array( 'lc-bootstrap' );
 	wp_enqueue_style( 'cardanopress-bootstrap-child-theme', lc_theme_asset_url( 'style.css' ), $deps, null );
 	wp_enqueue_style( 'cardanopress-bootstrap-child-theme-fonts', lc_theme_asset_url( 'fonts.css' ), array( 'cardanopress-bootstrap-child-theme' ), null );
 }
@@ -315,12 +317,14 @@ add_filter(
 	'sgo_rqs_exclude',
 	function ( $list ) {
 		$list[] = 'learncardano-cardanopress-theme-child/(style|fonts)\.css';
+		$list[] = 'learncardano-cardanopress-theme-child/assets/css/bootstrap-base\.min\.css';
 		return $list;
 	}
 );
 add_filter(
 	'sgo_css_minify_exclude',
 	function ( $list ) {
+		$list[] = 'lc-bootstrap';
 		$list[] = 'cardanopress-bootstrap-child-theme';
 		$list[] = 'cardanopress-bootstrap-child-theme-fonts';
 		return $list;

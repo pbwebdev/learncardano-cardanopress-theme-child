@@ -30,7 +30,7 @@ function lc_lockbox() {
 			<p>Log in with your wallet that is holding a CardanoPress Wapuu NFT
 				to continue reading and access exclusive resources.</p>
 			<p>
-				<?php echo do_shortcode('[cardanopress_template name="part/modal-trigger" if="!isConnected"]'); ?>
+				<?php if ( shortcode_exists( 'cardanopress_template' ) ) { echo do_shortcode('[cardanopress_template name="part/modal-trigger" if="!isConnected"]'); } ?>
 				Get a <a href="https://www.jpg.store/collection/cardanopresswapuus?tab=items"
 				target="_blank">Wapuu NFT on JPG.store</a>.
 			</p>

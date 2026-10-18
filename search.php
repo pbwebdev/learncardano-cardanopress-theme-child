@@ -34,7 +34,7 @@ if ( ! $lc_has_q ) {
 }
 ?>
 
-<main class="resources-archive search-results <?php echo cardanopress_bootstrap_class( 'content-full' ); ?>">
+<main class="resources-archive search-results <?php echo lc_layout_class( 'content-full' ); ?>">
 
 	<?php
 	get_template_part(

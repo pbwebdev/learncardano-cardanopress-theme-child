@@ -12,7 +12,7 @@ get_header();
 ?>
 
 <div class="container col-10">
-	<main class="<?php echo cardanopress_bootstrap_class( 'content-full' ); ?>">
+	<main class="<?php echo lc_layout_class( 'content-full' ); ?>">
 
 		<?php while ( have_posts() ) : ?>
 			<?php the_post(); ?>

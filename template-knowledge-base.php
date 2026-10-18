@@ -64,7 +64,7 @@ uksort( $lc_filter['level'], $lc_by_order( array( 'beginner', 'intermediate', 'a
 uksort( $lc_filter['era'], $lc_by_order( array( 'byron', 'shelley', 'goguen', 'mary', 'alonzo', 'babbage', 'conway' ) ) );
 ?>
 
-<main class="resources-archive kb-hub <?php echo cardanopress_bootstrap_class( 'content-full' ); ?>">
+<main class="resources-archive kb-hub <?php echo lc_layout_class( 'content-full' ); ?>">
 
 	<?php
 	while ( have_posts() ) :
