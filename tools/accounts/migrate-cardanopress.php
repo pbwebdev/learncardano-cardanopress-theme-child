@@ -19,8 +19,17 @@
  *   CardanoPress flaw, and an empty email means nothing can be mailed to them.
  *
  * Writes go straight to the tables (then clean_user_cache()/clean_comment_cache()),
- * so no hooks run and no notification emails go out. Safe to re-run: a second
- * run finds nothing to do. Prints counts only.
+ * so no hooks run and no notification emails go out. Prints counts only.
+ *
+ * Re-running: BEFORE go-live a second apply finds nothing to do. AFTER go-live
+ * (members have signed in, verified an email or linked a wallet) it still only
+ * touches what is untouched: an email is moved only while it is not the
+ * verified address (lc_email_verified) and the account has no lc_wallet; a
+ * name is changed only while display_name is still the hex login and the
+ * account has no lc_signup record. Restore puts a field back only while it
+ * still holds what apply wrote ("Cardano member", member-<ID>, an empty
+ * email), and never gives an address back that another account now owns. Even
+ * so, restore after go-live is a last resort: prefer restoring the database.
  *
  * @package CardanoPress Bootstrap
  */
@@ -63,33 +72,53 @@ if ( 'restore' === $lc_mode ) {
 	}
 	$users = 0;
 	foreach ( $data['users'] as $u ) {
-		$wpdb->update(
-			$wpdb->users,
-			array(
-				'display_name'  => $u['display_name'],
-				'user_nicename' => $u['user_nicename'],
-				'user_email'    => $u['user_email'],
-			),
-			array( 'ID' => (int) $u['ID'] )
-		);
-		if ( null === $u['nickname'] ) {
-			$wpdb->delete( $wpdb->usermeta, array( 'user_id' => (int) $u['ID'], 'meta_key' => 'nickname' ) );
-		} else {
-			lc_migrate_set_meta( (int) $u['ID'], 'nickname', $u['nickname'] );
+		$uid = (int) $u['ID'];
+		$cur = $wpdb->get_row( $wpdb->prepare( "SELECT display_name, user_nicename, user_email FROM {$wpdb->users} WHERE ID = %d", $uid ) );
+		if ( ! $cur ) {
+			continue;
 		}
-		if ( null === $u['legacy_email'] ) {
-			$wpdb->delete( $wpdb->usermeta, array( 'user_id' => (int) $u['ID'], 'meta_key' => 'lc_legacy_email' ) );
-		} else {
-			lc_migrate_set_meta( (int) $u['ID'], 'lc_legacy_email', $u['legacy_email'] );
+		// Revert a field only while it still holds what apply wrote.
+		$set = array();
+		if ( $cur->display_name === $lc_name && $u['display_name'] !== $lc_name ) {
+			$set['display_name'] = $u['display_name'];
+			if ( lc_migrate_get_meta( $uid, 'nickname' ) === $lc_name ) {
+				if ( null === $u['nickname'] ) {
+					$wpdb->delete( $wpdb->usermeta, array( 'user_id' => $uid, 'meta_key' => 'nickname' ) );
+				} else {
+					lc_migrate_set_meta( $uid, 'nickname', $u['nickname'] );
+				}
+			}
 		}
-		clean_user_cache( (int) $u['ID'] );
+		if ( 'member-' . $uid === $cur->user_nicename && $u['user_nicename'] !== $cur->user_nicename ) {
+			$set['user_nicename'] = $u['user_nicename'];
+		}
+		if ( '' === (string) $cur->user_email && '' !== (string) $u['user_email'] ) {
+			$owner = email_exists( $u['user_email'] );
+			if ( ! $owner || (int) $owner === $uid ) {
+				$set['user_email'] = $u['user_email'];
+				if ( null === $u['legacy_email'] ) {
+					$wpdb->delete( $wpdb->usermeta, array( 'user_id' => $uid, 'meta_key' => 'lc_legacy_email' ) );
+				} else {
+					lc_migrate_set_meta( $uid, 'lc_legacy_email', $u['legacy_email'] );
+				}
+			} else {
+				WP_CLI::warning( sprintf( 'User %d: email now belongs to another account; not restored.', $uid ) );
+			}
+		}
+		if ( $set ) {
+			$wpdb->update( $wpdb->users, $set, array( 'ID' => $uid ) );
+		}
+		clean_user_cache( $uid );
 		++$users;
 	}
+	$restored = array();
 	foreach ( $data['comments'] as $c ) {
-		$wpdb->update( $wpdb->comments, array( 'comment_author' => $c['author'] ), array( 'comment_ID' => (int) $c['id'] ) );
+		if ( $wpdb->update( $wpdb->comments, array( 'comment_author' => $c['author'] ), array( 'comment_ID' => (int) $c['id'], 'comment_author' => $lc_name ) ) ) {
+			$restored[] = (int) $c['id'];
+		}
 	}
-	clean_comment_cache( array_map( 'intval', wp_list_pluck( $data['comments'], 'id' ) ) );
-	WP_CLI::success( sprintf( 'Restored %d users and %d comments.', $users, count( $data['comments'] ) ) );
+	clean_comment_cache( $restored );
+	WP_CLI::success( sprintf( 'Restored %d users and %d comments.', $users, count( $restored ) ) );
 	return;
 }
 
@@ -115,9 +144,12 @@ foreach ( $lc_rows as $row ) {
 		'user_email'    => $row->user_email,
 		'nickname'      => lc_migrate_get_meta( (int) $row->ID, 'nickname' ),
 		'legacy_email'  => lc_migrate_get_meta( (int) $row->ID, 'lc_legacy_email' ),
-		'do_name'       => $row->display_name === $row->user_login,
+		// Skip what a signed-in-since member already owns: a new-system signup, a verified email, a linked wallet.
+		'do_name'       => $row->display_name === $row->user_login && null === lc_migrate_get_meta( (int) $row->ID, 'lc_signup' ),
 		'do_nicename'   => 'member-' . $row->ID !== $row->user_nicename,
-		'do_email'      => '' !== $row->user_email,
+		'do_email'      => '' !== $row->user_email
+			&& strtolower( (string) lc_migrate_get_meta( (int) $row->ID, 'lc_email_verified' ) ) !== strtolower( $row->user_email )
+			&& null === lc_migrate_get_meta( (int) $row->ID, 'lc_wallet' ),
 	);
 	$lc_count['names']     += (int) $item['do_name'];
 	$lc_count['nicenames'] += (int) $item['do_nicename'];
