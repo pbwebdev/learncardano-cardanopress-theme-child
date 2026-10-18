@@ -12,6 +12,16 @@ get_header();
 ?>
     <main class="<?php echo cardanopress_bootstrap_class( 'content-full' ); ?>">
 
+        <section class="pa__hero">
+            <h1 class="pa__h1"><?php
+                /* translators: %s: podcast tag name */
+                echo esc_html( sprintf( __( '%s Episodes', 'learncardano' ), single_term_title( '', false ) ) );
+            ?></h1>
+            <?php if ( term_description() ) : ?>
+                <div class="pa__sub"><?php echo wp_kses_post( term_description() ); ?></div>
+            <?php endif; ?>
+        </section>
+
         <div class="latest section">
             <div class="container">
 
