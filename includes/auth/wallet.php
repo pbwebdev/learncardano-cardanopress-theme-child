@@ -32,11 +32,15 @@ const LC_AUTH_CHALLENGE_TTL = 600;
 
 /**
  * The exact text a wallet is asked to sign. Built only here, stored, and
- * compared byte for byte by the verifier.
+ * compared byte for byte by the verifier. For "link" it names the account's
+ * public display name, so the person sees which account the wallet joins
+ * (a login-CSRF'd browser would show the attacker's account name).
  */
-function lc_auth_wallet_message( $stake, $intent, $nonce, $issued, $expires ) {
+function lc_auth_wallet_message( $stake, $intent, $nonce, $issued, $expires, $name = '' ) {
 	$sign_in = 'signin' === $intent;
-	return wp_parse_url( home_url(), PHP_URL_HOST ) . ' wants you to ' . ( $sign_in ? 'sign in with your Cardano wallet.' : 'connect this wallet to your Learn Cardano account.' ) . "\n\n"
+	$name    = trim( preg_replace( '/\s+/', ' ', (string) $name ) );
+	$link    = '' === $name ? 'connect this wallet to your Learn Cardano account.' : 'connect this wallet to the Learn Cardano account “' . $name . '”.';
+	return wp_parse_url( home_url(), PHP_URL_HOST ) . ' wants you to ' . ( $sign_in ? 'sign in with your Cardano wallet.' : $link ) . "\n\n"
 		. 'Stake address: ' . $stake . "\n"
 		. "Network: Mainnet\n"
 		. 'URI: ' . home_url() . "\n"
@@ -74,6 +78,7 @@ function lc_auth_wallet_challenge( array $in ) {
 	$intent  = isset( $in['intent'] ) ? $in['intent'] : '';
 	$user_id = 0;
 	$session = '';
+	$name    = '';
 	if ( 'link' === $intent ) {
 		$user = wp_get_current_user();
 		if ( ! $user->exists() ) {
@@ -86,7 +91,12 @@ function lc_auth_wallet_challenge( array $in ) {
 		if ( '' === $session || ! wp_verify_nonce( (string) ( $in['nonce'] ?? '' ), 'lc_wallet_link' ) ) {
 			return lc_auth_wallet_error( 'reload', 403 );
 		}
+		// Linking is a sensitive change: it needs a recent sign-in, like deleting the account.
+		if ( lc_auth_session_age() > 30 * MINUTE_IN_SECONDS ) {
+			return lc_auth_wallet_error( 'delete_recent', 403 );
+		}
 		$user_id = $user->ID;
+		$name    = lc_public_name( $user );
 	} elseif ( 'signin' !== $intent ) {
 		return lc_auth_wallet_error( 'wallet_failed', 400 );
 	}
@@ -103,7 +113,7 @@ function lc_auth_wallet_challenge( array $in ) {
 	$nonce   = bin2hex( random_bytes( 16 ) );
 	$now     = time();
 	$stake   = lc_cardano_stake_bech32( $raw );
-	$message = lc_auth_wallet_message( $stake, $intent, $nonce, $now, $now + LC_AUTH_CHALLENGE_TTL );
+	$message = lc_auth_wallet_message( $stake, $intent, $nonce, $now, $now + LC_AUTH_CHALLENGE_TTL, $name );
 	lc_auth_store_put(
 		'wc',
 		array(
@@ -172,6 +182,29 @@ function lc_auth_wallet_claimable( WP_User $old, $stake ) {
 		&& ! array_diff( lc_auth_methods( $old ), array( 'wallet:' . $stake ) );
 }
 
+/**
+ * Tell the account's verified address that a wallet was connected, so an
+ * unwanted link is noticed and can be removed. Nothing goes out when the
+ * account has no verified email.
+ */
+function lc_auth_wallet_notify( WP_User $user, $stake ) {
+	if ( ! lc_auth_email_verified( $user ) ) {
+		return;
+	}
+	lc_auth_load( 'email' );
+	lc_auth_email_send(
+		$user->user_email,
+		__( 'A wallet was connected to your Learn Cardano account', 'learncardano' ),
+		sprintf(
+			/* translators: 1: masked stake address, 2: account page URL */
+			__( "A Cardano wallet (%1\$s) was just connected to your Learn Cardano account.\n\nIf this was you, there is nothing to do. If it wasn't, remove the wallet and sign out everywhere else on your account page:\n%2\$s", 'learncardano' ),
+			lc_auth_mask_stake( $stake ),
+			lc_auth_account_url()
+		),
+		'wallet_linked'
+	);
+}
+
 /** Move a wallet and the old account's comments to $new, retire $old. */
 function lc_auth_wallet_claim( WP_User $old, WP_User $new, $stake ) {
 	global $wpdb;
@@ -191,6 +224,7 @@ function lc_auth_wallet_claim( WP_User $old, WP_User $new, $stake ) {
 	$old->set_role( '' );
 	WP_Session_Tokens::get_instance( $old->ID )->destroy_all();
 	lc_auth_log( 'wallet_claim', array( 'user' => $new->ID, 'from' => $old->ID, 'comments' => count( $comments ) ) );
+	lc_auth_wallet_notify( $new, $stake );
 }
 
 /**
@@ -269,6 +303,7 @@ function lc_auth_wallet_link( WP_User $user, $stake ) {
 			} else {
 				lc_auth_wallet_add( $user->ID, $stake );
 				lc_auth_log( 'wallet_link', array( 'user' => $user->ID ) );
+				lc_auth_wallet_notify( $user, $stake );
 			}
 			return array( 'wallets' => array_map( 'lc_auth_mask_stake', lc_auth_wallets( $user->ID ) ) );
 		}

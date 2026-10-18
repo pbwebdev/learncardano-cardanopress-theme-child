@@ -59,6 +59,24 @@ function lc_auth_is_privileged( $user ) {
 	return (bool) array_diff( (array) $user->roles, array( 'subscriber', 'student' ) );
 }
 
+/**
+ * Whether an account was created by CardanoPress wallet sign-up: its login
+ * is md5(stake address), 32 lowercase hex characters. Also defined in
+ * cardanopress-lockdown.php (which goes away with the plugin's backup), so
+ * both copies are guarded.
+ *
+ * @param WP_User|int|null $user User or ID.
+ * @return bool
+ */
+if ( ! function_exists( 'lc_is_legacy_wallet_account' ) ) {
+	function lc_is_legacy_wallet_account( $user ) {
+		if ( is_numeric( $user ) ) {
+			$user = get_userdata( (int) $user );
+		}
+		return $user instanceof WP_User && 1 === preg_match( '/^[0-9a-f]{32}$/', (string) $user->user_login );
+	}
+}
+
 /** Load an optional module (email | wallet) once. */
 function lc_auth_load( $module ) {
 	if ( in_array( $module, array( 'email', 'wallet' ), true ) ) {
@@ -372,7 +390,7 @@ function lc_auth_text( $code ) {
 		'password_need'   => __( 'Verify your email address first, then you can set a password.', 'learncardano' ),
 		'others_out'      => __( 'Signed out everywhere else.', 'learncardano' ),
 		'delete_confirm'  => __( 'To delete your account, type DELETE in the box.', 'learncardano' ),
-		'delete_recent'   => __( 'For safety, sign in again before deleting your account.', 'learncardano' ),
+		'delete_recent'   => __( 'For safety, sign in again to make this change.', 'learncardano' ),
 		'blocked'         => __( 'That request was blocked. Please reload the page and try again.', 'learncardano' ),
 		'forbidden'       => __( 'You cannot do that.', 'learncardano' ),
 		'unknown'         => __( 'Something went wrong. Please try again.', 'learncardano' ),
@@ -601,11 +619,16 @@ add_filter(
 /**
  * Core mails the OLD address when the email changes. On a legacy wallet
  * account that address may have been set by someone else, so only tell an
- * old address that was verified.
+ * old address that was verified. Every other account (staff included) keeps
+ * core's notice.
  */
 add_filter(
 	'send_email_change_email',
 	function ( $send, $user ) {
+		$u = get_userdata( (int) $user['ID'] );
+		if ( ! $u || ! lc_is_legacy_wallet_account( $u ) ) {
+			return $send; // Staff and everyone else keep core's "email changed" notice.
+		}
 		$v = (string) get_user_meta( (int) $user['ID'], 'lc_email_verified', true );
 		return $send && '' !== $v && strtolower( $v ) === strtolower( (string) $user['user_email'] );
 	},
@@ -630,6 +653,26 @@ add_action(
 		}
 		wp_safe_redirect( lc_auth_account_url() );
 		exit;
+	},
+	1
+);
+
+/**
+ * Login CSRF: wp-login.php takes a password POST from any site, so a page an
+ * attacker controls could sign a visitor into the ATTACKER's account (and
+ * from there a wallet link or claim would attach to it). Browsers always send
+ * Origin or Sec-Fetch-Site on a cross-site POST, so refuse those. Runs first
+ * on login_init; the password form on this site is same-origin.
+ */
+add_action(
+	'login_init',
+	function () {
+		$method = isset( $_SERVER['REQUEST_METHOD'] ) ? strtoupper( (string) $_SERVER['REQUEST_METHOD'] ) : 'GET';
+		if ( 'POST' !== $method || lc_auth_same_origin() ) {
+			return;
+		}
+		lc_auth_log( 'blocked_origin', array( 'path' => 'wp-login' ) );
+		wp_die( esc_html( lc_auth_text( 'blocked' ) ), '', array( 'response' => 403 ) );
 	},
 	1
 );
@@ -726,6 +769,8 @@ function lc_auth_no_cache() {
 	nocache_headers();
 	header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0, private' );
 	header( 'X-Robots-Tag: noindex, nofollow' );
+	header( 'X-Frame-Options: DENY' ); // Nobody frames the account pages (clickjacking).
+	header( "Content-Security-Policy: frame-ancestors 'none'" );
 }
 
 /**
@@ -772,6 +817,8 @@ add_action( 'parse_request', 'lc_auth_route_request', 1 );
 function lc_auth_response_headers( $headers ) {
 	$headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0, private';
 	$headers['X-Robots-Tag']  = 'noindex, nofollow';
+	$headers['X-Frame-Options']        = 'DENY';
+	$headers['Content-Security-Policy'] = "frame-ancestors 'none'";
 	return $headers;
 }
 

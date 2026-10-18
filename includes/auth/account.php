@@ -296,6 +296,9 @@ function lc_auth_post_home() {
 			break;
 
 		case 'email_change':
+			if ( lc_auth_session_age() > 30 * MINUTE_IN_SECONDS ) {
+				lc_auth_respond( false, 'delete_recent', '', array(), 403 ); // Changing the sign-in address needs a recent sign-in.
+			}
 			$result = lc_auth_email_change_request( $user, (string) ( $in['email'] ?? '' ) );
 			lc_auth_respond( $result['ok'], $result['code'], '', array(), 400, $result['retry'] ?? 0 );
 			break;
@@ -398,11 +401,27 @@ add_filter(
 		if ( false === strpos( $link, 'comment-reply-login' ) ) {
 			return $link;
 		}
-		$url = add_query_arg( 'replytocom', $comment->comment_ID, get_permalink( $comment->comment_post_ID ) ) . '#respond';
+		// No literal replytocom: Rank Math rewrites those links. Land on the comment instead.
+		$url = get_permalink( $comment->comment_post_ID ) . '#comment-' . $comment->comment_ID;
 		return preg_replace( '/<a rel="nofollow" class="comment-reply-login" href="[^"]*"/', '<a rel="nofollow" class="comment-reply-login" href="' . esc_url( lc_auth_signin_url( $url ) ) . '" data-lc-auth-open="comment" data-lc-auth-redirect="' . esc_url( $url ) . '"', $link );
 	},
-	10,
+	20,
 	3
+);
+
+/**
+ * Comment posts from a signed-in member carry the login cookie, so a page on
+ * another site could post as them. Browsers send Origin/Sec-Fetch-Site on
+ * that cross-site POST; refuse it. (Visitors have no cookie to abuse.)
+ */
+add_action(
+	'pre_comment_on_post',
+	function () {
+		if ( is_user_logged_in() && ! lc_auth_same_origin() ) {
+			wp_die( esc_html( lc_auth_text( 'blocked' ) ), '', array( 'response' => 403 ) );
+		}
+	},
+	1
 );
 
 /* ---------------------------------------------------------- members only */
@@ -506,3 +525,28 @@ function lc_auth_admin_save( $user_id ) {
 }
 add_action( 'personal_options_update', 'lc_auth_admin_save' );
 add_action( 'edit_user_profile_update', 'lc_auth_admin_save' );
+
+/**
+ * wp-admin's user-edit screen refuses to save a user with no email, but
+ * wallet-only members and migrated CardanoPress accounts have none. Let a
+ * staff edit through for a non-staff user whose stored email is already
+ * empty (nothing is being blanked).
+ *
+ * @param WP_Error $errors Validation errors.
+ * @param bool     $update True when updating an existing user.
+ * @param stdClass $user   The user data being saved.
+ */
+add_action(
+	'user_profile_update_errors',
+	function ( $errors, $update, $user ) {
+		if ( ! $update || ! $errors->get_error_message( 'empty_email' ) || empty( $user->ID ) ) {
+			return;
+		}
+		$stored = get_userdata( (int) $user->ID );
+		if ( $stored && '' === (string) $stored->user_email && ! lc_auth_is_privileged( $stored ) ) {
+			$errors->remove( 'empty_email' );
+		}
+	},
+	10,
+	3
+);
