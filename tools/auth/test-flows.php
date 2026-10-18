@@ -1400,14 +1400,15 @@ try {
 	t( 'local email unverified: refused (oauth_email_exists), nothing linked, not signed in', 'oauth_email_exists' === t_code( $f2['res'] ) && 0 === get_current_user_id() && '' === (string) get_user_meta( $lu->ID, 'lc_idp_google', true ) );
 	t( 'oauth_email_exists has its own wording that points to the email link', lc_auth_text( 'oauth_email_exists' ) !== lc_auth_text( 'unknown' ) && false !== stripos( lc_auth_text( 'oauth_email_exists' ), 'email link' ) );
 
-	// Staff by email.
+	// Staff by email (drop the identity the earlier staff case gave them, so "nothing linked" is checkable).
+	delete_user_meta( $st->ID, 'lc_idp_google' );
 	t_browser();
 	$f2 = t_g_flow( 'signin', array( 'email' => $st->user_email ) );
-	t( 'staff account with that email: refused (password_only), nothing linked', 'password_only' === t_code( $f2['res'] ) && 0 === get_current_user_id() && '' === (string) get_user_meta( $st->ID, 'lc_idp_google', true ) );
+	t( 'staff account with that email: refused (password_only), nothing linked', 'password_only' === t_code( $f2['res'] ) && 0 === get_current_user_id() && '' === (string) get_user_meta( $st->ID, 'lc_idp_google', true ), (string) t_code( $f2['res'] ) );
 	lc_auth_mark_email_verified( $st->ID, $st->user_email );
 	t_browser();
 	$f2 = t_g_flow( 'signin', array( 'email' => $st->user_email ) );
-	t( 'staff account with a VERIFIED matching email: still refused', 'password_only' === t_code( $f2['res'] ) && '' === (string) get_user_meta( $st->ID, 'lc_idp_google', true ) );
+	t( 'staff account with a VERIFIED matching email: still refused', 'password_only' === t_code( $f2['res'] ) && '' === (string) get_user_meta( $st->ID, 'lc_idp_google', true ), (string) t_code( $f2['res'] ) );
 
 	// Existing account already has a different Google identity.
 	t_browser();

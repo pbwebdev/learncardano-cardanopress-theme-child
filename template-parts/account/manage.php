@@ -101,12 +101,12 @@ $lc_date     = function ( $ts ) {
 		<?php foreach ( lc_auth_providers( true ) as $lc_pid => $lc_prov ) : ?>
 			<?php
 			$lc_on = isset( $lc_idps[ $lc_pid ] );
-			if ( ! $lc_on && empty( $lc_prov[enabled] ) ) {
+			if ( ! $lc_on && empty( $lc_prov['enabled'] ) ) {
 				continue; // Not set up on this site and not connected: nothing to show.
 			}
 			?>
 			<li>
-				<strong><?php echo esc_html( $lc_prov[label] ); ?></strong>
+				<strong><?php echo esc_html( $lc_prov['label'] ); ?></strong>
 				<?php if ( $lc_on ) : ?>
 					<?php if ( ! empty( $lc_idp_info[ $lc_pid ][hint] ) ) : ?>
 						<code><?php echo esc_html( $lc_idp_info[ $lc_pid ][hint] ); ?></code>
