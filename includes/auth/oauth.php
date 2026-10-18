@@ -734,8 +734,8 @@ function lc_auth_oauth_fail_redirect( WP_Error $err ) {
 function lc_auth_get_oauth_start() {
 	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a plain link; the state record is the protection.
 	$redirect = lc_auth_safe_redirect( isset( $_GET['redirect_to'] ) && is_string( $_GET['redirect_to'] ) ? wp_unslash( $_GET['redirect_to'] ) : '' );
-	if ( is_user_logged_in() ) {
-		wp_safe_redirect( $redirect, 303 ); // Nothing to sign in to.
+	if ( is_user_logged_in() || ( isset( $_SERVER['REQUEST_METHOD'] ) && 'HEAD' === strtoupper( (string) $_SERVER['REQUEST_METHOD'] ) ) ) {
+		wp_safe_redirect( $redirect, 303 ); // Nothing to sign in to (and a HEAD probe must not start a flow).
 		exit;
 	}
 	$res = lc_auth_oauth_start( lc_auth_oauth_route_provider(), 'signin', $redirect );

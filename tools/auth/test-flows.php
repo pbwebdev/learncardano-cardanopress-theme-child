@@ -23,6 +23,7 @@ if ( 'production' === wp_get_environment_type() || ! function_exists( 'lc_auth_d
 }
 lc_auth_load( 'email' );
 lc_auth_load( 'wallet' );
+lc_auth_load( 'oauth' );
 require_once ABSPATH . 'wp-admin/includes/user.php';
 add_filter( 'send_auth_cookies', '__return_false' );
 
@@ -181,6 +182,141 @@ function t_limits( array $over ) {
 	};
 	add_filter( 'lc_auth_mail_limits', $fn );
 	return $fn;
+}
+
+/* ---- OAuth helpers (R3) --------------------------------------------------- */
+
+$GLOBALS['lc_t_http'] = array(); // Every outgoing HTTP request the mocks saw.
+
+// Test client credentials, only when the site has none (HTTP is always mocked, so nothing real is called).
+foreach ( array( 'GOOGLE', 'DISCORD' ) as $lc_t_p ) {
+	if ( ! defined( "LC_{$lc_t_p}_CLIENT_ID" ) ) {
+		define( "LC_{$lc_t_p}_CLIENT_ID", 'test-client' );
+	}
+	if ( ! defined( "LC_{$lc_t_p}_CLIENT_SECRET" ) ) {
+		define( "LC_{$lc_t_p}_CLIENT_SECRET", 'test-secret-do-not-print' );
+	}
+}
+
+/** A canned wp_remote_* response. */
+function t_resp( $code, $body ) {
+	return array( 'headers' => array(), 'body' => is_string( $body ) ? $body : wp_json_encode( $body ), 'response' => array( 'code' => $code, 'message' => '' ), 'cookies' => array(), 'filename' => null );
+}
+
+/** Answer outgoing HTTP by URL prefix; unmatched URLs fail. Requests are logged in $GLOBALS['lc_t_http']. Returns the filter (remove_filter it). */
+function t_oauth_http( array $map ) {
+	$fn = function ( $pre, $args, $url ) use ( $map ) {
+		unset( $pre );
+		$GLOBALS['lc_t_http'][] = array( 'url' => $url, 'args' => $args );
+		foreach ( $map as $prefix => $resp ) {
+			if ( 0 === strpos( $url, $prefix ) ) {
+				return $resp;
+			}
+		}
+		return new WP_Error( 't_unmocked', $url );
+	};
+	add_filter( 'pre_http_request', $fn, 10, 3 );
+	return $fn;
+}
+
+/** Unsigned id_token: the signature is not checked (the token comes from the direct TLS exchange). */
+function t_jwt( array $claims, array $header = array( 'alg' => 'RS256', 'typ' => 'JWT' ) ) {
+	return lc_auth_b64url( wp_json_encode( $header ) ) . '.' . lc_auth_b64url( wp_json_encode( $claims ) ) . '.' . lc_auth_b64url( 'not-a-signature' );
+}
+
+/** Default claims, with $over applied (a null value removes the claim). */
+function t_claims( $nonce, array $over = array() ) {
+	$cid = lc_auth_oauth_creds( 'google' )['id'];
+	$now = time();
+	$c   = array(
+		'iss'            => 'https://accounts.google.com',
+		'aud'            => $cid,
+		'azp'            => $cid,
+		'sub'            => 'lctest-' . bin2hex( random_bytes( 6 ) ),
+		'email'          => 'oa' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid',
+		'email_verified' => true,
+		'given_name'     => 'Tess',
+		'iat'            => $now,
+		'exp'            => $now + 3600,
+		'nonce'          => $nonce,
+	);
+	foreach ( $over as $k => $v ) {
+		if ( null === $v ) {
+			unset( $c[ $k ] );
+		} else {
+			$c[ $k ] = $v;
+		}
+	}
+	return $c;
+}
+
+/** Start a flow and pull state/nonce out of the provider URL. */
+function t_oauth_begin( $provider, $intent = 'signin', $redirect = '' ) {
+	$r = lc_auth_oauth_start( $provider, $intent, $redirect );
+	if ( is_wp_error( $r ) ) {
+		return $r;
+	}
+	parse_str( (string) wp_parse_url( $r['url'], PHP_URL_QUERY ), $q );
+	return array( 'url' => $r['url'], 'state' => $q['state'] ?? '', 'nonce' => $q['nonce'] ?? '', 'q' => $q );
+}
+
+function t_track() {
+	if ( get_current_user_id() ) {
+		$GLOBALS['lc_t']['users'][] = get_current_user_id();
+	}
+}
+
+/** A whole Google round trip with mocked HTTP. Returns array( res, claims, b ). */
+function t_g_flow( $intent = 'signin', array $over = array(), array $q = array(), $redirect = '', $token_body = null ) {
+	$b = t_oauth_begin( 'google', $intent, $redirect );
+	if ( is_wp_error( $b ) ) {
+		return array( 'res' => $b, 'claims' => array(), 'b' => array() );
+	}
+	$claims = t_claims( $b['nonce'], $over );
+	$f      = t_oauth_http( array( 'https://oauth2.googleapis.com/token' => $token_body ?? t_resp( 200, array( 'id_token' => t_jwt( $claims ), 'access_token' => 'at', 'token_type' => 'Bearer' ) ) ) );
+	$res    = lc_auth_oauth_callback( 'google', array( 'code' => 'c0de', 'state' => $b['state'] ) + $q );
+	remove_filter( 'pre_http_request', $f, 10 );
+	t_track();
+	return array( 'res' => $res, 'claims' => $claims, 'b' => $b );
+}
+
+/** A whole Discord round trip with mocked HTTP. $profile overrides the /users/@me answer; null removes a field. */
+function t_d_flow( $intent = 'signin', array $profile = array(), array $q = array(), $redirect = '' ) {
+	$b = t_oauth_begin( 'discord', $intent, $redirect );
+	if ( is_wp_error( $b ) ) {
+		return array( 'res' => $b, 'profile' => array(), 'b' => array() );
+	}
+	$u = array(
+		'id'          => '99999' . random_int( 100000000000, 999999999999 ),
+		'username'    => 'tessd',
+		'global_name' => 'Tess D',
+		'email'       => 'od' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid',
+		'verified'    => true,
+	);
+	foreach ( $profile as $k => $v ) {
+		if ( null === $v ) {
+			unset( $u[ $k ] );
+		} else {
+			$u[ $k ] = $v;
+		}
+	}
+	$f   = t_oauth_http(
+		array(
+			'https://discord.com/api/oauth2/token/revoke' => t_resp( 200, '{}' ),
+			'https://discord.com/api/oauth2/token'        => t_resp( 200, array( 'access_token' => 'at-d', 'token_type' => 'Bearer' ) ),
+			'https://discord.com/api/v10/users/@me'       => t_resp( 200, $u ),
+		)
+	);
+	$res = lc_auth_oauth_callback( 'discord', array( 'code' => 'c0de', 'state' => $b['state'] ) + $q );
+	remove_filter( 'pre_http_request', $f, 10 );
+	t_track();
+	return array( 'res' => $res, 'profile' => $u, 'b' => $b );
+}
+
+/** Number of live OAuth state records. */
+function t_live_states() {
+	global $wpdb;
+	return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name LIKE '\_transient\_lc\_oa\_%'" );
 }
 
 try {
@@ -994,6 +1130,487 @@ try {
 	t( 'session age: fresh session is recent', lc_auth_session_age() < 60 );
 
 	t( 'rewrite rule for /account/ is registered', (bool) array_filter( array_keys( (array) get_option( 'rewrite_rules' ) ), fn( $r ) => 0 === strpos( $r, '^account' ) ), 'run wp rewrite flush' );
+	/* =============================================================== OAuth == */
+	$report( 'OAuth: providers, start' );
+	t_browser();
+	$cid_g   = lc_auth_oauth_creds( 'google' )['id'];
+	$enabled = lc_auth_providers();
+	t( 'registry: google and discord are enabled with constants set', isset( $enabled['google'], $enabled['discord'] ) && ! isset( $enabled['x'] ) );
+	t( 'registry never carries a secret', false === strpos( wp_json_encode( lc_auth_providers( true ) ), lc_auth_oauth_creds( 'google' )['secret'] ) && false === strpos( wp_json_encode( lc_auth_providers( true ) ), lc_auth_oauth_creds( 'discord' )['secret'] ) );
+	$off = function ( $on, $id ) {
+		return 'discord' === $id ? false : $on;
+	};
+	add_filter( 'lc_auth_provider_enabled', $off, 10, 2 );
+	t( 'registry: lc_auth_provider_enabled can switch one off', array( 'google' ) === array_keys( lc_auth_providers() ) && isset( lc_auth_providers( true )['discord'] ) );
+	t( 'disabled provider: start refused', 'oauth_unavailable' === t_code( lc_auth_oauth_start( 'discord', 'signin', '' ) ) );
+	t( 'disabled provider: no sign-in link in the panel', false === strpos( lc_auth_oauth_buttons( '' ), 'oauth/discord/' ) && false !== strpos( lc_auth_oauth_buttons( '' ), 'oauth/google/' ) );
+	remove_filter( 'lc_auth_provider_enabled', $off, 10 );
+	t( 'unknown provider: refused', 'oauth_unavailable' === t_code( lc_auth_oauth_start( 'x', 'signin', '' ) ) );
+	$btns = lc_auth_oauth_buttons( home_url( '/courses/' ) );
+	t( 'panel links are plain nofollow anchors carrying redirect_to', 2 === preg_match_all( '#<a class="lc-auth__sso [^"]*" href="[^"]*/account/oauth/(google|discord)/[^"]*" rel="nofollow">#', $btns ) && false !== strpos( $btns, 'redirect_to=' . rawurlencode( home_url( '/courses/' ) ) ) );
+
+	$b = t_oauth_begin( 'google', 'signin', home_url( '/courses/' ) );
+	t( 'start google: ok', is_array( $b ), t_code( $b ) );
+	if ( is_array( $b ) ) {
+		$q = $b['q'];
+		t( 'start google: provider URL, response_type=code, exact redirect_uri', 0 === strpos( $b['url'], 'https://accounts.google.com/o/oauth2/v2/auth?' ) && 'code' === $q['response_type'] && home_url( '/account/oauth/google/callback/' ) === $q['redirect_uri'] );
+		t( 'start google: client id, scope, prompt=select_account', $cid_g === $q['client_id'] && 'openid email profile' === $q['scope'] && 'select_account' === $q['prompt'] );
+		t( 'start google: state and nonce are 43-char tokens, PKCE S256', lc_auth_is_token( $q['state'] ) && lc_auth_is_token( $q['nonce'] ) && 'S256' === $q['code_challenge_method'] && 43 === strlen( $q['code_challenge'] ) );
+		$rec = lc_auth_store_get( 'oa', $q['state'] );
+		t( 'start google: record bound to flow cookie, provider, intent; challenge matches verifier', $rec && hash_equals( $rec['fh'], lc_auth_flow( false ) ) && 'google' === $rec['p'] && 'signin' === $rec['i'] && lc_auth_b64url( hash( 'sha256', $rec['v'], true ) ) === $q['code_challenge'] && $rec['n'] === $q['nonce'] );
+		t( 'start: the raw state is not an option name (key is an HMAC)', false === get_transient( 'lc_oa_' . $q['state'] ) );
+	}
+	$bd = t_oauth_begin( 'discord', 'signin', '' );
+	t( 'start discord: authorize URL, scope identify email, no OIDC nonce, S256', is_array( $bd ) && 0 === strpos( $bd['url'], 'https://discord.com/oauth2/authorize?' ) && 'identify email' === $bd['q']['scope'] && ! isset( $bd['q']['nonce'] ) && 'S256' === $bd['q']['code_challenge_method'] );
+	add_filter( 'lc_auth_oauth_pkce', '__return_false' );
+	$bn = t_oauth_begin( 'discord', 'signin', '' );
+	remove_filter( 'lc_auth_oauth_pkce', '__return_false' );
+	t( 'start discord: the lc_auth_oauth_pkce filter turns PKCE off', is_array( $bn ) && ! isset( $bn['q']['code_challenge'] ) );
+	t( 'start: bad intent refused', 'unknown' === t_code( lc_auth_oauth_start( 'google', 'merge', '' ) ) );
+
+	// Prefetch: no side effects at all.
+	t_browser();
+	$before                      = t_live_states();
+	$_SERVER['HTTP_SEC_PURPOSE'] = 'prefetch;prerender';
+	$res                         = lc_auth_oauth_start( 'google', 'signin', '' );
+	unset( $_SERVER['HTTP_SEC_PURPOSE'] );
+	t( 'start: Sec-Purpose prefetch refused with no record stored', 'oauth_prefetch' === t_code( $res ) && t_live_states() === $before );
+	$_SERVER['HTTP_PURPOSE'] = 'prefetch';
+	$res                     = lc_auth_oauth_start( 'google', 'signin', '' );
+	unset( $_SERVER['HTTP_PURPOSE'] );
+	t( 'start: Purpose prefetch refused too', 'oauth_prefetch' === t_code( $res ) );
+
+	// Rate limit.
+	t_browser();
+	$last = null;
+	for ( $i = 0; $i < 21; $i++ ) {
+		$last = lc_auth_oauth_start( 'google', 'signin', '' );
+	}
+	t( 'start: rate limited after 20 per window', 'rate' === t_code( $last ) );
+	t_browser();
+
+	// Link start needs the signed-in, non-staff user with a recent session.
+	$ls = t_user();
+	lc_auth_mark_email_verified( $ls->ID, $ls->user_email );
+	t( 'link start: signed out refused', 'forbidden' === t_code( lc_auth_oauth_start( 'google', 'link', '' ) ) );
+	t_session_aged( $ls->ID, 31 * MINUTE_IN_SECONDS );
+	t( 'link start: a 31 minute old session is refused (delete_recent)', 'delete_recent' === t_code( lc_auth_oauth_start( 'google', 'link', '' ) ) );
+	$ed = t_user( 'editor' );
+	t_session( $ed->ID );
+	t( 'link start: staff refused (password_only)', 'password_only' === t_code( lc_auth_oauth_start( 'google', 'link', '' ) ) );
+	t_session_aged( $ls->ID, 5 * MINUTE_IN_SECONDS );
+	$bl = t_oauth_begin( 'google', 'link', '' );
+	$rl = is_array( $bl ) ? lc_auth_store_get( 'oa', $bl['state'] ) : null;
+	t( 'link start: a 5 minute old session works; the record names user and session', is_array( $bl ) && $rl && (int) $rl['u'] === $ls->ID && hash_equals( $rl['s'], lc_auth_session_hash() ), t_code( $bl ) );
+
+	/* ---- id_token validation (direct) ----------------------------------- */
+	$report( 'OAuth: id_token checks' );
+	$nonce = lc_auth_new_token();
+	$now   = time();
+	$ok    = lc_auth_oauth_google_identity( t_jwt( t_claims( $nonce ) ), $cid_g, $nonce );
+	t( 'id_token: a good token gives subject, verified email and name', is_array( $ok ) && 'google' === $ok['provider'] && 0 === strpos( $ok['subject'], 'lctest-' ) && $ok['email_verified'] && 'Tess' === $ok['name'], t_code( $ok ) );
+	$bad = array(
+		'wrong aud'                  => array( array( 'aud' => 'someone-else', 'azp' => null ), null, 'idt_aud' ),
+		'aud list without azp'       => array( array( 'aud' => array( $cid_g, 'other' ), 'azp' => null ), null, 'idt_aud' ),
+		'wrong azp'                  => array( array( 'azp' => 'someone-else' ), null, 'idt_azp' ),
+		'wrong iss'                  => array( array( 'iss' => 'https://evil.example' ), null, 'idt_iss' ),
+		'iss lookalike'              => array( array( 'iss' => 'https://accounts.google.com.evil.example' ), null, 'idt_iss' ),
+		'wrong nonce'                => array( array( 'nonce' => lc_auth_new_token() ), null, 'idt_nonce' ),
+		'missing nonce'              => array( array( 'nonce' => null ), null, 'idt_nonce' ),
+		'expired (2 min ago)'        => array( array( 'exp' => $now - 120 ), null, 'idt_exp' ),
+		'iat far in the future'      => array( array( 'iat' => $now + 400 ), null, 'idt_iat' ),
+		'alg none'                   => array( array(), array( 'alg' => 'none' ), 'idt_alg' ),
+		'alg HS256'                  => array( array(), array( 'alg' => 'HS256' ), 'idt_alg' ),
+		'empty sub'                  => array( array( 'sub' => '' ), null, 'idt_sub' ),
+		'sub of 256 characters'      => array( array( 'sub' => str_repeat( 'a', 256 ) ), null, 'idt_sub' ),
+		'numeric sub (not a string)' => array( array( 'sub' => 12345 ), null, 'idt_sub' ),
+	);
+	foreach ( $bad as $name => $case ) {
+		$claims = t_claims( $nonce, $case[0] );
+		$jwt    = null === $case[1] ? t_jwt( $claims ) : t_jwt( $claims, $case[1] );
+		$res    = lc_auth_oauth_google_identity( $jwt, $cid_g, $nonce );
+		t( 'id_token rejected: ' . $name, $case[2] === t_code( $res ), t_code( $res ) );
+	}
+	t( 'id_token: iss without the scheme is accepted', is_array( lc_auth_oauth_google_identity( t_jwt( t_claims( $nonce, array( 'iss' => 'accounts.google.com' ) ) ), $cid_g, $nonce ) ) );
+	t( 'id_token: an aud list containing the client, with matching azp, is accepted', is_array( lc_auth_oauth_google_identity( t_jwt( t_claims( $nonce, array( 'aud' => array( 'other', $cid_g ) ) ) ), $cid_g, $nonce ) ) );
+	t( 'id_token: exp 30 s ago is inside the 60 s skew', is_array( lc_auth_oauth_google_identity( t_jwt( t_claims( $nonce, array( 'exp' => $now - 30 ) ) ), $cid_g, $nonce ) ) );
+	t( 'id_token: email_verified "true" (string) counts as verified', true === lc_auth_oauth_google_identity( t_jwt( t_claims( $nonce, array( 'email_verified' => 'true' ) ) ), $cid_g, $nonce )['email_verified'] );
+	$unv = lc_auth_oauth_google_identity( t_jwt( t_claims( $nonce, array( 'email_verified' => false ) ) ), $cid_g, $nonce );
+	t( 'id_token: email_verified false is reported as unverified', is_array( $unv ) && false === $unv['email_verified'] );
+	$unv2 = lc_auth_oauth_google_identity( t_jwt( t_claims( $nonce, array( 'email_verified' => 'false' ) ) ), $cid_g, $nonce );
+	t( 'id_token: email_verified "false" (string) is unverified', is_array( $unv2 ) && false === $unv2['email_verified'] );
+	t( 'id_token: garbage and wrong shapes rejected', is_wp_error( lc_auth_oauth_google_identity( 'x.y', $cid_g, $nonce ) ) && is_wp_error( lc_auth_oauth_google_identity( '', $cid_g, $nonce ) ) && is_wp_error( lc_auth_oauth_google_identity( 'a.b.c', $cid_g, $nonce ) ) );
+
+	/* ---- callback checks end to end -------------------------------------- */
+	$report( 'OAuth: callback checks' );
+	t_browser();
+	$f = t_g_flow( 'signin', array( 'nonce' => lc_auth_new_token() ) );
+	t( 'callback: wrong nonce in the token refused, nobody signed in', 'oauth_failed' === t_code( $f['res'] ) && 0 === get_current_user_id() );
+	t_browser();
+	$f = t_g_flow( 'signin', array( 'aud' => 'someone-else', 'azp' => null ) );
+	t( 'callback: wrong aud refused', 'oauth_failed' === t_code( $f['res'] ) && 0 === get_current_user_id() );
+	t_browser();
+	$f = t_g_flow( 'signin', array( 'exp' => time() - 600 ) );
+	t( 'callback: expired token refused', 'oauth_failed' === t_code( $f['res'] ) && 0 === get_current_user_id() );
+	t_browser();
+	$f = t_g_flow( 'signin', array( 'iss' => 'https://evil.example' ) );
+	t( 'callback: wrong iss in the token refused', 'oauth_failed' === t_code( $f['res'] ) );
+	t_browser();
+	$f = t_g_flow( 'signin', array(), array(), '', t_resp( 400, array( 'error' => 'invalid_grant' ) ) );
+	t( 'callback: token endpoint error refused', 'oauth_failed' === t_code( $f['res'] ) && 0 === get_current_user_id() );
+	t_browser();
+	$f = t_g_flow( 'signin', array(), array(), '', t_resp( 200, array( 'access_token' => 'x' ) ) );
+	t( 'callback: no id_token in the answer refused', 'oauth_failed' === t_code( $f['res'] ) );
+	t_browser();
+	$f = t_g_flow( 'signin', array(), array( 'iss' => 'https://evil.example' ) );
+	t( 'callback: an iss query parameter that does not match is refused', 'oauth_failed' === t_code( $f['res'] ) && 0 === get_current_user_id() );
+	t_browser();
+	$f = t_g_flow( 'signin', array(), array( 'iss' => 'https://accounts.google.com' ) );
+	t( 'callback: a matching iss query parameter is accepted', is_array( $f['res'] ), t_code( $f['res'] ) );
+
+	// Replay: the state record is single use.
+	t_browser();
+	$b      = t_oauth_begin( 'google', 'signin', '' );
+	$claims = t_claims( $b['nonce'] );
+	$hf     = t_oauth_http( array( 'https://oauth2.googleapis.com/token' => t_resp( 200, array( 'id_token' => t_jwt( $claims ) ) ) ) );
+	$cookie = $_COOKIE[ lc_auth_cookie_name( 'lcauth' ) ] ?? '';
+	$r1     = lc_auth_oauth_callback( 'google', array( 'code' => 'c', 'state' => $b['state'] ) );
+	t_track();
+	t_browser( false );
+	$_COOKIE[ lc_auth_cookie_name( 'lcauth' ) ] = $cookie; // The same browser flow cookie as the first use.
+	$r2 = lc_auth_oauth_callback( 'google', array( 'code' => 'c', 'state' => $b['state'] ) );
+	remove_filter( 'pre_http_request', $hf, 10 );
+	t( 'callback: first use works, a replay of the same state is refused', is_array( $r1 ) && 'oauth_failed' === t_code( $r2 ), t_code( $r1 ) . '/' . t_code( $r2 ) );
+	t( 'callback: unknown, malformed or missing state refused', 'oauth_failed' === t_code( lc_auth_oauth_callback( 'google', array( 'code' => 'c', 'state' => lc_auth_new_token() ) ) ) && 'oauth_failed' === t_code( lc_auth_oauth_callback( 'google', array( 'code' => 'c', 'state' => 'short' ) ) ) && 'oauth_failed' === t_code( lc_auth_oauth_callback( 'google', array() ) ) );
+
+	// A state from Google's flow cannot be redeemed on Discord's callback.
+	t_browser();
+	$b  = t_oauth_begin( 'google', 'signin', '' );
+	$hf = t_oauth_http( array( 'https://discord.com' => t_resp( 200, array( 'access_token' => 'x', 'id' => '99999123456789012' ) ) ) );
+	$n0 = count( $GLOBALS['lc_t_http'] );
+	$r  = lc_auth_oauth_callback( 'discord', array( 'code' => 'c', 'state' => $b['state'] ) );
+	remove_filter( 'pre_http_request', $hf, 10 );
+	t( 'callback: wrong provider (mix-up) refused, no HTTP call made', 'oauth_failed' === t_code( $r ) && 0 === get_current_user_id() && count( $GLOBALS['lc_t_http'] ) === $n0 );
+	t( 'callback: a mix-up burns the state', null === lc_auth_store_get( 'oa', $b['state'] ) );
+
+	// Flow cookie mismatch (login CSRF).
+	t_browser();
+	$b = t_oauth_begin( 'google', 'signin', '' );
+	t_browser( false ); // A different browser flow cookie.
+	$hf = t_oauth_http( array( 'https://oauth2.googleapis.com/token' => t_resp( 200, array( 'id_token' => t_jwt( t_claims( $b['nonce'] ) ) ) ) ) );
+	$n0 = count( $GLOBALS['lc_t_http'] );
+	$r  = lc_auth_oauth_callback( 'google', array( 'code' => 'c', 'state' => $b['state'] ) );
+	remove_filter( 'pre_http_request', $hf, 10 );
+	t( 'callback: flow cookie mismatch refused before any token call', 'oauth_failed' === t_code( $r ) && 0 === get_current_user_id() && count( $GLOBALS['lc_t_http'] ) === $n0 );
+	t_browser();
+	$b = t_oauth_begin( 'google', 'signin', '' );
+	unset( $_COOKIE[ lc_auth_cookie_name( 'lcauth' ) ] );
+	t( 'callback: no flow cookie at all refused', 'oauth_failed' === t_code( lc_auth_oauth_callback( 'google', array( 'code' => 'c', 'state' => $b['state'] ) ) ) );
+
+	// The person cancelled at the provider.
+	t_browser();
+	$b = t_oauth_begin( 'google', 'signin', home_url( '/courses/' ) );
+	$r = lc_auth_oauth_callback( 'google', array( 'error' => 'access_denied', 'state' => $b['state'] ) );
+	t( 'callback: error=access_denied gives oauth_cancelled, keeps the redirect, burns the state', 'oauth_cancelled' === t_code( $r ) && home_url( '/courses/' ) === ( $r->get_error_data()['redirect'] ?? '' ) && null === lc_auth_store_get( 'oa', $b['state'] ) );
+	t( 'callback: error with no state still gives oauth_cancelled', 'oauth_cancelled' === t_code( lc_auth_oauth_callback( 'google', array( 'error' => 'access_denied' ) ) ) );
+
+	// Callback rate limit.
+	t_browser();
+	$r = null;
+	for ( $i = 0; $i < 31; $i++ ) {
+		$r = lc_auth_oauth_callback( 'google', array( 'code' => 'c', 'state' => 'x' ) );
+	}
+	t( 'callback: rate limited after 30 per window', 'rate' === t_code( $r ) );
+
+	// Redirect handling.
+	t_browser();
+	$f = t_g_flow( 'signin', array(), array(), 'https://evil.example/phish' );
+	t( 'redirect: an off-site redirect_to falls back to /account/', is_array( $f['res'] ) && lc_auth_account_url() === $f['res']['redirect'], t_code( $f['res'] ) );
+	t_browser();
+	$f = t_g_flow( 'signin', array(), array(), home_url( '/courses/' ) );
+	t( 'redirect: a same-site redirect_to is kept', is_array( $f['res'] ) && home_url( '/courses/' ) === $f['res']['redirect'], t_code( $f['res'] ) );
+	t_browser();
+	$f = t_g_flow( 'signin', array(), array(), home_url( '/account/email-link/?t=abc' ) );
+	t( 'redirect: our own flow pages are not valid destinations', is_array( $f['res'] ) && lc_auth_account_url() === $f['res']['redirect'] );
+
+	/* ---- Google sign-in matrix ------------------------------------------ */
+	$report( 'OAuth: Google sign-in matrix' );
+	t_browser();
+	$users_before = (int) count_users()['total_users'];
+	$email_new    = 'oa' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid';
+	$f            = t_g_flow( 'signin', array( 'email' => $email_new ) );
+	$nu           = get_user_by( 'email', $email_new );
+	t( 'no match: a new member is created and signed in', is_array( $f['res'] ) && $f['res']['new_account'] && $nu && get_current_user_id() === $nu->ID, t_code( $f['res'] ) );
+	t( 'new member: verified email, provider name, subscriber, subject stored with a masked hint', $nu && lc_auth_email_verified( $nu ) && 'Tess' === $nu->display_name && array( 'subscriber' ) === $nu->roles && $f['claims']['sub'] === get_user_meta( $nu->ID, 'lc_idp_google', true ) && lc_auth_mask_email( $email_new ) === ( get_user_meta( $nu->ID, 'lc_idp_info', true )['google']['hint'] ?? '' ) );
+	t( 'new member: methods = email + idp:google', $nu && array( 'email', 'idp:google' ) === lc_auth_methods( $nu ) );
+	t( 'new member: login is random (no email, no subject)', $nu && 0 === strpos( $nu->user_login, 'm_' ) && false === strpos( $nu->user_login, 'oa' ) );
+	t( 'no match: exactly one user was added', (int) count_users()['total_users'] === $users_before + 1 );
+
+	// Existing identity.
+	t_browser();
+	$f2 = t_g_flow( 'signin', array( 'sub' => $f['claims']['sub'], 'email' => $email_new ) );
+	t( 'existing identity: signs in as that account, no new user', is_array( $f2['res'] ) && ! $f2['res']['new_account'] && $nu && get_current_user_id() === $nu->ID && (int) count_users()['total_users'] === $users_before + 1, t_code( $f2['res'] ) );
+	t_browser();
+	$f2 = t_g_flow( 'signin', array( 'sub' => $f['claims']['sub'], 'email' => 'changed' . bin2hex( random_bytes( 3 ) ) . '@lc-test.invalid' ) );
+	t( 'existing identity: a changed provider email does not matter (the key is the subject)', is_array( $f2['res'] ) && $nu && get_current_user_id() === $nu->ID );
+
+	// Existing identity marks a matching, still-unverified local email verified.
+	t_browser();
+	$eu = t_user();
+	update_user_meta( $eu->ID, 'lc_idp_google', 'lctest-ev-' . $eu->ID );
+	t( 'precondition: local email unverified', ! lc_auth_email_verified( $eu ) );
+	$f2 = t_g_flow( 'signin', array( 'sub' => 'lctest-ev-' . $eu->ID, 'email' => $eu->user_email ) );
+	t( 'existing identity + provider-verified matching email: the email becomes verified', is_array( $f2['res'] ) && get_current_user_id() === $eu->ID && lc_auth_email_verified( $eu->ID ), t_code( $f2['res'] ) );
+	t_browser();
+	$eu2 = t_user();
+	update_user_meta( $eu2->ID, 'lc_idp_google', 'lctest-ev2-' . $eu2->ID );
+	$f2 = t_g_flow( 'signin', array( 'sub' => 'lctest-ev2-' . $eu2->ID, 'email' => 'other' . bin2hex( random_bytes( 3 ) ) . '@lc-test.invalid' ) );
+	t( 'existing identity + a different provider email: the local email stays unverified', is_array( $f2['res'] ) && get_current_user_id() === $eu2->ID && ! lc_auth_email_verified( $eu2->ID ) );
+
+	// Staff with an identity are refused.
+	t_browser();
+	$st = t_user( 'editor' );
+	update_user_meta( $st->ID, 'lc_idp_google', 'lctest-staff-' . $st->ID );
+	$f2 = t_g_flow( 'signin', array( 'sub' => 'lctest-staff-' . $st->ID, 'email' => $st->user_email ) );
+	t( 'existing identity on a staff account: refused (password_only), not signed in', 'password_only' === t_code( $f2['res'] ) && 0 === get_current_user_id() );
+
+	// Auto-link: provider email verified AND local email verified.
+	t_browser();
+	$al = t_user();
+	lc_auth_mark_email_verified( $al->ID, $al->user_email );
+	lc_auth_dev_outbox_clear();
+	$f2 = t_g_flow( 'signin', array( 'email' => $al->user_email ) );
+	t( 'auto-link: verified local + verified provider email -> linked, signed in as the existing account', is_array( $f2['res'] ) && ! $f2['res']['new_account'] && get_current_user_id() === $al->ID && $f2['claims']['sub'] === get_user_meta( $al->ID, 'lc_idp_google', true ), t_code( $f2['res'] ) );
+	t( 'auto-link: the verified address is notified once', 1 === t_outbox_count( $al->user_email ) );
+	t( 'auto-link: methods now include idp:google', in_array( 'idp:google', lc_auth_methods( get_userdata( $al->ID ) ), true ) );
+
+	// Provider email unverified: no auto-link, no account takeover.
+	t_browser();
+	$un = t_user();
+	lc_auth_mark_email_verified( $un->ID, $un->user_email );
+	$f2 = t_g_flow( 'signin', array( 'email' => $un->user_email, 'email_verified' => false ) );
+	$nm = get_current_user_id();
+	t( 'provider email unverified: not linked to the existing account', '' === (string) get_user_meta( $un->ID, 'lc_idp_google', true ) && $nm !== $un->ID );
+	t( 'provider email unverified: a fresh member with no email is created instead', is_array( $f2['res'] ) && $f2['res']['new_account'] && '' === get_userdata( $nm )->user_email && ! lc_auth_email_verified( $nm ) );
+
+	// Local email unverified: refuse and say how to proceed.
+	t_browser();
+	$lu = t_user();
+	$f2 = t_g_flow( 'signin', array( 'email' => $lu->user_email ) );
+	t( 'local email unverified: refused (oauth_email_exists), nothing linked, not signed in', 'oauth_email_exists' === t_code( $f2['res'] ) && 0 === get_current_user_id() && '' === (string) get_user_meta( $lu->ID, 'lc_idp_google', true ) );
+	t( 'oauth_email_exists has its own wording that points to the email link', lc_auth_text( 'oauth_email_exists' ) !== lc_auth_text( 'unknown' ) && false !== stripos( lc_auth_text( 'oauth_email_exists' ), 'email link' ) );
+
+	// Staff by email.
+	t_browser();
+	$f2 = t_g_flow( 'signin', array( 'email' => $st->user_email ) );
+	t( 'staff account with that email: refused (password_only), nothing linked', 'password_only' === t_code( $f2['res'] ) && 0 === get_current_user_id() && '' === (string) get_user_meta( $st->ID, 'lc_idp_google', true ) );
+	lc_auth_mark_email_verified( $st->ID, $st->user_email );
+	t_browser();
+	$f2 = t_g_flow( 'signin', array( 'email' => $st->user_email ) );
+	t( 'staff account with a VERIFIED matching email: still refused', 'password_only' === t_code( $f2['res'] ) && '' === (string) get_user_meta( $st->ID, 'lc_idp_google', true ) );
+
+	// Existing account already has a different Google identity.
+	t_browser();
+	$hs = t_user();
+	lc_auth_mark_email_verified( $hs->ID, $hs->user_email );
+	update_user_meta( $hs->ID, 'lc_idp_google', 'lctest-other-' . $hs->ID );
+	$f2 = t_g_flow( 'signin', array( 'email' => $hs->user_email ) );
+	t( 'auto-link refused when the account already has another Google identity', 'idp_has_other' === t_code( $f2['res'] ) && 'lctest-other-' . $hs->ID === get_user_meta( $hs->ID, 'lc_idp_google', true ) && 0 === get_current_user_id() );
+
+	// Integrity: the same subject on two accounts.
+	t_browser();
+	$d1 = t_user();
+	$d2 = t_user();
+	update_user_meta( $d1->ID, 'lc_idp_google', 'lctest-dup-' . $d1->ID );
+	update_user_meta( $d2->ID, 'lc_idp_google', 'lctest-dup-' . $d1->ID );
+	$f2 = t_g_flow( 'signin', array( 'sub' => 'lctest-dup-' . $d1->ID ) );
+	t( 'integrity: one subject on two accounts is refused (idp_conflict)', 'idp_conflict' === t_code( $f2['res'] ) && 0 === get_current_user_id() );
+	update_user_meta( $d2->ID, 'lc_merged_into', $d1->ID );
+	t_browser();
+	$f2 = t_g_flow( 'signin', array( 'sub' => 'lctest-dup-' . $d1->ID ) );
+	t( 'integrity: a merged-away holder is ignored', is_array( $f2['res'] ) && get_current_user_id() === $d1->ID );
+
+	// Sign-up switched off: new identities refused, existing ones still in.
+	t_browser();
+	add_filter( 'lc_auth_signup_enabled', '__return_false' );
+	$f2 = t_g_flow( 'signin' );
+	$f3 = t_g_flow( 'signin', array( 'sub' => $f['claims']['sub'], 'email' => $email_new ) );
+	remove_filter( 'lc_auth_signup_enabled', '__return_false' );
+	t( 'sign-up closed: a new identity is refused (signup_closed); a known one still signs in', 'signup_closed' === t_code( $f2['res'] ) && is_array( $f3['res'] ) );
+
+	// Signing in while signed in as someone else ends the old session.
+	t_browser();
+	$other = t_user();
+	t_session( $other->ID );
+	$old_token = wp_get_session_token();
+	$f2        = t_g_flow( 'signin', array( 'sub' => $f['claims']['sub'], 'email' => $email_new ) );
+	t( 'switching accounts: signed in as the identity owner; the previous session is destroyed', is_array( $f2['res'] ) && get_current_user_id() === $nu->ID && null === WP_Session_Tokens::get_instance( $other->ID )->get( $old_token ) );
+
+	/* ---- Discord ---------------------------------------------------------- */
+	$report( 'OAuth: Discord' );
+	t_browser();
+	$de          = 'od' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid';
+	$http_before = count( $GLOBALS['lc_t_http'] );
+	$d           = t_d_flow( 'signin', array( 'email' => $de ) );
+	$du          = get_user_by( 'email', $de );
+	t( 'discord: new member with verified email, signed in', is_array( $d['res'] ) && $d['res']['new_account'] && $du && get_current_user_id() === $du->ID && lc_auth_email_verified( $du ), t_code( $d['res'] ) );
+	t( 'discord: display name from global_name; identity stored under lc_idp_discord', $du && 'Tess D' === $du->display_name && $d['profile']['id'] === get_user_meta( $du->ID, 'lc_idp_discord', true ) );
+	$reqs = array_slice( $GLOBALS['lc_t_http'], $http_before );
+	$urls = array_column( $reqs, 'url' );
+	t( 'discord: token, profile and revoke were called, in that order', array( 'https://discord.com/api/oauth2/token', 'https://discord.com/api/v10/users/@me', 'https://discord.com/api/oauth2/token/revoke' ) === $urls, implode( ' ', $urls ) );
+	$tok = $reqs[0]['args'] ?? array();
+	t( 'discord token call: form body, TLS verified, 10 s timeout, code_verifier matches the challenge', ( $tok['sslverify'] ?? null ) === true && 10 === (int) ( $tok['timeout'] ?? 0 ) && 'authorization_code' === ( $tok['body']['grant_type'] ?? '' ) && lc_auth_oauth_redirect_uri( 'discord' ) === ( $tok['body']['redirect_uri'] ?? '' ) && lc_auth_b64url( hash( 'sha256', (string) ( $tok['body']['code_verifier'] ?? '' ), true ) ) === $d['b']['q']['code_challenge'] );
+	t( 'discord profile call sends the bearer token', 'Bearer at-d' === ( $reqs[1]['args']['headers']['Authorization'] ?? '' ) );
+	t( 'discord revoke call carries the token', 'at-d' === ( $reqs[2]['args']['body']['token'] ?? '' ) );
+
+	t_browser();
+	$d  = t_d_flow( 'signin', array( 'email' => null ) );
+	$nm = get_current_user_id();
+	t( 'discord null email: a member with no email is created and signed in', is_array( $d['res'] ) && $d['res']['new_account'] && $nm && '' === get_userdata( $nm )->user_email && array( 'idp:discord' ) === lc_auth_methods( get_userdata( $nm ) ), t_code( $d['res'] ) );
+	t( 'discord null email: no masked hint is stored', '' === ( get_user_meta( $nm, 'lc_idp_info', true )['discord']['hint'] ?? 'x' ) );
+	t( 'last-method guard: a Discord-only account cannot remove Discord', ! lc_auth_can_remove( get_userdata( $nm ), 'idp:discord' ) );
+
+	t_browser();
+	$ue = 'od' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid';
+	$d  = t_d_flow( 'signin', array( 'email' => $ue, 'verified' => false ) );
+	$nm = get_current_user_id();
+	t( 'discord unverified email: a member is created WITHOUT that email', is_array( $d['res'] ) && $nm && '' === get_userdata( $nm )->user_email && false === get_user_by( 'email', $ue ) );
+
+	t_browser();
+	$da = t_user();
+	lc_auth_mark_email_verified( $da->ID, $da->user_email );
+	lc_auth_dev_outbox_clear();
+	$d = t_d_flow( 'signin', array( 'email' => $da->user_email ) );
+	t( 'discord auto-link to a verified local email works and notifies', is_array( $d['res'] ) && get_current_user_id() === $da->ID && $d['profile']['id'] === get_user_meta( $da->ID, 'lc_idp_discord', true ) && 1 === t_outbox_count( $da->user_email ) );
+
+	t_browser();
+	$d = t_d_flow( 'signin', array( 'id' => 'not-digits' ) );
+	t( 'discord: a non-numeric id is rejected', 'oauth_failed' === t_code( $d['res'] ) && 0 === get_current_user_id() );
+	t_browser();
+	$bd = t_oauth_begin( 'discord', 'signin', '' );
+	$hf = t_oauth_http( array( 'https://discord.com/api/oauth2/token/revoke' => t_resp( 200, '{}' ), 'https://discord.com/api/oauth2/token' => t_resp( 200, array( 'access_token' => 'at' ) ), 'https://discord.com/api/v10/users/@me' => t_resp( 401, array( 'message' => '401: Unauthorized' ) ) ) );
+	$r  = lc_auth_oauth_callback( 'discord', array( 'code' => 'c', 'state' => $bd['state'] ) );
+	remove_filter( 'pre_http_request', $hf, 10 );
+	t( 'discord: the profile call failing is refused', 'oauth_failed' === t_code( $r ) && 0 === get_current_user_id() );
+	t_browser();
+	$bd = t_oauth_begin( 'discord', 'signin', '' );
+	$r  = lc_auth_oauth_callback( 'discord', array( 'code' => 'c', 'state' => $bd['state'], 'iss' => 'https://evil.example' ) );
+	t( 'discord: an iss parameter mismatch is refused', 'oauth_failed' === t_code( $r ) );
+	t_browser();
+	$bd = t_oauth_begin( 'discord', 'signin', '' );
+	$hf = t_oauth_http( array( 'https://discord.com' => new WP_Error( 'http_request_failed', 'timeout' ) ) );
+	$r  = lc_auth_oauth_callback( 'discord', array( 'code' => 'c', 'state' => $bd['state'] ) );
+	remove_filter( 'pre_http_request', $hf, 10 );
+	t( 'discord: a network failure on the token call is refused', 'oauth_failed' === t_code( $r ) );
+
+	/* ---- linking from the account page ---------------------------------- */
+	$report( 'OAuth: linking, unlinking' );
+	t_browser();
+	$lk = t_user();
+	lc_auth_mark_email_verified( $lk->ID, $lk->user_email );
+	t_session( $lk->ID );
+	lc_auth_dev_outbox_clear();
+	$f2 = t_g_flow( 'link', array( 'email' => 'x' . bin2hex( random_bytes( 3 ) ) . '@lc-test.invalid' ) );
+	t( 'link: connects Google to the signed-in account and lands on /account/ with a notice', is_array( $f2['res'] ) && $f2['claims']['sub'] === get_user_meta( $lk->ID, 'lc_idp_google', true ) && add_query_arg( 'done', 'idp_linked', lc_auth_account_url() ) === $f2['res']['redirect'], t_code( $f2['res'] ) );
+	t( 'link: still the same user, and the verified address is notified', get_current_user_id() === $lk->ID && 1 === t_outbox_count( $lk->user_email ) );
+	t( 'link: info row has linked/used timestamps and a masked hint', ! empty( get_user_meta( $lk->ID, 'lc_idp_info', true )['google']['linked'] ) && false !== strpos( (string) get_user_meta( $lk->ID, 'lc_idp_info', true )['google']['hint'], '•••@' ) );
+	t( 'link: methods = email + idp:google', array( 'email', 'idp:google' ) === lc_auth_methods( get_userdata( $lk->ID ) ) );
+	t( 'link: the local email is left alone when the account already has one', $lk->user_email === get_userdata( $lk->ID )->user_email );
+
+	lc_auth_dev_outbox_clear();
+	$f3 = t_g_flow( 'link', array( 'sub' => $f2['claims']['sub'] ) );
+	t( 'link: the same subject again is a no-op (no second notice)', is_array( $f3['res'] ) && $f2['claims']['sub'] === get_user_meta( $lk->ID, 'lc_idp_google', true ) && 0 === t_outbox_count( $lk->user_email ), t_code( $f3['res'] ) );
+	$f3 = t_g_flow( 'link', array( 'sub' => 'lctest-second-' . $lk->ID ) );
+	t( 'link: a different Google account while one is connected is refused (disconnect first)', 'idp_has_other' === t_code( $f3['res'] ) && $f2['claims']['sub'] === get_user_meta( $lk->ID, 'lc_idp_google', true ) );
+
+	t_browser();
+	$lb = t_user();
+	t_session( $lb->ID );
+	$f3 = t_g_flow( 'link', array( 'sub' => $f2['claims']['sub'] ) );
+	t( 'link conflict: a subject held by another account is refused (idp_in_use), nothing merged', 'idp_in_use' === t_code( $f3['res'] ) && '' === (string) get_user_meta( $lb->ID, 'lc_idp_google', true ) && $f2['claims']['sub'] === get_user_meta( $lk->ID, 'lc_idp_google', true ) );
+
+	t_browser();
+	$ln = t_user( 'subscriber', false );
+	t_session( $ln->ID );
+	$free = 'oa' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid';
+	$f3   = t_g_flow( 'link', array( 'email' => $free ) );
+	$ln2  = get_userdata( $ln->ID );
+	t( 'link sets a missing email when the provider email is verified and free (and verifies it)', is_array( $f3['res'] ) && $free === $ln2->user_email && lc_auth_email_verified( $ln2 ) && add_query_arg( 'done', 'idp_email_set', lc_auth_account_url() ) === $f3['res']['redirect'], t_code( $f3['res'] ) );
+	t_browser();
+	$ln = t_user( 'subscriber', false );
+	t_session( $ln->ID );
+	$taken = t_user();
+	$f3    = t_g_flow( 'link', array( 'email' => $taken->user_email ) );
+	t( 'link: a provider email that belongs to someone else is not copied (still linked)', is_array( $f3['res'] ) && '' === get_userdata( $ln->ID )->user_email && $f3['claims']['sub'] === get_user_meta( $ln->ID, 'lc_idp_google', true ) );
+	t_browser();
+	$ln = t_user( 'subscriber', false );
+	t_session( $ln->ID );
+	$f3 = t_g_flow( 'link', array( 'email' => 'oa' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid', 'email_verified' => false ) );
+	t( 'link: an unverified provider email is never copied', is_array( $f3['res'] ) && '' === get_userdata( $ln->ID )->user_email );
+
+	// The link callback must come back to the same user and session.
+	t_browser();
+	$u1 = t_user();
+	$u2 = t_user();
+	t_session( $u1->ID );
+	$b = t_oauth_begin( 'google', 'link', '' );
+	t_session( $u2->ID ); // Another user in the same browser.
+	$hf = t_oauth_http( array( 'https://oauth2.googleapis.com/token' => t_resp( 200, array( 'id_token' => t_jwt( t_claims( $b['nonce'] ) ) ) ) ) );
+	$r  = lc_auth_oauth_callback( 'google', array( 'code' => 'c', 'state' => $b['state'] ) );
+	remove_filter( 'pre_http_request', $hf, 10 );
+	t( 'link callback: a different signed-in user is refused', 'oauth_failed' === t_code( $r ) && '' === (string) get_user_meta( $u2->ID, 'lc_idp_google', true ) );
+	t_browser();
+	t_session( $u1->ID );
+	$b = t_oauth_begin( 'google', 'link', '' );
+	t_session( $u1->ID ); // Same user, a new session token.
+	$hf = t_oauth_http( array( 'https://oauth2.googleapis.com/token' => t_resp( 200, array( 'id_token' => t_jwt( t_claims( $b['nonce'] ) ) ) ) ) );
+	$r  = lc_auth_oauth_callback( 'google', array( 'code' => 'c', 'state' => $b['state'] ) );
+	remove_filter( 'pre_http_request', $hf, 10 );
+	t( 'link callback: the same user on a different session is refused', 'oauth_failed' === t_code( $r ) && '' === (string) get_user_meta( $u1->ID, 'lc_idp_google', true ) );
+	t_browser();
+	t_session( $u1->ID );
+	$b = t_oauth_begin( 'google', 'link', '' );
+	unset( $_COOKIE[ LOGGED_IN_COOKIE ] );
+	wp_set_current_user( 0 );
+	$hf = t_oauth_http( array( 'https://oauth2.googleapis.com/token' => t_resp( 200, array( 'id_token' => t_jwt( t_claims( $b['nonce'] ) ) ) ) ) );
+	$r  = lc_auth_oauth_callback( 'google', array( 'code' => 'c', 'state' => $b['state'] ) );
+	remove_filter( 'pre_http_request', $hf, 10 );
+	t( 'link callback: signed out in between is refused (never turns into a sign-in)', 'oauth_failed' === t_code( $r ) && 0 === get_current_user_id() );
+
+	// A sign-in state never links to whoever happens to be signed in.
+	t_browser();
+	$u3 = t_user();
+	$b  = t_oauth_begin( 'google', 'signin', '' );
+	t_session( $u3->ID );
+	$hf = t_oauth_http( array( 'https://oauth2.googleapis.com/token' => t_resp( 200, array( 'id_token' => t_jwt( t_claims( $b['nonce'] ) ) ) ) ) );
+	$r  = lc_auth_oauth_callback( 'google', array( 'code' => 'c', 'state' => $b['state'] ) );
+	remove_filter( 'pre_http_request', $hf, 10 );
+	t_track();
+	t( 'a sign-in state never links to the account that happens to be signed in', is_array( $r ) && '' === (string) get_user_meta( $u3->ID, 'lc_idp_google', true ) && get_current_user_id() !== $u3->ID );
+
+	// Unlink and the last-method guard.
+	t_browser();
+	t( 'unlink: allowed while another method remains (verified email)', lc_auth_can_remove( get_userdata( $lk->ID ), 'idp:google' ) );
+	lc_auth_dev_outbox_clear();
+	lc_auth_idp_remove( $lk->ID, 'google' );
+	lc_auth_idp_notify( get_userdata( $lk->ID ), 'google', 'idp_unlinked' );
+	t( 'unlink: identity and info are gone, the address is told', '' === (string) get_user_meta( $lk->ID, 'lc_idp_google', true ) && ! isset( get_user_meta( $lk->ID, 'lc_idp_info', true )['google'] ) && 1 === t_outbox_count( $lk->user_email ) );
+	t( 'unlink: no longer a method', ! in_array( 'idp:google', lc_auth_methods( get_userdata( $lk->ID ) ), true ) );
+	$only = t_user();
+	update_user_meta( $only->ID, 'lc_idp_google', 'lctest-only-' . $only->ID );
+	t( 'last-method guard: a Google-only account (unverified email) cannot unlink Google', ! lc_auth_can_remove( get_userdata( $only->ID ), 'idp:google' ) && array( 'idp:google' ) === lc_auth_methods( get_userdata( $only->ID ) ) );
+	$wl = t_wallet();
+	add_user_meta( $only->ID, 'lc_wallet', $wl['stake'] );
+	t( 'last-method guard: with a wallet as well, Google can be unlinked', lc_auth_can_remove( get_userdata( $only->ID ), 'idp:google' ) && lc_auth_can_remove( get_userdata( $only->ID ), 'wallet:' . $wl['stake'] ) );
+	$ghost = t_user();
+	t( 'last-method guard: a provider that is not linked is not a method', ! lc_auth_can_remove( get_userdata( $ghost->ID ), 'idp:discord' ) );
+
+	// Secrets never appear in request URLs; routes are GET-only and whitelisted.
+	$all_http = wp_json_encode( array_column( $GLOBALS['lc_t_http'], 'url' ) );
+	t( 'secrets never appear in request URLs', false === strpos( $all_http, lc_auth_oauth_creds( 'google' )['secret'] ) && false === strpos( $all_http, lc_auth_oauth_creds( 'discord' )['secret'] ) );
+	$routes = lc_auth_routes();
+	t( 'routes: start and callback for both providers are whitelisted, GET only', isset( $routes['oauth/google']['GET'], $routes['oauth/google/callback']['GET'], $routes['oauth/discord']['GET'], $routes['oauth/discord/callback']['GET'] ) && 1 === count( $routes['oauth/google'] ) && 1 === count( $routes['oauth/discord/callback'] ) && is_callable( $routes['oauth/google']['GET'] ) && is_callable( $routes['oauth/discord/callback']['GET'] ) );
+
 } catch ( Throwable $e ) {
 	t( 'no exception', false, get_class( $e ) . ': ' . $e->getMessage() . ' @' . basename( $e->getFile() ) . ':' . $e->getLine() );
 } finally {
@@ -1003,13 +1620,13 @@ try {
 		wp_delete_comment( $cid, true );
 	}
 	// Anything created by flows (members made by wallet/email sign-up) carries no lc_test meta; the ones we saw are tracked.
-	$ids = array_unique( array_merge( $GLOBALS['lc_t']['users'], array_map( 'intval', $wpdb->get_col( "SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = 'lc_test'" ) ) ) );
+	$ids = array_unique( array_merge( $GLOBALS['lc_t']['users'], array_map( 'intval', $wpdb->get_col( "SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = 'lc_test' OR (meta_key = 'lc_idp_google' AND meta_value LIKE 'lctest-%')" ) ), array_map( 'intval', $wpdb->get_col( "SELECT ID FROM {$wpdb->users} WHERE user_email LIKE '%@lc-test.invalid'" ) ) ) );
 	foreach ( $ids as $id ) {
 		if ( get_userdata( $id ) ) {
 			wp_delete_user( $id );
 		}
 	}
-	foreach ( array( 'lc\_rl\_', 'lc\_ml\_', 'lc\_mli\_', 'lc\_wc\_', 'lc\_tt\_' ) as $prefix ) {
+	foreach ( array( 'lc\_oa\_', 'lc\_rl\_', 'lc\_ml\_', 'lc\_mli\_', 'lc\_wc\_', 'lc\_tt\_' ) as $prefix ) {
 		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_{$prefix}%' OR option_name LIKE '\\_transient\\_timeout\\_{$prefix}%'" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- fixed strings.
 	}
 	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'lc\\_lock\\_%'" );

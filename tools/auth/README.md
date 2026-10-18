@@ -36,3 +36,32 @@ wp --path=… eval-file ~/lc-tools/auth/outbox.php email=x@lc-test.invalid   # n
 Run `wp rewrite flush` after deploying the theme (the deploy does not flush); the tests check that the `/account/` rule exists.
 
 `tools/accounts/migrate-cardanopress.php` is the one-off clean-up of CardanoPress-era accounts (dry run by default; `apply <backup-dir>`, `restore <backup.json>`).
+
+## Google and Discord sign-in (R3)
+
+Code: `includes/auth/oauth.php` (loaded only by `/account/*` routes and the pages that show the buttons). A provider is on only when both of its constants are set and non-empty in `wp-config.php`:
+
+```php
+define( 'LC_GOOGLE_CLIENT_ID',     '…' );
+define( 'LC_GOOGLE_CLIENT_SECRET', '…' );
+define( 'LC_DISCORD_CLIENT_ID',     '…' );
+define( 'LC_DISCORD_CLIENT_SECRET', '…' );
+```
+
+Paste them in wp-config only; nothing prints or logs them. Remove a pair (or filter `lc_auth_provider_enabled`) to switch that provider off: its buttons disappear and its routes answer "not available".
+
+**Redirect URIs** to register at each provider, exact, with the trailing slash, one pair per host:
+
+| Host | Google | Discord |
+|---|---|---|
+| live | `https://learncardano.io/account/oauth/google/callback/` | `https://learncardano.io/account/oauth/discord/callback/` |
+| staging | `https://staging2.learncardano.io/account/oauth/google/callback/` | `https://staging2.learncardano.io/account/oauth/discord/callback/` |
+
+One Google web client and one Discord application can serve both hosts: list both redirect URIs in each, and put the same four constants in both wp-configs.
+
+- Google: Cloud console, a *Web application* OAuth client, consent screen **In production** (the `openid email profile` scopes need no verification). The id_token is read from the direct TLS token exchange, so no signature check is made (documented in `lc_auth_oauth_google_identity()`).
+- Discord: scopes `identify email`. PKCE is on; if Discord rejects `code_verifier` on staging, turn it off with `add_filter( 'lc_auth_oauth_pkce', '__return_false' );` (the `state` and flow-cookie binding stay). Tokens are revoked right after the profile call.
+- Routes: `GET /account/oauth/{google|discord}/` (start) and `GET /account/oauth/{google|discord}/callback/`. Connecting from the account page is a POST (`lc_action=link_oauth`) that needs a session at most 30 minutes old.
+- Storage: user meta `lc_idp_google` / `lc_idp_discord` (the provider's stable subject), `lc_idp_info` (linked, last used, masked email). Support can disconnect a provider on the user-edit screen.
+
+Tests: the "OAuth" sections of `test-flows.php` mock all provider HTTP with `pre_http_request` (no real call is made) and define `LC_*_CLIENT_ID/SECRET` as `test-client` values only if the site has none.
