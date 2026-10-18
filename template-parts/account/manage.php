@@ -108,8 +108,8 @@ $lc_date     = function ( $ts ) {
 			<li>
 				<strong><?php echo esc_html( $lc_prov['label'] ); ?></strong>
 				<?php if ( $lc_on ) : ?>
-					<?php if ( ! empty( $lc_idp_info[ $lc_pid ][hint] ) ) : ?>
-						<code><?php echo esc_html( $lc_idp_info[ $lc_pid ][hint] ); ?></code>
+					<?php if ( ! empty( $lc_idp_info[ $lc_pid ]['hint'] ) ) : ?>
+						<code><?php echo esc_html( $lc_idp_info[ $lc_pid ]['hint'] ); ?></code>
 					<?php endif; ?>
 					<small>
 						<?php

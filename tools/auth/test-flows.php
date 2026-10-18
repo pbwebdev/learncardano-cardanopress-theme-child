@@ -1074,6 +1074,28 @@ try {
 
 	/* ============================================================ account == */
 	$report( 'Account' );
+	// Render the account page for a member with every way to sign in connected,
+	// so a template error in any row (wallet, Google, Discord) fails here, not on the site.
+	$full = t_user();
+	lc_auth_mark_email_verified( $full->ID, $full->user_email );
+	add_user_meta( $full->ID, 'lc_wallet', 'stake1u' . str_repeat( 'q', 52 ) );
+	update_user_meta( $full->ID, 'lc_wallet_info', array( 'stake1u' . str_repeat( 'q', 52 ) => array( 'linked' => time(), 'used' => time() ) ) );
+	foreach ( array( 'google', 'discord' ) as $p ) {
+		update_user_meta( $full->ID, 'lc_idp_' . $p, 'lctest-render-' . $p . '-' . $full->ID );
+	}
+	update_user_meta( $full->ID, 'lc_idp_info', array( 'google' => array( 'linked' => time(), 'used' => time(), 'hint' => 'p•••@gmail.com' ), 'discord' => array( 'linked' => time(), 'used' => 0, 'hint' => '' ) ) );
+	wp_set_current_user( $full->ID );
+	$html = '';
+	try {
+		ob_start();
+		get_template_part( 'template-parts/account/manage' );
+		$html = ob_get_clean();
+	} catch ( Throwable $e ) {
+		ob_end_clean();
+		$html = 'FATAL ' . $e->getMessage();
+	}
+	t( 'account page renders with wallet, Google and Discord all connected', false !== strpos( $html, 'value="signout"' ) && substr_count( $html, 'Disconnect' ) >= 2, substr( $html, 0, 120 ) );
+	wp_set_current_user( 0 );
 	t_browser();
 	$names_ok  = array( 'Alice B', 'Jo', 'Åsa Ünal', str_repeat( 'a', 40 ) );
 	$names_bad = array( 'a', str_repeat( 'a', 41 ), 'me@example.com', 'see http://x.test', 'www.example.com', md5( 'x' ), $w['stake'], 'addr1' . str_repeat( 'q', 30 ), $editor->display_name, strtoupper( $editor->display_name ), 'Admin', $editor->user_login );
