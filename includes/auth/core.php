@@ -460,6 +460,7 @@ function lc_auth_set_cookie( $base, $value, $ttl ) {
 	} else {
 		unset( $_COOKIE[ $name ] );
 	}
+	do_action( 'lc_auth_cookie_set', $base, $ttl ); // Lets the tests see a cookie (re)issue after headers are sent.
 	if ( headers_sent() ) {
 		return;
 	}

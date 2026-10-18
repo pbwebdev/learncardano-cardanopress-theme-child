@@ -1677,6 +1677,27 @@ try {
 	$r  = lc_auth_oauth_callback( 'google', array( 'code' => 'c', 'state' => $b['state'] ) );
 	remove_filter( 'pre_http_request', $hf, 10 );
 	t( 'link callback: signed out in between is refused (never turns into a sign-in)', 'oauth_failed' === t_code( $r ) && 0 === get_current_user_id() );
+	// The session is ended while the provider call runs (the real owner revoked it): nothing is connected.
+	t_browser();
+	t_session( $u1->ID );
+	$b    = t_oauth_begin( 'google', 'link', '' );
+	$jwt  = t_jwt( t_claims( $b['nonce'] ) );
+	$kill = function ( $pre, $args, $url ) use ( $u1, $jwt ) {
+		unset( $args );
+		if ( 0 !== strpos( (string) $url, 'https://oauth2.googleapis.com/token' ) ) {
+			return $pre;
+		}
+		WP_Session_Tokens::get_instance( $u1->ID )->destroy_all();
+		return t_resp( 200, array( 'id_token' => $jwt ) );
+	};
+	add_filter( 'pre_http_request', $kill, 10, 3 );
+	$r = lc_auth_oauth_callback( 'google', array( 'code' => 'c', 'state' => $b['state'] ) );
+	remove_filter( 'pre_http_request', $kill, 10 );
+	t( 'link callback: session ended during the provider call -> nothing connected', 'oauth_failed' === t_code( $r ) && '' === (string) get_user_meta( $u1->ID, 'lc_idp_google', true ), t_code( $r ) );
+	// Signing in with a connected identity only refreshes its info; it never re-adds a removed one.
+	$tu = t_user();
+	lc_auth_idp_touch( $tu->ID, 'google', 'x@lc-test.invalid' );
+	t( 'idp touch: does nothing for an identity that is not connected', '' === (string) get_user_meta( $tu->ID, 'lc_idp_google', true ) && ! isset( ( (array) get_user_meta( $tu->ID, 'lc_idp_info', true ) )['google'] ) );
 
 	// A sign-in state never links to whoever happens to be signed in.
 	t_browser();
@@ -1754,18 +1775,39 @@ try {
 	t( 'sec-fetch: dest alone is enough to reject', lc_auth_oauth_subresource() );
 	unset( $_SERVER['HTTP_SEC_FETCH_DEST'] );
 	t_browser();
+	unset( $_COOKIE[ lc_auth_cookie_name( 'lcauth' ) ] ); // A first visit: no flow cookie yet.
 	$before                      = t_live_states();
+	$sets                        = array();
+	$spy                         = function ( $base, $ttl ) use ( &$sets ) {
+		$sets[] = array( $base, $ttl );
+	};
+	add_action( 'lc_auth_cookie_set', $spy, 10, 2 );
 	$_SERVER['HTTP_SEC_PURPOSE'] = 'prefetch';
 	$res                         = lc_auth_oauth_start( 'google', 'signin', '' );
 	unset( $_SERVER['HTTP_SEC_PURPOSE'] );
-	t( 'prefetch: start returns without creating a state record or a cookie', 'oauth_prefetch' === t_code( $res ) && t_live_states() === $before );
+	remove_action( 'lc_auth_cookie_set', $spy, 10 );
+	t( 'prefetch: start returns without creating a state record or a cookie', 'oauth_prefetch' === t_code( $res ) && t_live_states() === $before && array() === $sets && ! isset( $_COOKIE[ lc_auth_cookie_name( 'lcauth' ) ] ) );
+	t( 'prefetch: nothing is counted against the start limit', false === get_transient( 'lc_rl_' . substr( lc_auth_hmac( 'rl', 'oauth_start|' . lc_auth_ip_subject() ), 0, 32 ) ) );
 	t( 'panel anchors carry the no-prefetch class', 2 === substr_count( lc_auth_oauth_buttons( '' ), ' no-prefetch"' ) );
 
 	// Flow cookie is kept (same value) after a start.
 	t_browser();
-	$cv0 = $_COOKIE[ lc_auth_cookie_name( 'lcauth' ) ];
+	$cv0  = $_COOKIE[ lc_auth_cookie_name( 'lcauth' ) ];
+	$sets = array();
+	$spy  = function ( $base, $ttl ) use ( &$sets ) {
+		$sets[] = array( $base, $ttl );
+	};
+	add_action( 'lc_auth_cookie_set', $spy, 10, 2 );
 	t_oauth_begin( 'google', 'signin', '' );
-	t( 'start: the flow cookie value is unchanged (only its lifetime is refreshed)', $cv0 === $_COOKIE[ lc_auth_cookie_name( 'lcauth' ) ] );
+	remove_action( 'lc_auth_cookie_set', $spy, 10 );
+	t( 'start: the flow cookie is re-issued once with a fresh hour, same value', array( array( 'lcauth', HOUR_IN_SECONDS ) ) === $sets && $cv0 === $_COOKIE[ lc_auth_cookie_name( 'lcauth' ) ], wp_json_encode( $sets ) );
+	t_browser();
+	unset( $_COOKIE[ lc_auth_cookie_name( 'lcauth' ) ] );
+	$sets = array();
+	add_action( 'lc_auth_cookie_set', $spy, 10, 2 );
+	t_oauth_begin( 'google', 'signin', '' );
+	remove_action( 'lc_auth_cookie_set', $spy, 10 );
+	t( 'start: a first visit gets exactly one new flow cookie', array( array( 'lcauth', HOUR_IN_SECONDS ) ) === $sets, wp_json_encode( $sets ) );
 
 	// Security notices cannot be silenced by filling the recipient bucket.
 	t_browser();

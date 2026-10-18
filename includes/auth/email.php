@@ -388,14 +388,15 @@ function lc_auth_email_confirm( $token, $c ) {
 					// Unverified address on a plain account: someone may have put it there
 					// (REST/admin) and kept a password or session. Whoever opens this link is
 					// the real owner, so cut every other way in before signing them in.
-					WP_Session_Tokens::get_instance( $user->ID )->destroy_all();
-					wp_set_password( wp_generate_password( 48, true, true ), $user->ID );
-					// A Google/Discord identity connected by that person would be a way back in too.
+					// Order matters: close the ways in first (identities, password), end the
+					// sessions last, so a sign-in racing this cannot keep a session.
 					lc_auth_load( 'oauth' );
 					$idps = array_keys( lc_auth_idps( $user->ID ) );
 					foreach ( $idps as $provider ) {
 						lc_auth_idp_remove( $user->ID, $provider );
 					}
+					wp_set_password( wp_generate_password( 48, true, true ), $user->ID );
+					WP_Session_Tokens::get_instance( $user->ID )->destroy_all();
 					lc_auth_log( 'email_takeover_revoked', array( 'user' => $user->ID, 'idps_removed' => count( $idps ) ) );
 				}
 				lc_auth_mark_email_verified( $user->ID, $email );

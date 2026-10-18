@@ -153,6 +153,24 @@ function lc_auth_idp_set( $user_id, $provider, $subject, $email = '' ) {
 	update_user_meta( $user_id, 'lc_idp_info', $info );
 }
 
+/**
+ * Sign-in with an identity already connected: refresh its info (last used, hint)
+ * without rewriting the subject, so a sign-in racing a removal cannot bring it back.
+ */
+function lc_auth_idp_touch( $user_id, $provider, $email = '' ) {
+	if ( '' === (string) get_user_meta( $user_id, 'lc_idp_' . $provider, true ) ) {
+		return;
+	}
+	$info              = (array) get_user_meta( $user_id, 'lc_idp_info', true );
+	$old               = isset( $info[ $provider ] ) && is_array( $info[ $provider ] ) ? $info[ $provider ] : array();
+	$info[ $provider ] = array(
+		'linked' => $old['linked'] ?? time(),
+		'used'   => time(),
+		'hint'   => '' !== $email ? lc_auth_mask_email( $email ) : ( $old['hint'] ?? '' ),
+	);
+	update_user_meta( $user_id, 'lc_idp_info', $info );
+}
+
 function lc_auth_idp_remove( $user_id, $provider ) {
 	delete_user_meta( $user_id, 'lc_idp_' . $provider );
 	$info = (array) get_user_meta( $user_id, 'lc_idp_info', true );
@@ -623,7 +641,7 @@ function lc_auth_oauth_do_signin( array $ident, array $rec ) {
 		if ( '' !== $email && strtolower( $user->user_email ) === $email && ! lc_auth_email_verified( $user ) ) {
 			lc_auth_mark_email_verified( $user->ID, $email );
 		}
-		lc_auth_idp_set( $user->ID, $provider, $subject, $hint );
+		lc_auth_idp_touch( $user->ID, $provider, $hint );
 	} else {
 		$existing = '' !== $hint ? get_user_by( 'email', $hint ) : false;
 		if ( $existing && ! $auth ) {
@@ -707,11 +725,17 @@ function lc_auth_oauth_do_link( array $ident, array $rec ) {
 		if ( $owners[0] !== $user->ID ) {
 			return new WP_Error( 'idp_in_use' );
 		}
-		lc_auth_idp_set( $user->ID, $provider, $subject, $ident['email_verified'] ? $ident['email'] : '' );
+		lc_auth_idp_touch( $user->ID, $provider, $ident['email_verified'] ? $ident['email'] : '' );
 		return array( 'redirect' => $done, 'new_account' => false ); // Already connected.
 	}
 	if ( isset( lc_auth_idps( $user->ID )[ $provider ] ) ) {
 		return new WP_Error( 'idp_has_other' );
+	}
+	// The provider calls take a moment; if this session was ended meanwhile (e.g. the
+	// real owner of the address revoked it by email link), connect nothing.
+	$token = wp_get_session_token();
+	if ( '' === $token || ! WP_Session_Tokens::get_instance( $user->ID )->verify( $token ) ) {
+		return new WP_Error( 'oauth_failed' );
 	}
 	$was_verified = lc_auth_email_verified( $user );
 	lc_auth_idp_set( $user->ID, $provider, $subject, $ident['email_verified'] ? $ident['email'] : '' );
