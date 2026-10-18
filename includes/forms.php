@@ -502,17 +502,15 @@ function lc_form_validate( $form ) {
 }
 
 /**
- * Hash of the visitor's IP for the rate limit (never stored in clear).
- * Cloudflare sits in front of the site, so prefer its client IP header.
+ * The visitor's IP for the rate limit (only ever stored hashed).
+ * lc_client_ip() (includes/security.php) trusts CF-Connecting-IP only from
+ * Cloudflare's edges, so a forged header can't reset the limit.
  */
 function lc_form_ip() {
-	$ip = '';
-	foreach ( array( 'HTTP_CF_CONNECTING_IP', 'REMOTE_ADDR' ) as $header ) {
-		if ( ! empty( $_SERVER[ $header ] ) ) {
-			$ip = sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) );
-			break;
-		}
+	if ( function_exists( 'lc_client_ip' ) ) {
+		return lc_client_ip();
 	}
+	$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 	return filter_var( $ip, FILTER_VALIDATE_IP ) ? $ip : '';
 }
 
@@ -533,7 +531,10 @@ function lc_form_rate_limited( $count_it = true ) {
 }
 
 /**
- * Check a reCAPTCHA v2 response with Google. True when the keys are not set.
+ * Check a reCAPTCHA v2 response with Google. True when the keys are not set,
+ * false for a wrong or missing answer, WP_Error when Google can't be asked.
+ *
+ * @return true|false|WP_Error
  */
 function lc_form_recaptcha_ok() {
 	$keys = lc_form_recaptcha_keys();
@@ -556,13 +557,19 @@ function lc_form_recaptcha_ok() {
 			),
 		)
 	);
-	if ( is_wp_error( $response ) ) {
-		// Google unreachable: don't lose real messages over it.
-		error_log( 'lc_form: reCAPTCHA verify failed: ' . $response->get_error_message() );
-		return true;
+	$body = is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ? null : json_decode( wp_remote_retrieve_body( $response ), true );
+	if ( ! is_array( $body ) ) {
+		// Fail closed: with the keys set, an unverified submission is not let
+		// through (bots could otherwise ride out any Google hiccup).
+		error_log( 'lc_form: reCAPTCHA verify failed: ' . ( is_wp_error( $response ) ? $response->get_error_message() : 'HTTP ' . wp_remote_retrieve_response_code( $response ) ) );
+		return new WP_Error( 'lc_recaptcha_unavailable', 'reCAPTCHA could not be verified' );
 	}
-	$body = json_decode( wp_remote_retrieve_body( $response ), true );
-	return ! empty( $body['success'] );
+	if ( empty( $body['success'] ) ) {
+		return false;
+	}
+	// A token solved on another site (key reuse / token farms) doesn't count.
+	$host = strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
+	return isset( $body['hostname'] ) && strtolower( (string) $body['hostname'] ) === $host;
 }
 
 /**
@@ -606,7 +613,11 @@ function lc_form_handle() {
 
 	// Count everything that reaches the paid/external calls.
 	lc_form_rate_limited( true );
-	if ( ! lc_form_recaptcha_ok() ) {
+	$captcha = lc_form_recaptcha_ok();
+	if ( is_wp_error( $captcha ) ) {
+		lc_form_respond( $form_id, false, 'failed' );
+	}
+	if ( ! $captcha ) {
 		lc_form_respond( $form_id, false, 'captcha' );
 	}
 
@@ -709,8 +720,9 @@ add_action( 'wp_ajax_' . LC_FORM_TOKEN_ACTION, 'lc_form_token' );
 add_action( 'wp_ajax_nopriv_' . LC_FORM_TOKEN_ACTION, 'lc_form_token' );
 
 /**
- * Mailchimp list member for a submission: add as pending (double opt-in) or
- * update an existing member, then add the tags. Never runs off production.
+ * Mailchimp list member for a submission: add a new address as pending
+ * (double opt-in) with name and interests; an existing member is left as is.
+ * Both get the form's tags. Never runs off production.
  *
  * @return true|WP_Error
  */
@@ -721,10 +733,8 @@ function lc_form_mailchimp_subscribe( $form_id, $form, $values, $source ) {
 		// Which course page the person signed up on, e.g. "course-lace-wallet".
 		$tags[] = 'course-' . $source->post_name;
 	}
-	if ( ! empty( $values['course'] ) ) {
-		// The free-text "Course" answer, as GF's Course field, kept short.
-		$tags[] = 'course: ' . mb_substr( $values['course'], 0, 80 );
-	}
+	// The free-text "Course" answer is not a tag (anyone could create tags in
+	// the audience with it); it only goes in the admin email.
 	$tags = array_values( array_unique( $tags ) );
 
 	if ( 'production' !== wp_get_environment_type() ) {
@@ -759,28 +769,47 @@ function lc_form_mailchimp_subscribe( $form_id, $form, $values, $source ) {
 		'Content-Type'  => 'application/json',
 	);
 
-	$body = array(
-		'email_address' => $email,
-		'status_if_new' => 'pending',
-		'merge_fields'  => array( 'FNAME' => isset( $values['name'] ) ? $values['name'] : '' ),
-	);
-	if ( ! empty( $config['interests'] ) ) {
-		$body['interests'] = $config['interests'];
-	}
-
-	$response = wp_remote_request(
-		$member,
+	// Look the address up first. The form is public, so anyone can submit
+	// someone else's email: an existing member's name, interests and status
+	// must not change, they only get the tags.
+	$lookup = wp_remote_get(
+		add_query_arg( 'fields', 'status', $member ),
 		array(
-			'method'  => 'PUT',
 			'timeout' => 15,
 			'headers' => $auth,
-			'body'    => wp_json_encode( $body ),
 		)
 	);
-	$error = lc_form_mailchimp_error( $response );
+	$exists = is_wp_error( $lookup ) || 404 !== (int) wp_remote_retrieve_response_code( $lookup );
+	$error  = $exists ? lc_form_mailchimp_error( $lookup ) : '';
 	if ( $error ) {
-		error_log( sprintf( 'lc_form: Mailchimp subscribe failed for a %s signup: %s', $form_id, $error ) );
+		error_log( sprintf( 'lc_form: Mailchimp lookup failed for a %s signup: %s', $form_id, $error ) );
 		return new WP_Error( 'lc_mailchimp', $error );
+	}
+
+	if ( ! $exists ) {
+		$body = array(
+			'email_address' => $email,
+			'status_if_new' => 'pending',
+			'merge_fields'  => array( 'FNAME' => isset( $values['name'] ) ? $values['name'] : '' ),
+		);
+		if ( ! empty( $config['interests'] ) ) {
+			$body['interests'] = $config['interests'];
+		}
+
+		$response = wp_remote_request(
+			$member,
+			array(
+				'method'  => 'PUT',
+				'timeout' => 15,
+				'headers' => $auth,
+				'body'    => wp_json_encode( $body ),
+			)
+		);
+		$error = lc_form_mailchimp_error( $response );
+		if ( $error ) {
+			error_log( sprintf( 'lc_form: Mailchimp subscribe failed for a %s signup: %s', $form_id, $error ) );
+			return new WP_Error( 'lc_mailchimp', $error );
+		}
 	}
 
 	if ( $tags ) {
@@ -864,7 +893,8 @@ function lc_form_all_fields( $form, $values, $source, $notes = array() ) {
 
 /**
  * Send a form's notifications (Gravity Forms' admin notification and, for
- * Contact, the auto-reply). True when at least one email went out.
+ * Contact, the auto-reply, capped at one per address per day). True when at
+ * least one email went out.
  */
 function lc_form_send_notifications( $form, $values, $source, $notes = array() ) {
 	$sent = false;
@@ -876,6 +906,16 @@ function lc_form_send_notifications( $form, $values, $source, $notes = array() )
 		}
 		if ( ! $to || ! is_email( $to ) ) {
 			continue;
+		}
+
+		// One auto-reply per address per day, so the form can't be used to
+		// mail-bomb a stranger. The submission itself still goes to the admin.
+		$reply_key = '';
+		if ( 'admin' !== $notification['to'] ) {
+			$reply_key = 'lc_form_ar_' . substr( wp_hash( strtolower( $to ) ), 0, 32 );
+			if ( get_transient( $reply_key ) ) {
+				continue;
+			}
 		}
 
 		$body = str_replace( '{all_fields}', lc_form_all_fields( $form, $values, $source, $notes ), $notification['body'] );
@@ -893,6 +933,9 @@ function lc_form_send_notifications( $form, $values, $source, $notes = array() )
 		$subject = str_replace( '{form_title}', $form['title'], $notification['subject'] );
 		if ( wp_mail( $to, $subject, $body, $headers ) ) {
 			$sent = true;
+			if ( $reply_key ) {
+				set_transient( $reply_key, 1, DAY_IN_SECONDS );
+			}
 		} else {
 			error_log( sprintf( 'production' === wp_get_environment_type() ? 'lc_form: "%s" email could not be sent' : 'lc_form: would send "%s" email (mail is off outside production)', $subject ) );
 		}

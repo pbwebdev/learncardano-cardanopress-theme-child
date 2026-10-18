@@ -10,12 +10,16 @@
 
 get_header();
 
-
+// Embed IDs go into src attributes: read them raw and only print values
+// that look like real IDs (lc_youtube_id() / lc_spotify_id() in
+// includes/rest-meta.php also accept a pasted YouTube/Spotify URL).
+$lc_youtube_id = function_exists('lc_youtube_id') ? lc_youtube_id(get_field('youtube_video', false, false)) : '';
+$lc_spotify_id = function_exists('lc_spotify_id') ? lc_spotify_id(get_field('spotify_id', false, false)) : '';
 
 ?>
-<?php if (get_field('youtube_video')): ?>
+<?php if ($lc_youtube_id): ?>
     <div id="preloader" style="visibility: hidden; display: none;">
-        <img src="https://i.ytimg.com/vi/<?php the_field('youtube_video'); ?>/hqdefault.jpg" height="1" width="1" style="visibility: hidden; display: none;" alt="">
+        <img src="<?php echo esc_url('https://i.ytimg.com/vi/' . $lc_youtube_id . '/hqdefault.jpg'); ?>" height="1" width="1" style="visibility: hidden; display: none;" alt="">
     </div>
 <?php endif; ?>
 
@@ -75,7 +79,7 @@ get_header();
                     <div class="container">
                         <div class="row justify-content-md-center">
                             <div class="col-md-10 col-sm-12">
-                                <?php if (get_field('youtube_video')): ?>
+                                <?php if ($lc_youtube_id): ?>
                                     <div class="youtube-embed col-md-10 mb-2 offset-md-1">
                                         <style>
                                             .embed-container {
@@ -97,7 +101,7 @@ get_header();
                                             }
                                         </style>
                                         <div class='embed-container'>
-                                            <iframe src='https://www.youtube.com/embed/<?php the_field('youtube_video'); ?>' frameborder='0' allowfullscreen></iframe>
+                                            <iframe src="<?php echo esc_url('https://www.youtube.com/embed/' . $lc_youtube_id); ?>" title="<?php echo esc_attr(get_the_title()); ?>" loading="lazy" frameborder="0" allowfullscreen></iframe>
                                         </div>
                                     </div>
                                 <?php endif; ?>
@@ -110,7 +114,9 @@ get_header();
                                     </div>
                                 </div>
 
-                                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/episode/<?php the_field('spotify_id'); ?>?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                <?php if ($lc_spotify_id): ?>
+                                    <iframe style="border-radius:12px" src="<?php echo esc_url('https://open.spotify.com/embed/episode/' . $lc_spotify_id . '?utm_source=generator&theme=0'); ?>" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                <?php endif; ?>
 
                             </div>
                         </div>

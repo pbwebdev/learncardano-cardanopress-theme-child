@@ -97,12 +97,8 @@ function lc_svg_sanitize_upload( $file ) {
 		$file['error'] = __( 'SVG sanitizer is missing, so SVG uploads are disabled.', 'learncardano' );
 		return $file;
 	}
-	$sanitizer = new \enshrined\svgSanitize\Sanitizer();
-	$sanitizer->removeRemoteReferences( true );
-	$sanitizer->minify( true );
-	$clean = $sanitizer->sanitize( $dirty );
-
-	if ( false === $clean || '' === trim( (string) $clean ) ) {
+	$clean = lc_svg_clean( $dirty );
+	if ( false === $clean ) {
 		$file['error'] = __( 'This SVG could not be sanitized and was not uploaded.', 'learncardano' );
 		return $file;
 	}
@@ -112,6 +108,47 @@ function lc_svg_sanitize_upload( $file ) {
 }
 add_filter( 'wp_handle_upload_prefilter', 'lc_svg_sanitize_upload' );
 add_filter( 'wp_handle_sideload_prefilter', 'lc_svg_sanitize_upload' );
+
+/**
+ * Sanitized SVG markup, or false when it is compressed, unparseable or the
+ * sanitizer is missing.
+ *
+ * @return string|false
+ */
+function lc_svg_clean( $dirty ) {
+	if ( ! is_string( $dirty ) || 0 === strpos( $dirty, "\x1f\x8b" ) || ! class_exists( '\enshrined\svgSanitize\Sanitizer' ) ) {
+		return false;
+	}
+	$sanitizer = new \enshrined\svgSanitize\Sanitizer();
+	$sanitizer->removeRemoteReferences( true );
+	$sanitizer->minify( true );
+	$clean = $sanitizer->sanitize( $dirty );
+	return ( false === $clean || '' === trim( (string) $clean ) ) ? false : (string) $clean;
+}
+
+/**
+ * Backstop for SVG attachments that skipped the upload prefilters (e.g.
+ * wp_upload_bits() + wp_insert_attachment() from a plugin or import):
+ * sanitize the stored file in place, or delete the attachment when that
+ * fails. Already-clean files come out unchanged, so this is cheap to repeat.
+ */
+add_action(
+	'add_attachment',
+	function ( $attachment_id ) {
+		$path = get_attached_file( $attachment_id );
+		$ext  = $path ? strtolower( pathinfo( $path, PATHINFO_EXTENSION ) ) : '';
+		if ( 'image/svg+xml' !== get_post_mime_type( $attachment_id ) && 'svg' !== $ext && 'svgz' !== $ext ) {
+			return;
+		}
+		$dirty = ( 'svgz' !== $ext && $path && is_readable( $path ) ) ? file_get_contents( $path ) : false; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local upload.
+		$clean = false === $dirty ? false : lc_svg_clean( $dirty );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- local upload.
+		if ( false === $clean || ( $clean !== $dirty && false === file_put_contents( $path, $clean ) ) ) {
+			error_log( sprintf( 'lc_svg: deleted attachment %d, its SVG could not be sanitized', $attachment_id ) );
+			wp_delete_attachment( $attachment_id, true );
+		}
+	}
+);
 
 /**
  * Width and height of an SVG file from its root element: numeric (px)

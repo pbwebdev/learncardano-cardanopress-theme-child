@@ -106,9 +106,56 @@ function lc_rest_meta_schema() {
 	);
 }
 
+/**
+ * A YouTube video ID from an ID or a YouTube URL (watch, youtu.be, embed,
+ * shorts, live). Returns '' unless the result looks like a real ID, so it is
+ * safe to put in an embed URL.
+ */
+function lc_youtube_id( $value ) {
+	$value = trim( (string) $value );
+	if ( preg_match( '~(?:youtu\.be/|youtube(?:-nocookie)?\.com/(?:embed/|shorts/|live/|v/|watch\?(?:[^#]*&)?v=))([A-Za-z0-9_-]+)~i', $value, $m ) ) {
+		$value = $m[1];
+	}
+	return preg_match( '/^[A-Za-z0-9_-]{6,20}$/', $value ) ? $value : '';
+}
+
+/**
+ * A Spotify episode/show ID from an ID or an open.spotify.com URL, or ''.
+ */
+function lc_spotify_id( $value ) {
+	$value = trim( (string) $value );
+	if ( preg_match( '~open\.spotify\.com/(?:embed/)?(?:episode|show)/([A-Za-z0-9]+)~i', $value, $m ) ) {
+		$value = $m[1];
+	}
+	return preg_match( '/^[A-Za-z0-9]{10,40}$/', $value ) ? $value : '';
+}
+
+/**
+ * Sanitizers for meta keys that end up in embed URLs: keep only the ID
+ * characters instead of wp_kses_post (which lets quotes through).
+ *
+ * @return array<string, callable>
+ */
+function lc_rest_meta_id_sanitizers() {
+	return array(
+		'youtube_video' => function ( $v ) {
+			$v  = is_string( $v ) ? sanitize_text_field( $v ) : '';
+			$id = lc_youtube_id( $v );
+			return '' !== $id ? $id : preg_replace( '/[^A-Za-z0-9_-]/', '', $v );
+		},
+		'spotify_id'    => function ( $v ) {
+			$v  = is_string( $v ) ? sanitize_text_field( $v ) : '';
+			$id = lc_spotify_id( $v );
+			return '' !== $id ? $id : preg_replace( '/[^A-Za-z0-9]/', '', $v );
+		},
+	);
+}
+
 add_action(
 	'init',
 	function () {
+		$id_sanitizers = lc_rest_meta_id_sanitizers();
+
 		$auth = function () {
 			return current_user_can( 'edit_posts' );
 		};
@@ -168,17 +215,17 @@ add_action(
 					if ( registered_meta_key_exists( 'post', $key, $post_type ) ) {
 						continue;
 					}
-					register_post_meta(
-						$post_type,
-						$key,
-						array_merge(
-							$kinds[ $kind ],
-							array(
-								'single'        => true,
-								'auth_callback' => $auth,
-							)
+					$args = array_merge(
+						$kinds[ $kind ],
+						array(
+							'single'        => true,
+							'auth_callback' => $auth,
 						)
 					);
+					if ( isset( $id_sanitizers[ $key ] ) ) {
+						$args['sanitize_callback'] = $id_sanitizers[ $key ];
+					}
+					register_post_meta( $post_type, $key, $args );
 				}
 			}
 		}
