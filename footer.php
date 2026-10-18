@@ -25,10 +25,10 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
                         <p><a class="btn btn-primary" href="https://chatsoon.app/id/peter-bui-5ec50167" target="_blank" rel="noopener"><?php esc_html_e( 'Follow & contact Peter', 'learncardano' ); ?><span class="visually-hidden"> <?php esc_html_e( '(opens Chatsoon in a new tab)', 'learncardano' ); ?></span></a></p>
                     </div>
                     <div class="col-md-5 offset-md-1 text-center">
+                        <?php $lc_peter = get_stylesheet_directory_uri() . '/images/peter-bui'; ?>
                         <picture class="about-image">
-                            <source srcset="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/peter-bui.webp" alt="Peter Bui"  width="250" height="250" type="image/webp">
-                            <source srcset="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/peter-bui.jpg" alt="Peter Bui"  width="250" height="250" type="image/jpeg">
-                            <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/peter-bui.jpg" alt="Peter Bui" width="250" height="250" loading="lazy" decoding="async">
+                            <source srcset="<?php echo esc_url( $lc_peter . '.webp' ); ?> 1x, <?php echo esc_url( $lc_peter . '@2x.webp' ); ?> 2x" type="image/webp">
+                            <img src="<?php echo esc_url( $lc_peter . '.jpg' ); ?>" srcset="<?php echo esc_url( $lc_peter . '.jpg' ); ?> 1x, <?php echo esc_url( $lc_peter . '@2x.jpg' ); ?> 2x" alt="Peter Bui" width="250" height="250" loading="lazy" decoding="async">
                         </picture>
                     </div>
                 </div>
