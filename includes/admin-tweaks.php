@@ -26,9 +26,9 @@ add_filter(
 );
 
 /**
- * Admin menu order as Admin Menu Editor had it: Dashboard, Podcasts,
- * Courses, Posts, then Pages, Media and Comments. Everything else follows in
- * WordPress's default order.
+ * Admin menu: Dashboard, then all the content in one group (Podcasts,
+ * Courses, Posts, Knowledge Base, Pages, Comments, Media), a divider, and
+ * everything else in WordPress's default order.
  */
 add_filter( 'custom_menu_order', '__return_true' );
 add_filter(
@@ -39,10 +39,11 @@ add_filter(
 			'edit.php?post_type=podcasts',
 			'edit.php?post_type=sfwd-courses',
 			'edit.php',
-			'separator1',
+			'lc-knowledge-base',
 			'edit.php?post_type=page',
-			'upload.php',
 			'edit-comments.php',
+			'upload.php',
+			'separator1',
 		);
 	}
 );
