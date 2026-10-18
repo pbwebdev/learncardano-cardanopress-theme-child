@@ -1,8 +1,8 @@
 <?php
 /**
  * Accounts, part 1 (R2): the shared plumbing. Loaded on every request, so it
- * is only hooks and small helpers; email.php and wallet.php load when an
- * /account/* route needs them.
+ * is only hooks and small helpers; email.php, wallet.php and oauth.php
+ * (Google/Discord, R3) load when an /account/* route needs them.
  *
  * What the account system is:
  * - Sign-in by email link or Cardano wallet (CIP-30), plus the normal
@@ -77,9 +77,9 @@ if ( ! function_exists( 'lc_is_legacy_wallet_account' ) ) {
 	}
 }
 
-/** Load an optional module (email | wallet) once. */
+/** Load an optional module (email | wallet | oauth) once. */
 function lc_auth_load( $module ) {
-	if ( in_array( $module, array( 'email', 'wallet' ), true ) ) {
+	if ( in_array( $module, array( 'email', 'wallet', 'oauth' ), true ) ) {
 		require_once __DIR__ . '/' . $module . '.php';
 	}
 }
@@ -568,6 +568,16 @@ function lc_auth_text( $code ) {
 		'wallet_conflict' => __( 'This wallet is linked to more than one account. Please contact us so we can sort it out.', 'learncardano' ),
 		'wallet_in_use'   => __( 'This wallet already has its own account. Sign in with it there, or remove it from that account first.', 'learncardano' ),
 		'wallet_linked'   => __( 'Wallet connected.', 'learncardano' ),
+		'oauth_cancelled' => __( 'Sign-in was cancelled. You can try again or use another way to sign in.', 'learncardano' ),
+		'oauth_failed'    => __( 'We could not complete that sign-in. Please try again.', 'learncardano' ),
+		'oauth_unavailable' => __( 'That sign-in method is not available right now.', 'learncardano' ),
+		'oauth_email_exists' => __( 'An account already uses this email address. Sign in with an email link first, then connect Google or Discord on your account page.', 'learncardano' ),
+		'idp_in_use'      => __( 'That account is already connected to a different Learn Cardano account. Sign in with it there, or disconnect it from that account first.', 'learncardano' ),
+		'idp_has_other'   => __( 'You already have a different account connected for this provider. Disconnect it first.', 'learncardano' ),
+		'idp_conflict'    => __( 'That account is connected more than once. Please contact us so we can sort it out.', 'learncardano' ),
+		'idp_linked'      => __( 'Account connected.', 'learncardano' ),
+		'idp_email_set'   => __( 'Account connected, and its email address is now your verified email.', 'learncardano' ),
+		'idp_removed'     => __( 'Account disconnected.', 'learncardano' ),
 		'wallet_removed'  => __( 'Wallet removed.', 'learncardano' ),
 		'last_method'     => __( 'That is your only way to sign in, so it cannot be removed. Add another one first.', 'learncardano' ),
 		'name_invalid'    => __( 'Choose a display name of 2 to 40 characters. It cannot contain "@" or web addresses, look like a wallet address, or copy a staff name.', 'learncardano' ),
@@ -791,7 +801,24 @@ function lc_auth_wallets( $user_id ) {
 	return array_values( array_unique( array_filter( array_map( 'strval', (array) get_user_meta( $user_id, 'lc_wallet', false ) ) ) ) );
 }
 
-/** Ways to sign in: 'email' (only when verified), 'wallet:<stake>'; R3 adds idp:*. */
+/** Identity providers an account can link (R3). The provider registry itself is in oauth.php. */
+function lc_auth_idp_ids() {
+	return array( 'google', 'discord' );
+}
+
+/** Linked identities of a user: provider => subject (user meta lc_idp_<provider>). */
+function lc_auth_idps( $user_id ) {
+	$out = array();
+	foreach ( lc_auth_idp_ids() as $provider ) {
+		$subject = (string) get_user_meta( $user_id, 'lc_idp_' . $provider, true );
+		if ( '' !== $subject ) {
+			$out[ $provider ] = $subject;
+		}
+	}
+	return $out;
+}
+
+/** Ways to sign in: 'email' (only when verified), 'wallet:<stake>', 'idp:<provider>'. */
 function lc_auth_methods( $user ) {
 	$methods = array();
 	if ( lc_auth_email_verified( $user ) ) {
@@ -799,6 +826,9 @@ function lc_auth_methods( $user ) {
 	}
 	foreach ( lc_auth_wallets( $user->ID ) as $stake ) {
 		$methods[] = 'wallet:' . $stake;
+	}
+	foreach ( array_keys( lc_auth_idps( $user->ID ) ) as $provider ) {
+		$methods[] = 'idp:' . $provider;
 	}
 	return (array) apply_filters( 'lc_auth_methods', $methods, $user );
 }
@@ -969,6 +999,11 @@ function lc_auth_routes() {
 		),
 		'wallet/challenge' => array( 'POST' => 'lc_auth_post_wallet_challenge' ),
 		'wallet/verify'    => array( 'POST' => 'lc_auth_post_wallet_verify' ),
+		// Google / Discord (oauth.php): start and per-provider callback.
+		'oauth/google'           => array( 'GET' => 'lc_auth_get_oauth_start' ),
+		'oauth/google/callback'  => array( 'GET' => 'lc_auth_get_oauth_callback' ),
+		'oauth/discord'          => array( 'GET' => 'lc_auth_get_oauth_start' ),
+		'oauth/discord/callback' => array( 'GET' => 'lc_auth_get_oauth_callback' ),
 		'__dashboard'      => array( 'GET' => 'lc_auth_get_dashboard' ),
 	);
 }
@@ -1012,6 +1047,9 @@ function lc_auth_route_request( $wp ) {
 
 	lc_auth_load( 'email' );
 	lc_auth_load( 'wallet' );
+	if ( 0 === strpos( $path, 'oauth/' ) ) {
+		lc_auth_load( 'oauth' ); // Only the oauth routes (and the panel/account page) need it.
+	}
 
 	if ( 'POST' === $method && ! lc_auth_same_origin() ) {
 		lc_auth_log( 'blocked_origin', array( 'path' => $path ) );

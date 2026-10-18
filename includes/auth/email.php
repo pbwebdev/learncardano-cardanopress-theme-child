@@ -67,7 +67,7 @@ function lc_auth_panel_token_ok( $token ) {
  * @param string         $subject Subject.
  * @param string|Closure $body    Text, or a closure that builds it (so a link
  *                                token is only made when the mail will go out).
- * @param string         $kind    signin|wallet_first|password|email_change|email_verify|wallet_linked.
+ * @param string         $kind    signin|wallet_first|password|email_change|email_verify|wallet_linked|idp_linked|idp_unlinked.
  */
 function lc_auth_email_send( $to, $subject, $body, $kind ) {
 	$blocked = lc_auth_mail_check( $to );

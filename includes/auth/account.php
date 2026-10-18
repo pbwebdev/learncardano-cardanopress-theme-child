@@ -334,7 +334,37 @@ function lc_auth_post_home() {
 			lc_auth_respond( $result['ok'], $result['code'], '', array(), 400, $result['retry'] ?? 0 );
 			break;
 
+		case 'link_oauth':
+			// Connect Google/Discord: nonce and staff were checked above; the start function checks session recency.
+			lc_auth_load( 'oauth' );
+			$res = lc_auth_oauth_start( sanitize_key( (string) ( $in['provider'] ?? '' ) ), 'link', lc_auth_account_url() );
+			if ( is_wp_error( $res ) ) {
+				$data = $res->get_error_data();
+				lc_auth_respond( false, $res->get_error_code(), '', array(), isset( $data['status'] ) ? (int) $data['status'] : 400, isset( $data['retry'] ) ? (int) $data['retry'] : 0 );
+			}
+			if ( lc_auth_wants_json() ) {
+				wp_send_json( array( 'ok' => true, 'redirect' => $res['url'] ) );
+			}
+			header( 'Referrer-Policy: no-referrer' );
+			wp_redirect( $res['url'], 303 ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- the provider's fixed authorize URL.
+			exit;
+
 		case 'unlink':
+			$method = (string) ( $in['method'] ?? '' );
+			if ( 0 === strpos( $method, 'idp:' ) ) {
+				lc_auth_load( 'oauth' );
+				$provider = substr( $method, 4 );
+				if ( ! isset( lc_auth_idps( $user->ID )[ $provider ] ) ) {
+					lc_auth_respond( false, 'forbidden', '', array(), 403 );
+				}
+				if ( ! lc_auth_can_remove( $user, $method ) ) {
+					lc_auth_respond( false, 'last_method', '', array(), 409 );
+				}
+				lc_auth_idp_remove( $user->ID, $provider );
+				lc_auth_log( 'idp_unlink', array( 'user' => $user->ID, 'provider' => $provider ) );
+				lc_auth_idp_notify( $user, $provider, 'idp_unlinked' );
+				lc_auth_respond( true, 'idp_removed' );
+			}
 			$stake = (string) ( $in['stake'] ?? '' );
 			if ( ! in_array( $stake, lc_auth_wallets( $user->ID ), true ) ) {
 				lc_auth_respond( false, 'forbidden', '', array(), 403 );
@@ -508,6 +538,10 @@ function lc_auth_admin_box( $user ) {
 	if ( ! $wallets ) {
 		echo esc_html__( 'None linked.', 'learncardano' );
 	}
+	foreach ( lc_auth_idps( $user->ID ) as $provider => $subject ) {
+		unset( $subject ); // The subject stays out of the page; the checkbox names the provider.
+		echo '<label style="display:block"><input type="checkbox" name="lc_auth_remove_idp[]" value="' . esc_attr( $provider ) . '"> ' . esc_html__( 'Disconnect', 'learncardano' ) . ' <code>' . esc_html( ucfirst( $provider ) ) . '</code></label>';
+	}
 	if ( lc_is_legacy_wallet_account( $user ) ) {
 		echo '<p class="description">' . esc_html__( 'CardanoPress-era account (login is md5 of the stake address); its wallet is adopted at the first wallet sign-in.', 'learncardano' ) . '</p>';
 	}
@@ -540,6 +574,15 @@ function lc_auth_admin_save( $user_id ) {
 			if ( is_string( $stake ) && in_array( $stake, lc_auth_wallets( $user_id ), true ) ) {
 				lc_auth_wallet_remove( $user_id, $stake );
 				lc_auth_log( 'admin_wallet_removed', array( 'user' => $user_id, 'by' => get_current_user_id() ) );
+			}
+		}
+	}
+	if ( ! empty( $_POST['lc_auth_remove_idp'] ) && is_array( $_POST['lc_auth_remove_idp'] ) ) {
+		lc_auth_load( 'oauth' );
+		foreach ( wp_unslash( $_POST['lc_auth_remove_idp'] ) as $provider ) {
+			if ( is_string( $provider ) && isset( lc_auth_idps( $user_id )[ $provider ] ) ) {
+				lc_auth_idp_remove( $user_id, $provider );
+				lc_auth_log( 'admin_idp_removed', array( 'user' => $user_id, 'by' => get_current_user_id(), 'provider' => $provider ) );
 			}
 		}
 	}
