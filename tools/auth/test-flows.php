@@ -48,6 +48,7 @@ function t_origin() {
 function t_browser() {
 	global $wpdb;
 	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\_transient\_lc\_rl\_%' OR option_name LIKE '\_transient\_timeout\_lc\_rl\_%'" );
+	wp_cache_flush(); // the rows were deleted with SQL: drop the request's cached copies too.
 	$_COOKIE[ lc_auth_cookie_name( 'lcauth' ) ] = lc_auth_new_token();
 	unset( $_COOKIE[ lc_auth_cookie_name( 'lcml' ) ] );
 	unset( $_COOKIE[ LOGGED_IN_COOKIE ] );

@@ -19,7 +19,11 @@ function lc_auth_dev_outbox_is_test_address( $address ) {
 	return 1 === preg_match( '/@lc-test\.invalid>?$/i', trim( (string) $address ) );
 }
 
-/** Capture before mail.php's blocker (priority 1) runs; return null so it still blocks. */
+/**
+ * Capture mail to test addresses before mail.php's blocker (priority 1) runs, and
+ * report it as sent so code that checks wp_mail()'s result (core's password
+ * reset) behaves as on production. Mail to anyone else is left to the blocker.
+ */
 add_filter(
 	'pre_wp_mail',
 	function ( $return, $atts ) {
@@ -37,7 +41,7 @@ add_filter(
 			'message' => (string) $atts['message'],
 		);
 		update_option( LC_AUTH_OUTBOX_OPTION, array_slice( $box, -20 ), false );
-		return $return;
+		return true;
 	},
 	0,
 	2
