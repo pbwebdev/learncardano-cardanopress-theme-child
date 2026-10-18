@@ -295,6 +295,63 @@ function lc_preload_fonts() {
 add_action( 'wp_head', 'lc_preload_fonts', 2 );
 
 /**
+ * Preload the LCP image where we know it in advance, so it starts with the
+ * stylesheets instead of after the parser reaches it:
+ * - front page: the newest episode's featured image (template-parts/home-podcasts.php),
+ *   with the same srcset/sizes, as WebP when includes/webp.php will serve WebP;
+ * - podcast episode: the YouTube facade thumbnail (single-podcasts.php).
+ */
+function lc_preload_lcp_image() {
+	if ( is_singular( 'podcasts' ) ) {
+		$id = function_exists( 'lc_youtube_id' ) ? lc_youtube_id( get_field( 'youtube_video', get_queried_object_id(), false ) ) : '';
+		if ( $id ) {
+			echo '<link rel="preconnect" href="https://i.ytimg.com">' . "\n";
+			printf( '<link rel="preload" as="image" href="%s" fetchpriority="high">' . "\n", esc_url( 'https://i.ytimg.com/vi/' . $id . '/hqdefault.jpg' ) );
+		}
+		return;
+	}
+	if ( ! is_front_page() ) {
+		return;
+	}
+	$newest = get_posts(
+		array(
+			'post_type'      => 'podcasts',
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+		)
+	);
+	$thumb_id = $newest ? get_post_thumbnail_id( $newest[0] ) : 0;
+	$srcset   = $thumb_id ? wp_get_attachment_image_srcset( $thumb_id, 'large' ) : '';
+	if ( ! $srcset ) {
+		return;
+	}
+	$type = '';
+	if ( function_exists( 'lc_webp_url' ) ) {
+		$webp = array();
+		foreach ( explode( ',', $srcset ) as $candidate ) {
+			$parts = preg_split( '/\s+/', trim( $candidate ) );
+			$url   = lc_webp_url( $parts[0] );
+			if ( ! $url ) {
+				$webp = array();
+				break;
+			}
+			$webp[] = $url . ( isset( $parts[1] ) ? ' ' . $parts[1] : '' );
+		}
+		if ( $webp ) {
+			$srcset = implode( ', ', $webp );
+			$type   = ' type="image/webp"';
+		}
+	}
+	printf(
+		'<link rel="preload" as="image" imagesrcset="%s" imagesizes="%s"%s fetchpriority="high">' . "\n",
+		esc_attr( $srcset ),
+		esc_attr( '(max-width: 899px) 100vw, 610px' ),
+		$type // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static attribute.
+	);
+}
+add_action( 'wp_head', 'lc_preload_lcp_image', 2 );
+
+/**
  * A post's primary category: Rank Math's primary pick when set, otherwise the
  * first category. Uncategorized counts as no category.
  */

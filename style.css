@@ -529,5 +529,19 @@ img.pa__media-img,img.lep__media-img{width:100%;height:100%;object-fit:cover;dis
 .lc-spreaker__label{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lc-spreaker__meta{flex:none;font-size:12px;font-weight:400;color:#9a9aa2}
 
+/* ============================================================
+   YouTube facade (single-podcasts.php .lc-yt)
+   Episode thumbnail + play button in a 16:9 box; clicking swaps in
+   the real player iframe at the same size.
+   ============================================================ */
+.embed-container{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#000}
+.embed-container iframe,.lc-yt{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+.lc-yt{display:block;cursor:pointer}
+.lc-yt__thumb{width:100%;height:100%;object-fit:cover;display:block}
+.lc-yt__play{position:absolute;top:50%;left:50%;display:flex;align-items:center;justify-content:center;width:72px;height:72px;margin:-36px 0 0 -36px;border-radius:50%;background:rgba(0,0,0,.72);color:#fff;box-shadow:0 4px 24px rgba(0,0,0,.35);transition:background .18s ease,transform .18s ease}
+.lc-yt__play .lc-icon{width:28px;height:28px;margin-left:4px;vertical-align:0}
+.lc-yt:hover .lc-yt__play,.lc-yt:focus-visible .lc-yt__play{background:#9333ea;transform:scale(1.06)}
+.lc-yt:focus-visible{outline:3px solid #9333ea;outline-offset:-3px}
+
 /* <picture> wrappers from includes/webp.php must not change layout */
 .lc-picture{display:contents}
