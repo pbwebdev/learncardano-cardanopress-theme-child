@@ -7,7 +7,7 @@
  * assets/js/courses.js can write "3 of 12 steps done" into
  * .lcc__card-progress for visitors who have started it.
  *
- * Args: index (position in the loop; the first two images load eagerly).
+ * Args: index (position in the loop; the first image loads eagerly).
  *
  * @package CardanoPress Bootstrap
  */
@@ -34,15 +34,11 @@ if ( $lcc_superseded ) {
 	<div class="pa__media">
 		<?php if ( $lcc_thumb_id ) : ?>
 			<?php
-			echo wp_get_attachment_image(
-				$lcc_thumb_id,
-				'large',
-				false,
+			// The first card is the mobile LCP element: load it eagerly at high priority.
+			echo lc_card_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in lc_card_image().
 				array(
-					'class'   => 'pa__media-img',
-					'alt'     => '',
-					'sizes'   => '(max-width: 780px) 100vw, 540px',
-					'loading' => $args['index'] < 2 ? 'eager' : 'lazy',
+					'class' => 'pa__media-img',
+					'eager' => ( 0 === $args['index'] ),
 				)
 			);
 			?>

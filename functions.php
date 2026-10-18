@@ -12,7 +12,6 @@ require_once 'includes/svg-uploads.php';
 require_once 'includes/rest-meta.php';
 require_once 'includes/mail.php';
 require_once 'includes/admin-tweaks.php';
-require_once 'includes/critical-css.php';
 
 // Forms and the newsletter popup (replace Gravity Forms and WP Popups).
 foreach ( array( 'includes/forms.php', 'includes/newsletter-popup.php' ) as $lc_include ) {
@@ -141,7 +140,8 @@ function enable_proposal_comments()
 
 /**
  * Resolve an episode's thumbnail URL, falling back to the bundled cover art.
- * Shared by the home Latest Episodes section and the podcast archive.
+ * The episode cards now render real images with lc_card_image(); this stays
+ * for anything that still needs a plain URL.
  */
 if ( ! function_exists( 'lc_episode_thumb_url' ) ) {
 	function lc_episode_thumb_url( $size = 'medium_large' ) {
@@ -154,14 +154,144 @@ if ( ! function_exists( 'lc_episode_thumb_url' ) ) {
 }
 
 /**
+ * A listing card's image for the current post: the featured image as a real
+ * <img> with srcset/sizes, or the bundled cover art when there is none.
+ *
+ * Cards used to paint these as inline background-images, which the browser
+ * only discovers once the CSS is in and can't size responsively; on mobile the
+ * first card is the LCP element. The first card (eager) now loads at high
+ * priority and carries `skip-lazy` so SiteGround Optimizer's JS lazy-load
+ * leaves it alone; every other card uses native lazy loading. style.css sizes
+ * img.pa__media-img / img.lep__media-img with object-fit:cover, which looks
+ * the same as the old background-size:cover.
+ *
+ * Args: class, size, sizes, eager.
+ */
+function lc_card_image( $args = array() ) {
+	$args = wp_parse_args(
+		$args,
+		array(
+			'class' => '',
+			'size'  => 'large',
+			'sizes' => '(max-width: 780px) 100vw, 540px',
+			'eager' => false,
+		)
+	);
+	$attr = array(
+		'class'    => trim( $args['class'] . ( $args['eager'] ? ' skip-lazy' : '' ) ),
+		'alt'      => '',
+		'sizes'    => $args['sizes'],
+		'loading'  => $args['eager'] ? 'eager' : 'lazy',
+		'decoding' => 'async',
+	);
+	if ( $args['eager'] ) {
+		$attr['fetchpriority'] = 'high';
+	}
+
+	$thumb_id = get_post_thumbnail_id();
+	$html     = $thumb_id ? wp_get_attachment_image( $thumb_id, $args['size'], false, $attr ) : '';
+	if ( $html ) {
+		return $html;
+	}
+
+	// Cover art fallback (the same image lc_episode_thumb_url() falls back to).
+	unset( $attr['sizes'] );
+	$cover = get_stylesheet_directory_uri() . '/images/learn-cardano-podcast-cover';
+	$html  = '<img src="' . esc_url( $cover . '.jpg' ) . '" width="1400" height="1400"';
+	foreach ( $attr as $name => $value ) {
+		$html .= ' ' . $name . '="' . esc_attr( $value ) . '"';
+	}
+	return '<picture><source srcset="' . esc_url( $cover . '.webp' ) . '" type="image/webp">' . $html . '></picture>';
+}
+
+/**
+ * Small inline SVG icon (play, comment, wallet), sized to the text with the
+ * .lc-icon rule in style.css. Replaces the Font Awesome classes the templates
+ * used, which rendered nothing once Font Awesome stopped being loaded.
+ */
+function lc_icon( $name ) {
+	$paths = array(
+		'play'    => 'M4 2.4v11.2L13.5 8z',
+		'comment' => 'M3.5 1.5h9A1.5 1.5 0 0 1 14 3v6.5a1.5 1.5 0 0 1-1.5 1.5H7.2L4 13.8V11h-.5A1.5 1.5 0 0 1 2 9.5V3a1.5 1.5 0 0 1 1.5-1.5z',
+		'wallet'  => 'M2.5 3A1.5 1.5 0 0 0 1 4.5v8A1.5 1.5 0 0 0 2.5 14h11a1.5 1.5 0 0 0 1.5-1.5V11h-3a2.5 2.5 0 0 1 0-5h3V4.5A1.5 1.5 0 0 0 13.5 3h-11zM12 7.25a1.25 1.25 0 0 0 0 2.5h3v-2.5h-3z',
+	);
+	if ( ! isset( $paths[ $name ] ) ) {
+		return '';
+	}
+	return '<svg class="lc-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="' . $paths[ $name ] . '"/></svg>';
+}
+
+/**
  * URL of a child-theme asset with its modified time as the version, so each
- * deploy busts browser caches. Used for the stylesheets linked in footer.php.
+ * deploy busts browser caches. Used for the child theme's stylesheets.
  */
 function lc_theme_asset_url( $file ) {
 	$path = get_stylesheet_directory() . '/' . $file;
 	$ver  = file_exists( $path ) ? filemtime( $path ) : false;
 	return add_query_arg( 'ver', $ver, get_stylesheet_directory_uri() . '/' . $file );
 }
+
+/**
+ * The child theme's style.css and fonts.css, in the <head>.
+ *
+ * They used to be printed as <link>s after wp_footer(), so every page first
+ * painted with only the inline critical CSS (a stale snapshot, since removed)
+ * and then jumped when style.css arrived: mobile CLS 0.85-1.07. Depending on
+ * the parent stylesheet keeps them after the parent and plugin styles, so the
+ * cascade order is unchanged. The ver= query is the file's mtime
+ * (lc_theme_asset_url()); SiteGround Optimizer must not strip it or swap in
+ * its year-cached minified copy (see the filters below).
+ */
+function lc_enqueue_theme_styles() {
+	$deps = wp_style_is( 'cardanopress_bootstrap-style', 'registered' ) ? array( 'cardanopress_bootstrap-style' ) : array();
+	wp_enqueue_style( 'cardanopress-bootstrap-child-theme', lc_theme_asset_url( 'style.css' ), $deps, null );
+	wp_enqueue_style( 'cardanopress-bootstrap-child-theme-fonts', lc_theme_asset_url( 'fonts.css' ), array( 'cardanopress-bootstrap-child-theme' ), null );
+}
+add_action( 'wp_enqueue_scripts', 'lc_enqueue_theme_styles', 50 );
+
+add_filter(
+	'sgo_rqs_exclude',
+	function ( $list ) {
+		$list[] = 'learncardano-cardanopress-theme-child/(style|fonts)\.css';
+		return $list;
+	}
+);
+add_filter(
+	'sgo_css_minify_exclude',
+	function ( $list ) {
+		$list[] = 'cardanopress-bootstrap-child-theme';
+		$list[] = 'cardanopress-bootstrap-child-theme-fonts';
+		return $list;
+	}
+);
+
+/**
+ * Preload the self-hosted Chivo + Mulish files (fonts.css) on the redesigned
+ * views, where the hero H1 is Chivo and the body text Mulish. Without it the
+ * browser only finds them after style.css and fonts.css are parsed, and the
+ * swap from the fallback font reflows the hero and pushes the cards down.
+ * Skipped on the front page (its LCP image should not compete) and on the
+ * older templates whose above-the-fold text is Open Sans / Rubik.
+ */
+function lc_preload_fonts() {
+	if (
+		is_front_page()
+		|| is_404()
+		|| is_singular( array( 'podcasts', 'proposal' ) )
+		|| is_post_type_archive( 'proposal' )
+		|| is_tax( array( 'pcategory', 'ptag' ) )
+		|| ( is_page() && ! get_page_template_slug() )
+	) {
+		return;
+	}
+	foreach ( array( 'chivo-latin-var', 'mulish-latin-var' ) as $font ) {
+		printf(
+			'<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n",
+			esc_url( get_stylesheet_directory_uri() . '/assets/fonts/' . $font . '.woff2' )
+		);
+	}
+}
+add_action( 'wp_head', 'lc_preload_fonts', 2 );
 
 /**
  * A post's primary category: Rank Math's primary pick when set, otherwise the
@@ -385,9 +515,13 @@ add_filter( 'script_loader_tag', function ( $tag, $handle ) {
 add_filter( 'wp_resource_hints', function ( $urls, $relation_type ) {
 	if ( 'preconnect' === $relation_type ) {
 		$urls[] = array( 'href' => 'https://www.googletagmanager.com', 'crossorigin' );
-		$urls[] = array( 'href' => 'https://widget.spreaker.com', 'crossorigin' );
+		// Open Sans / Rubik (fonts.css) and SG Optimizer's inlined Google
+		// Fonts are served from here.
+		$urls[] = array( 'href' => 'https://fonts.gstatic.com', 'crossorigin' );
 		// Note: cdn.jsdelivr.net preconnect was removed once Bootstrap was
 		// self-hosted (PR #10) — PSI flagged it as an unused preconnect.
+		// widget.spreaker.com was removed when the footer player became a
+		// click-to-load facade (footer.php): nothing connects there on load.
 	}
 	if ( 'dns-prefetch' === $relation_type ) {
 		$urls[] = 'https://i.ytimg.com';

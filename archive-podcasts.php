@@ -39,7 +39,6 @@ get_header();
 				while ( have_posts() ) :
 					the_post();
 					$title_attr  = the_title_attribute( array( 'echo' => false ) );
-					$thumb       = esc_url( lc_episode_thumb_url( 'large' ) );
 					$permalink   = esc_url( get_permalink() );
 					$date        = esc_html( get_the_date( 'd M, Y' ) );
 					$is_newest   = ( $is_first_page && 0 === $i );
@@ -47,7 +46,15 @@ get_header();
 					?>
 					<a class="pa__card" href="<?php echo $permalink; ?>" aria-label="<?php echo esc_attr( $title_attr ); ?>">
 						<div class="pa__media<?php echo $is_newest ? ' pa__media--newest' : ''; ?>">
-							<div class="pa__media-img" style="background-image:url('<?php echo $thumb; ?>')" role="img" aria-label="<?php echo esc_attr( $title_attr ); ?>"></div>
+							<?php
+							// The first card is the mobile LCP element: load it eagerly at high priority.
+							echo lc_card_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in lc_card_image().
+								array(
+									'class' => 'pa__media-img',
+									'eager' => ( 0 === $i ),
+								)
+							);
+							?>
 							<?php if ( $is_newest ) : ?>
 								<span class="pa__badge">Newest</span>
 							<?php endif; ?>

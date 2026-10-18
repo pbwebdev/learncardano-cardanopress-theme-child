@@ -31,7 +31,21 @@ get_header();
                                 <div class="row">
                                     <div class="col-md-3 episode-image align-self-start">
                                         <?php if ( has_post_thumbnail() ) : ?>
-                                            <?php the_post_thumbnail(); ?>
+                                            <?php
+                                            // The first episode is the mobile LCP image: load it eagerly at
+                                            // high priority and keep SiteGround Optimizer's JS lazy-load off
+                                            // it (skip-lazy); the rest stay lazy.
+                                            $lc_thumb_attr = array( 'sizes' => '(max-width: 767px) 100vw, 300px' );
+                                            if ( 0 === $GLOBALS['wp_query']->current_post ) {
+                                                $lc_thumb_attr += array(
+                                                    'class'         => 'attachment-large size-large wp-post-image skip-lazy',
+                                                    'loading'       => 'eager',
+                                                    'fetchpriority' => 'high',
+                                                    'decoding'      => 'async',
+                                                );
+                                            }
+                                            the_post_thumbnail( 'large', $lc_thumb_attr );
+                                            ?>
                                         <?php endif; ?>
                             
                                     </div>
@@ -58,8 +72,8 @@ get_header();
                                             <?php the_excerpt(); ?>
                                         </div>
                                         <a href="<?php the_permalink() ?>" class="btn btn-primary"  rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>">
-                                            <span class="fa fa-play"></span> Play episode
-                                        </a> <span class="btn-secondary btn"><span class="fa fa-comment"></span> <?php printf( _n( '%d comment', '%d comments', get_comments_number(), 'learncardano' ), get_comments_number() ); ?></span>
+                                            <?php echo lc_icon( 'play' ); ?> Play episode
+                                        </a> <span class="btn-secondary btn"><?php echo lc_icon( 'comment' ); ?> <?php printf( _n( '%d comment', '%d comments', get_comments_number(), 'learncardano' ), get_comments_number() ); ?></span>
                                         <?php get_the_term_list(get_the_ID(), 'podcasts'); ?>
                                     </div>
                                 </div>

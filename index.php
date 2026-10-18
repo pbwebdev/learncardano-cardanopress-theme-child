@@ -66,7 +66,7 @@ get_header();
                                                     </div>
                                                     <a href="<?php the_permalink() ?>" class="btn btn-primary"  rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>">
                                                     	Read more
-                                                    </a> <a  href="<?php the_permalink() ?>#comments"  class="btn-secondary btn"><span class="fa fa-comment"></span> <?php printf( _n( '%d comment', '%d comments', get_comments_number(), 'learncardano' ), get_comments_number() ); ?></a>
+                                                    </a> <a  href="<?php the_permalink() ?>#comments"  class="btn-secondary btn"><?php echo lc_icon( 'comment' ); ?> <?php printf( _n( '%d comment', '%d comments', get_comments_number(), 'learncardano' ), get_comments_number() ); ?></a>
 
                                                 </div>
                                             </div>

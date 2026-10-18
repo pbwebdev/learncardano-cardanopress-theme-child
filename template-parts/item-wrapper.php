@@ -52,7 +52,7 @@ $tags     = get_the_term_list( false, ( 'podcasts' === $post_type ? 'ptag' : 'po
                         <?php the_excerpt(); ?>
                     </div>
                     <a href="<?php the_permalink() ?>" class="btn btn-primary"  rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>">
-                        <span class="fa fa-play"></span> Play episode
+                        <?php echo lc_icon( 'play' ); ?> Play episode
                     </a>
 
                 </div>
