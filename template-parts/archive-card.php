@@ -40,15 +40,11 @@ if ( $is_article ) {
 	<div class="pa__media">
 		<?php if ( $thumb_id ) : ?>
 			<?php
-			echo wp_get_attachment_image(
-				$thumb_id,
-				'large',
-				false,
+			// The first card is the mobile LCP element: load it eagerly at high priority.
+			echo lc_card_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in lc_card_image().
 				array(
-					'class'   => 'pa__media-img',
-					'alt'     => '',
-					'sizes'   => '(max-width: 780px) 100vw, 540px',
-					'loading' => $args['index'] < 2 ? 'eager' : 'lazy',
+					'class' => 'pa__media-img',
+					'eager' => ( 0 === $args['index'] ),
 				)
 			);
 			?>

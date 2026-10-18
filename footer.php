@@ -54,7 +54,7 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
                         <a href="/delegate" title="Delegate & stake your ADA" class="btn btn-primary">Stake Your ADA</a>
                     </div>
                 </div>
-                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/ellipses-background-hero-01.svg" alt="" class="bg-hero-ellipses-01" loading="lazy" decoding="async" aria-hidden="true">
+                <img src="<?php echo get_theme_root_uri(); ?>/learncardano-cardanopress-theme-child/images/ellipses-background-hero-01.svg" alt="" class="bg-hero-ellipses-01" width="751" height="709" loading="lazy" decoding="async" aria-hidden="true">
             </div>
         </div>
 
@@ -125,27 +125,69 @@ $theme = wp_get_theme( CARDANOPRESS_BOOTSTRAP_THEME_BASE );
                 	</div>
 		</div>
 	</footer>
-	<iframe src='https://widget.spreaker.com/player?show_id=4856207&theme=dark&playlist=show&playlist-continuous=true&chapters-image=true' width='100%' height='50px' title='Learn Cardano Podcast' frameborder='0' loading='lazy' class="fixed-bottom" ></iframe>
+	<?php
+	// Spreaker player: a lightweight bar in its place until it's wanted. The
+	// real player is a heavy third-party iframe, and fixed to the viewport it
+	// loaded on every page view; clicking the bar swaps in the same iframe.
+	// Same 50px height, so nothing moves. Without JS the iframe loads as before.
+	$lc_spreaker_src = 'https://widget.spreaker.com/player?show_id=4856207&theme=dark&playlist=show&playlist-continuous=true&chapters-image=true';
+	?>
+	<div class="lc-spreaker fixed-bottom">
+		<button type="button" class="lc-spreaker__play" id="lc-spreaker-play" data-src="<?php echo esc_url( $lc_spreaker_src ); ?>">
+			<span class="lc-spreaker__icon" aria-hidden="true"><?php echo lc_icon( 'play' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG. ?></span>
+			<span class="lc-spreaker__label"><?php esc_html_e( 'Play the Learn Cardano Podcast', 'learncardano' ); ?></span>
+			<span class="lc-spreaker__meta"><?php esc_html_e( 'Spreaker player', 'learncardano' ); ?></span>
+		</button>
+	</div>
+	<noscript><iframe src="<?php echo esc_url( $lc_spreaker_src ); ?>" width="100%" height="50px" title="Learn Cardano Podcast" frameborder="0" loading="lazy" class="fixed-bottom"></iframe></noscript>
+	<script>
+	(function () {
+		var btn = document.getElementById('lc-spreaker-play');
+		if (!btn) { return; }
+		btn.addEventListener('click', function () {
+			var frame = document.createElement('iframe');
+			frame.src = btn.getAttribute('data-src');
+			frame.width = '100%';
+			frame.setAttribute('height', '50px');
+			frame.title = 'Learn Cardano Podcast';
+			frame.setAttribute('frameborder', '0');
+			frame.className = 'fixed-bottom';
+			btn.parentNode.parentNode.replaceChild(frame, btn.parentNode);
+			frame.focus();
+		});
+	})();
+	</script>
 
 
 <script src="<?php echo esc_url( get_stylesheet_directory_uri() ); ?>/assets/bootstrap/bootstrap.bundle.min.js" defer></script>
 
 		<?php wp_footer(); ?>
 
-        <link rel='stylesheet' id='cardanopress-bootstrap-child-theme'  href='<?php echo esc_url( lc_theme_asset_url( 'style.css' ) ); ?>' media='all' />
-        <link rel='stylesheet' id='cardanopress-bootstrap-child-theme-fonts'  href='<?php echo esc_url( lc_theme_asset_url( 'fonts.css' ) ); ?>' media='all' />
-
-<!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/fontawesome.min.css" integrity="sha384-zIaWifL2YFF1qaDiAo0JFgsmasocJ/rqu7LKYH8CoBEXqGbb9eO+Xi3s6fQhgFWM" crossorigin="anonymous">-->
-
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js" integrity="sha512-6PM0qYu5KExuNcKt5bURAoT6KCThUmHRewN3zUFNaoI6Di7XJPTMoT6K0nsagZKk2OB4L7E3q1uQKHNHd4stIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>-->
-
-
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-W49L88K8');</script>
+<!-- Google Tag Manager: loaded once the page has finished loading and the
+     browser is idle, so it never competes with first render. -->
+<script>
+(function (w, d) {
+	function gtm() {
+		(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+			'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+		})(w,d,'script','dataLayer','GTM-W49L88K8');
+	}
+	function idle() {
+		if ('requestIdleCallback' in w) {
+			w.requestIdleCallback(gtm, { timeout: 3000 });
+		} else {
+			setTimeout(gtm, 1500);
+		}
+	}
+	if (d.readyState === 'complete') {
+		idle();
+	} else {
+		w.addEventListener('load', idle);
+	}
+})(window, document);
+</script>
 <!-- End Google Tag Manager -->
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W49L88K8"

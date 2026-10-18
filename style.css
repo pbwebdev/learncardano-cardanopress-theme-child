@@ -172,7 +172,7 @@ body{font-family:"Open Sans",sans-serif;color:#222 !important}h1,h2,h3,.navbar-b
    article-only additions: <img> thumbnails, placeholder, category
    label, arrow button and the category filter.
    ============================================================ */
-img.pa__media-img{width:100%;height:100%;object-fit:cover;display:block}
+img.pa__media-img,img.lep__media-img{width:100%;height:100%;object-fit:cover;display:block}
 .pa__placeholder{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#dc10ff 0%,#0070ff 100%)}
 .pa__placeholder-mark{font-family:'Chivo',sans-serif;font-weight:900;font-size:30px;letter-spacing:-0.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.18)}
 .pa__cat{color:#5b5b63}
@@ -507,3 +507,24 @@ img.pa__media-img{width:100%;height:100%;object-fit:cover;display:block}
 @media (max-width:400px){
   #footer-links .lc-platforms{grid-template-columns:1fr}
 }
+
+/* ============================================================
+   Inline SVG icons (lc_icon() in functions.php), sized to the text.
+   Replace the Font Awesome classes, which Font Awesome no longer styled.
+   ============================================================ */
+.lc-icon{display:inline-block;width:1em;height:1em;vertical-align:-0.125em;fill:currentColor}
+
+/* ============================================================
+   Spreaker player facade (footer.php .lc-spreaker)
+   A 50px dark bar in the player's place; clicking it swaps in the
+   real Spreaker iframe at the same size, so nothing moves.
+   ============================================================ */
+.lc-spreaker{height:50px;background:#1c1c1e;color:#fff;box-shadow:0 -1px 0 rgba(255,255,255,0.06)}
+.no-js .lc-spreaker{display:none}
+.lc-spreaker__play{display:flex;align-items:center;gap:12px;width:100%;height:50px;padding:0 16px;border:0;background:transparent;color:inherit;font-family:"Open Sans",sans-serif;font-size:14px;font-weight:600;line-height:1.2;text-align:left;cursor:pointer}
+.lc-spreaker__play:focus-visible{outline:2px solid #9333ea;outline-offset:-2px}
+.lc-spreaker__icon{flex:none;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#fff;color:#1c1c1e;transition:background .18s ease,color .18s ease}
+.lc-spreaker__icon .lc-icon{width:14px;height:14px;margin-left:2px;vertical-align:0}
+.lc-spreaker__play:hover .lc-spreaker__icon,.lc-spreaker__play:focus-visible .lc-spreaker__icon{background:#9333ea;color:#fff}
+.lc-spreaker__label{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lc-spreaker__meta{flex:none;font-size:12px;font-weight:400;color:#9a9aa2}

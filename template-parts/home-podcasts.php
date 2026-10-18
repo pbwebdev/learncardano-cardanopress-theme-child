@@ -22,7 +22,7 @@ if ( ! $query->have_posts() ) {
 	return;
 }
 
-// lc_episode_thumb_url() is defined in functions.php (shared with the archive).
+// lc_card_image() is defined in functions.php (shared with the archives).
 
 $index = 0;
 ?>
@@ -33,7 +33,6 @@ $index = 0;
 		$query->the_post();
 		$is_featured = ( 0 === $index );
 		$title_attr  = the_title_attribute( array( 'echo' => false ) );
-		$thumb       = esc_url( lc_episode_thumb_url( $is_featured ? 'large' : 'medium_large' ) );
 		$permalink   = esc_url( get_permalink() );
 		$date        = esc_html( get_the_date( 'F j, Y' ) );
 
@@ -41,7 +40,16 @@ $index = 0;
 			?>
 			<a class="lep__featured" href="<?php echo $permalink; ?>" aria-label="<?php echo esc_attr( $title_attr ); ?>">
 				<div class="lep__media lep__media--featured">
-					<div class="lep__media-img" style="background-image:url('<?php echo $thumb; ?>')" role="img" aria-label="<?php echo esc_attr( $title_attr ); ?>"></div>
+					<?php
+					// The home page's LCP element: load it eagerly at high priority.
+					echo lc_card_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in lc_card_image().
+						array(
+							'class' => 'lep__media-img',
+							'sizes' => '(max-width: 899px) 100vw, 610px',
+							'eager' => true,
+						)
+					);
+					?>
 					<div class="lep__media-grad" aria-hidden="true"></div>
 					<span class="lep__badge">Newest</span>
 					<span class="lep__play" aria-hidden="true">
@@ -67,7 +75,15 @@ $index = 0;
 			?>
 			<a class="lep__card" href="<?php echo $permalink; ?>" aria-label="<?php echo esc_attr( $title_attr ); ?>">
 				<div class="lep__media lep__media--card">
-					<div class="lep__media-img" style="background-image:url('<?php echo $thumb; ?>')" role="img" aria-label="<?php echo esc_attr( $title_attr ); ?>"></div>
+					<?php
+					echo lc_card_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in lc_card_image().
+						array(
+							'class' => 'lep__media-img',
+							'size'  => 'medium_large',
+							'sizes' => '(max-width: 899px) 100vw, 200px',
+						)
+					);
+					?>
 					<span class="lep__play" aria-hidden="true">
 						<span class="lep__play-circle lep__play-circle--sm"><span class="lep__play-tri"></span></span>
 					</span>

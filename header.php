@@ -25,6 +25,8 @@ https://meshwithus.com.au
 -->
 <html class="no-js" <?php language_attributes(); ?>>
 	<head>
+		<meta charset="<?php bloginfo( 'charset' ); ?>" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <style media="all">
             .container,.container-fluid,.container-lg,.container-md,.container-sm,.container-xl,.container-xxl{margin-left:auto;margin-right:auto;padding-left:var(--bs-gutter-x,.75rem);padding-right:var(--bs-gutter-x,.75rem);width:100%}
             .entry-title{margin-bottom:2rem}
@@ -43,9 +45,7 @@ https://meshwithus.com.au
         </style>
 
 		<script type="text/javascript">document.documentElement.className = document.documentElement.className.replace( 'no-js', 'js' );</script>
-		<meta charset="<?php bloginfo( 'charset' ); ?>" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <link rel="icon" href="/wp-content/themes/learncardano-cardanopress-theme-child/images/favicon-16x16.png" sizes="16x16" />
         <link rel="icon" href="/wp-content/themes/learncardano-cardanopress-theme-child/images/favicon-32x32.png" sizes="32x32" />
         <link rel="icon" href="/wp-content/themes/learncardano-cardanopress-theme-child/images/android-chrome-192x192.png" sizes="192x192" />
