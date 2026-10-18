@@ -331,20 +331,25 @@ function lc_auth_mail_cap_alert() {
  * @param string $to Recipient address.
  * @return string '' when allowed, else the name of the bucket that said no.
  */
-function lc_auth_mail_check( $to ) {
+function lc_auth_mail_check( $to, $security = false ) {
 	$lim = lc_auth_mail_limits();
 	$key = lc_auth_email_key( $to );
-	if ( lc_auth_rate( 'mail_rcpt_h', $key, (int) $lim['rcpt_h'], HOUR_IN_SECONDS, false ) ) {
-		return 'rcpt_hour';
-	}
-	if ( lc_auth_rate( 'mail_rcpt_d', $key, (int) $lim['rcpt_d'], DAY_IN_SECONDS, false ) ) {
-		return 'rcpt_day';
-	}
-	if ( lc_auth_rate( 'mail_ip', null, (int) $lim['ip'], 15 * MINUTE_IN_SECONDS, false ) ) {
-		return 'ip';
-	}
-	if ( lc_auth_rate( 'mail_coarse', lc_auth_coarse_subject(), (int) $lim['ip_coarse'], 15 * MINUTE_IN_SECONDS, false ) ) {
-		return 'ip_coarse';
+	if ( ! $security ) {
+		// Security notices skip the recipient and visitor buckets, so exhausting them cannot hide a change from the owner.
+		if ( lc_auth_rate( 'mail_rcpt_h', $key, (int) $lim['rcpt_h'], HOUR_IN_SECONDS, false ) ) {
+			return 'rcpt_hour';
+		}
+		if ( lc_auth_rate( 'mail_rcpt_d', $key, (int) $lim['rcpt_d'], DAY_IN_SECONDS, false ) ) {
+			return 'rcpt_day';
+		}
+		if ( lc_auth_rate( 'mail_ip', null, (int) $lim['ip'], 15 * MINUTE_IN_SECONDS, false ) ) {
+			return 'ip';
+		}
+		if ( lc_auth_rate( 'mail_coarse', lc_auth_coarse_subject(), (int) $lim['ip_coarse'], 15 * MINUTE_IN_SECONDS, false ) ) {
+			return 'ip_coarse';
+		}
+	} elseif ( lc_auth_rate( 'mail_sec_d', $key, (int) ( $lim['security_d'] ?? 10 ), DAY_IN_SECONDS, false ) ) {
+		return 'security_day'; // Small separate bucket so notices cannot be used to mail-bomb an address.
 	}
 	if ( lc_auth_rate( 'mail_global', 'all', lc_auth_mail_global_cap(), DAY_IN_SECONDS, false ) ) {
 		lc_auth_mail_cap_alert();
@@ -357,13 +362,17 @@ function lc_auth_mail_check( $to ) {
 }
 
 /** The COUNTING half: call once, right before a mail really goes out. */
-function lc_auth_mail_count( $to ) {
+function lc_auth_mail_count( $to, $security = false ) {
 	$lim = lc_auth_mail_limits();
 	$key = lc_auth_email_key( $to );
-	lc_auth_rate( 'mail_rcpt_h', $key, (int) $lim['rcpt_h'], HOUR_IN_SECONDS );
-	lc_auth_rate( 'mail_rcpt_d', $key, (int) $lim['rcpt_d'], DAY_IN_SECONDS );
-	lc_auth_rate( 'mail_ip', null, (int) $lim['ip'], 15 * MINUTE_IN_SECONDS );
-	lc_auth_rate( 'mail_coarse', lc_auth_coarse_subject(), (int) $lim['ip_coarse'], 15 * MINUTE_IN_SECONDS );
+	if ( $security ) {
+		lc_auth_rate( 'mail_sec_d', $key, (int) ( $lim['security_d'] ?? 10 ), DAY_IN_SECONDS );
+	} else {
+		lc_auth_rate( 'mail_rcpt_h', $key, (int) $lim['rcpt_h'], HOUR_IN_SECONDS );
+		lc_auth_rate( 'mail_rcpt_d', $key, (int) $lim['rcpt_d'], DAY_IN_SECONDS );
+		lc_auth_rate( 'mail_ip', null, (int) $lim['ip'], 15 * MINUTE_IN_SECONDS );
+		lc_auth_rate( 'mail_coarse', lc_auth_coarse_subject(), (int) $lim['ip_coarse'], 15 * MINUTE_IN_SECONDS );
+	}
 	lc_auth_rate( 'mail_global', 'all', lc_auth_mail_global_cap(), DAY_IN_SECONDS );
 }
 
@@ -833,10 +842,38 @@ function lc_auth_methods( $user ) {
 	return (array) apply_filters( 'lc_auth_methods', $methods, $user );
 }
 
-/** A method may go only while another one remains. */
+/**
+ * Whether a provider can be used to sign in right now: both wp-config constants
+ * set and not empty, then the same lc_auth_provider_enabled filter the provider
+ * registry applies. Cheap, so core does not have to load oauth.php.
+ */
+function lc_auth_idp_enabled( $provider ) {
+	if ( ! in_array( $provider, lc_auth_idp_ids(), true ) ) {
+		return false;
+	}
+	$a  = 'LC_' . strtoupper( $provider ) . '_CLIENT_ID';
+	$b  = 'LC_' . strtoupper( $provider ) . '_CLIENT_SECRET';
+	$on = defined( $a ) && defined( $b ) && is_string( constant( $a ) ) && is_string( constant( $b ) )
+		&& '' !== trim( constant( $a ) ) && '' !== trim( constant( $b ) );
+	return (bool) apply_filters( 'lc_auth_provider_enabled', $on, $provider );
+}
+
+/** The methods that work right now: lc_auth_methods() minus connected providers that are switched off. */
+function lc_auth_usable_methods( $user ) {
+	return array_values(
+		array_filter(
+			lc_auth_methods( $user ),
+			function ( $m ) {
+				return 0 !== strpos( (string) $m, 'idp:' ) || lc_auth_idp_enabled( substr( (string) $m, 4 ) );
+			}
+		)
+	);
+}
+
+/** A method may go only while another USABLE one remains (a disabled provider is no way in). */
 function lc_auth_can_remove( $user, $key ) {
 	$methods = lc_auth_methods( $user );
-	return in_array( $key, $methods, true ) && count( $methods ) >= 2;
+	return in_array( $key, $methods, true ) && count( array_diff( lc_auth_usable_methods( $user ), array( $key ) ) ) >= 1;
 }
 
 /** stake1u8…k2x9 */

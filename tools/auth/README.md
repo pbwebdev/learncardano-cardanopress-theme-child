@@ -57,6 +57,12 @@ Paste them in wp-config only; nothing prints or logs them. Remove a pair (or fil
 | live | `https://learncardano.io/account/oauth/google/callback/` | `https://learncardano.io/account/oauth/discord/callback/` |
 | staging | `https://staging2.learncardano.io/account/oauth/google/callback/` | `https://staging2.learncardano.io/account/oauth/discord/callback/` |
 
+**Current setup (owner's choice):** the same Google client and the same Discord app serve BOTH staging and live; both sites run on the same server account and share the same four constants. Both redirect URIs are registered in each. Consequence: anything with the client secret on that account can act as either site, and a user's Google/Discord subject is the same on both sites (so a staging test account and a live account link to the same provider identity independently).
+
+**To split them later:** create a second Google web client and a second Discord application, register only the staging redirect URIs in the new ones (and remove the staging URIs from the live ones), then define the new four constants in the staging `wp-config.php` only. No code change is needed. Identities linked on staging with the old client will not match the new one, so reconnect any staging test accounts.
+
+**Account-linking rule ("connect once, then automatic"):** a sign-in joins an existing account by email only when the provider is authoritative for that address: Google with `email_verified` and either a `@gmail.com`/`@googlemail.com` address or a non-empty `hd` claim; Discord never. Otherwise it is refused with `oauth_email_exists` (sign in by email link, then connect on the account page), and a new member is created without an email.
+
 One Google web client and one Discord application can serve both hosts: list both redirect URIs in each, and put the same four constants in both wp-configs.
 
 - Google: Cloud console, a *Web application* OAuth client, consent screen **In production** (the `openid email profile` scopes need no verification). The id_token is read from the direct TLS token exchange, so no signature check is made (documented in `lc_auth_oauth_google_identity()`).

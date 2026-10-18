@@ -59,7 +59,9 @@ function lc_auth_panel_token_ok( $token ) {
  * see lc_auth_mail_check(). Over a limit the mail is skipped silently and the
  * caller gets the same "sent" answer, so nothing reveals the limit or whether
  * an address has an account. The limits are only LOOKED at first and counted
- * just before the mail goes out, so a skipped mail uses no budget.
+ * just before the mail goes out, so a skipped mail uses no budget. The security
+ * notices (idp_linked, idp_unlinked, wallet_linked) skip the recipient and visitor
+ * buckets, keep the global cap and have a small per-recipient daily bucket.
  *
  * Off production wp_mail() returns false by design; that is not an error.
  *
@@ -70,12 +72,15 @@ function lc_auth_panel_token_ok( $token ) {
  * @param string         $kind    signin|wallet_first|password|email_change|email_verify|wallet_linked|idp_linked|idp_unlinked.
  */
 function lc_auth_email_send( $to, $subject, $body, $kind ) {
-	$blocked = lc_auth_mail_check( $to );
+	// Notices about a change to an existing account (sent to its verified address) must not be
+	// suppressible by filling the recipient/visitor buckets: they use a small bucket of their own.
+	$security = in_array( $kind, array( 'idp_linked', 'idp_unlinked', 'wallet_linked' ), true );
+	$blocked  = lc_auth_mail_check( $to, $security );
 	if ( '' !== $blocked ) {
 		lc_auth_log( 'mail_capped', array( 'kind' => $kind, 'bucket' => $blocked ) );
 		return true;
 	}
-	lc_auth_mail_count( $to );
+	lc_auth_mail_count( $to, $security );
 	if ( $body instanceof Closure ) {
 		$body = $body();
 	}

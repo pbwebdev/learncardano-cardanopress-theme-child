@@ -1360,9 +1360,9 @@ try {
 	t_browser();
 	$users_before = (int) count_users()['total_users'];
 	$email_new    = 'oa' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid';
-	$f            = t_g_flow( 'signin', array( 'email' => $email_new ) );
+	$f            = t_g_flow( 'signin', array( 'email' => $email_new, 'hd' => 'lc-test.invalid' ) ); // hd present: Google is authoritative for the address.
 	$nu           = get_user_by( 'email', $email_new );
-	t( 'no match: a new member is created and signed in', is_array( $f['res'] ) && $f['res']['new_account'] && $nu && get_current_user_id() === $nu->ID, t_code( $f['res'] ) );
+	t( 'no match + authoritative: a new member is created and signed in', is_array( $f['res'] ) && $f['res']['new_account'] && $nu && get_current_user_id() === $nu->ID, t_code( $f['res'] ) );
 	t( 'new member: verified email, provider name, subscriber, subject stored with a masked hint', $nu && lc_auth_email_verified( $nu ) && 'Tess' === $nu->display_name && array( 'subscriber' ) === $nu->roles && $f['claims']['sub'] === get_user_meta( $nu->ID, 'lc_idp_google', true ) && lc_auth_mask_email( $email_new ) === ( get_user_meta( $nu->ID, 'lc_idp_info', true )['google']['hint'] ?? '' ) );
 	t( 'new member: methods = email + idp:google', $nu && array( 'email', 'idp:google' ) === lc_auth_methods( $nu ) );
 	t( 'new member: login is random (no email, no subject)', $nu && 0 === strpos( $nu->user_login, 'm_' ) && false === strpos( $nu->user_login, 'oa' ) );
@@ -1381,13 +1381,18 @@ try {
 	$eu = t_user();
 	update_user_meta( $eu->ID, 'lc_idp_google', 'lctest-ev-' . $eu->ID );
 	t( 'precondition: local email unverified', ! lc_auth_email_verified( $eu ) );
-	$f2 = t_g_flow( 'signin', array( 'sub' => 'lctest-ev-' . $eu->ID, 'email' => $eu->user_email ) );
-	t( 'existing identity + provider-verified matching email: the email becomes verified', is_array( $f2['res'] ) && get_current_user_id() === $eu->ID && lc_auth_email_verified( $eu->ID ), t_code( $f2['res'] ) );
+	$f2 = t_g_flow( 'signin', array( 'sub' => 'lctest-ev-' . $eu->ID, 'email' => $eu->user_email, 'hd' => 'lc-test.invalid' ) );
+	t( 'existing identity + authoritative matching email: the email becomes verified', is_array( $f2['res'] ) && get_current_user_id() === $eu->ID && lc_auth_email_verified( $eu->ID ), t_code( $f2['res'] ) );
 	t_browser();
 	$eu2 = t_user();
 	update_user_meta( $eu2->ID, 'lc_idp_google', 'lctest-ev2-' . $eu2->ID );
 	$f2 = t_g_flow( 'signin', array( 'sub' => 'lctest-ev2-' . $eu2->ID, 'email' => 'other' . bin2hex( random_bytes( 3 ) ) . '@lc-test.invalid' ) );
 	t( 'existing identity + a different provider email: the local email stays unverified', is_array( $f2['res'] ) && get_current_user_id() === $eu2->ID && ! lc_auth_email_verified( $eu2->ID ) );
+	t_browser();
+	$eu3 = t_user();
+	update_user_meta( $eu3->ID, 'lc_idp_google', 'lctest-ev3-' . $eu3->ID );
+	$f2 = t_g_flow( 'signin', array( 'sub' => 'lctest-ev3-' . $eu3->ID, 'email' => $eu3->user_email ) ); // Verified but not authoritative (no hd, not Gmail).
+	t( 'existing identity + NON-authoritative matching email: still signs in directly, email stays unverified', is_array( $f2['res'] ) && get_current_user_id() === $eu3->ID && ! lc_auth_email_verified( $eu3->ID ), t_code( $f2['res'] ) );
 
 	// Staff with an identity are refused.
 	t_browser();
@@ -1401,8 +1406,8 @@ try {
 	$al = t_user();
 	lc_auth_mark_email_verified( $al->ID, $al->user_email );
 	lc_auth_dev_outbox_clear();
-	$f2 = t_g_flow( 'signin', array( 'email' => $al->user_email ) );
-	t( 'auto-link: verified local + verified provider email -> linked, signed in as the existing account', is_array( $f2['res'] ) && ! $f2['res']['new_account'] && get_current_user_id() === $al->ID && $f2['claims']['sub'] === get_user_meta( $al->ID, 'lc_idp_google', true ), t_code( $f2['res'] ) );
+	$f2 = t_g_flow( 'signin', array( 'email' => $al->user_email, 'hd' => 'lc-test.invalid' ) );
+	t( 'auto-link: verified local + authoritative provider email -> linked, signed in as the existing account', is_array( $f2['res'] ) && ! $f2['res']['new_account'] && get_current_user_id() === $al->ID && $f2['claims']['sub'] === get_user_meta( $al->ID, 'lc_idp_google', true ), t_code( $f2['res'] ) );
 	t( 'auto-link: the verified address is notified once', 1 === t_outbox_count( $al->user_email ) );
 	t( 'auto-link: methods now include idp:google', in_array( 'idp:google', lc_auth_methods( get_userdata( $al->ID ) ), true ) );
 
@@ -1418,18 +1423,18 @@ try {
 	// Local email unverified: refuse and say how to proceed.
 	t_browser();
 	$lu = t_user();
-	$f2 = t_g_flow( 'signin', array( 'email' => $lu->user_email ) );
-	t( 'local email unverified: refused (oauth_email_exists), nothing linked, not signed in', 'oauth_email_exists' === t_code( $f2['res'] ) && 0 === get_current_user_id() && '' === (string) get_user_meta( $lu->ID, 'lc_idp_google', true ) );
+	$f2 = t_g_flow( 'signin', array( 'email' => $lu->user_email, 'hd' => 'lc-test.invalid' ) );
+	t( 'local email unverified (authoritative provider): refused (oauth_email_exists), nothing linked, not signed in', 'oauth_email_exists' === t_code( $f2['res'] ) && 0 === get_current_user_id() && '' === (string) get_user_meta( $lu->ID, 'lc_idp_google', true ) );
 	t( 'oauth_email_exists has its own wording that points to the email link', lc_auth_text( 'oauth_email_exists' ) !== lc_auth_text( 'unknown' ) && false !== stripos( lc_auth_text( 'oauth_email_exists' ), 'email link' ) );
 
 	// Staff by email (drop the identity the earlier staff case gave them, so "nothing linked" is checkable).
 	delete_user_meta( $st->ID, 'lc_idp_google' );
 	t_browser();
-	$f2 = t_g_flow( 'signin', array( 'email' => $st->user_email ) );
+	$f2 = t_g_flow( 'signin', array( 'email' => $st->user_email, 'hd' => 'lc-test.invalid' ) );
 	t( 'staff account with that email: refused (password_only), nothing linked', 'password_only' === t_code( $f2['res'] ) && 0 === get_current_user_id() && '' === (string) get_user_meta( $st->ID, 'lc_idp_google', true ), (string) t_code( $f2['res'] ) );
 	lc_auth_mark_email_verified( $st->ID, $st->user_email );
 	t_browser();
-	$f2 = t_g_flow( 'signin', array( 'email' => $st->user_email ) );
+	$f2 = t_g_flow( 'signin', array( 'email' => $st->user_email, 'hd' => 'lc-test.invalid' ) );
 	t( 'staff account with a VERIFIED matching email: still refused', 'password_only' === t_code( $f2['res'] ) && '' === (string) get_user_meta( $st->ID, 'lc_idp_google', true ), (string) t_code( $f2['res'] ) );
 
 	// Existing account already has a different Google identity.
@@ -1437,7 +1442,7 @@ try {
 	$hs = t_user();
 	lc_auth_mark_email_verified( $hs->ID, $hs->user_email );
 	update_user_meta( $hs->ID, 'lc_idp_google', 'lctest-other-' . $hs->ID );
-	$f2 = t_g_flow( 'signin', array( 'email' => $hs->user_email ) );
+	$f2 = t_g_flow( 'signin', array( 'email' => $hs->user_email, 'hd' => 'lc-test.invalid' ) );
 	t( 'auto-link refused when the account already has another Google identity', 'idp_has_other' === t_code( $f2['res'] ) && 'lctest-other-' . $hs->ID === get_user_meta( $hs->ID, 'lc_idp_google', true ) && 0 === get_current_user_id() );
 
 	// Integrity: the same subject on two accounts.
@@ -1469,6 +1474,59 @@ try {
 	$f2        = t_g_flow( 'signin', array( 'sub' => $f['claims']['sub'], 'email' => $email_new ) );
 	t( 'switching accounts: signed in as the identity owner; the previous session is destroyed', is_array( $f2['res'] ) && get_current_user_id() === $nu->ID && null === WP_Session_Tokens::get_instance( $other->ID )->get( $old_token ) );
 
+	/* ---- authoritative vs not (connect once, then automatic) ------------- */
+	$report( 'OAuth: email authority (Gmail / hd / Discord)' );
+	$gm_set = function ( WP_User $u ) {
+		$new = 'lctest.' . bin2hex( random_bytes( 4 ) ) . '@gmail.com';
+		wp_update_user( array( 'ID' => $u->ID, 'user_email' => $new ) );
+		return get_userdata( $u->ID );
+	};
+	$nonce_x = lc_auth_new_token();
+	$ident   = function ( array $over ) use ( $nonce_x, $cid_g ) {
+		return lc_auth_oauth_google_identity( t_jwt( t_claims( $nonce_x, $over ) ), $cid_g, $nonce_x );
+	};
+	t( 'authority: verified @gmail.com is authoritative', true === $ident( array( 'email' => 'someone@gmail.com' ) )['email_authoritative'] );
+	t( 'authority: verified @googlemail.com is authoritative', true === $ident( array( 'email' => 'someone@googlemail.com' ) )['email_authoritative'] );
+	t( 'authority: UNverified @gmail.com is not', false === $ident( array( 'email' => 'someone@gmail.com', 'email_verified' => false ) )['email_authoritative'] );
+	t( 'authority: verified non-Gmail without hd is not', false === $ident( array() )['email_authoritative'] );
+	t( 'authority: verified non-Gmail with a non-empty hd is (hd is not compared to the domain)', true === $ident( array( 'hd' => 'unrelated.example' ) )['email_authoritative'] );
+	t( 'authority: empty or non-string hd does not count', false === $ident( array( 'hd' => '' ) )['email_authoritative'] && false === $ident( array( 'hd' => true ) )['email_authoritative'] );
+	t( 'authority: a lookalike gmail domain does not count', false === $ident( array( 'email' => 'x@notgmail.com' ) )['email_authoritative'] && false === $ident( array( 'email' => 'x@gmail.com.evil.example' ) )['email_authoritative'] );
+
+	t_browser();
+	$gv = $gm_set( t_user() );
+	lc_auth_mark_email_verified( $gv->ID, $gv->user_email );
+	$f2 = t_g_flow( 'signin', array( 'email' => $gv->user_email ) );
+	t( 'google @gmail.com verified: auto-links to the verified local account and signs in', is_array( $f2['res'] ) && get_current_user_id() === $gv->ID && $f2['claims']['sub'] === get_user_meta( $gv->ID, 'lc_idp_google', true ), t_code( $f2['res'] ) );
+
+	t_browser();
+	$nv = t_user();
+	lc_auth_mark_email_verified( $nv->ID, $nv->user_email );
+	$f2 = t_g_flow( 'signin', array( 'email' => $nv->user_email ) ); // Non-Gmail, no hd.
+	t( 'google non-Gmail without hd + existing verified account: oauth_email_exists, nothing linked', 'oauth_email_exists' === t_code( $f2['res'] ) && '' === (string) get_user_meta( $nv->ID, 'lc_idp_google', true ) && 0 === get_current_user_id() );
+	t_browser();
+	$nu2 = t_user();
+	$f2  = t_g_flow( 'signin', array( 'email' => $nu2->user_email ) );
+	t( 'google non-Gmail without hd + existing UNverified account: oauth_email_exists too', 'oauth_email_exists' === t_code( $f2['res'] ) && '' === (string) get_user_meta( $nu2->ID, 'lc_idp_google', true ) );
+	t_browser();
+	$free_e = 'oa' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid';
+	$f2     = t_g_flow( 'signin', array( 'email' => $free_e ) );
+	$nm2    = get_current_user_id();
+	t( 'google non-Gmail without hd + no account: a member is created WITHOUT an email', is_array( $f2['res'] ) && $f2['res']['new_account'] && $nm2 && '' === get_userdata( $nm2 )->user_email && false === get_user_by( 'email', $free_e ) && $f2['claims']['sub'] === get_user_meta( $nm2, 'lc_idp_google', true ), t_code( $f2['res'] ) );
+
+	t_browser();
+	$hv = t_user();
+	lc_auth_mark_email_verified( $hv->ID, $hv->user_email );
+	$f2 = t_g_flow( 'signin', array( 'email' => $hv->user_email, 'hd' => 'lc-test.invalid' ) );
+	t( 'google with hd: authoritative, auto-links to the verified account', is_array( $f2['res'] ) && get_current_user_id() === $hv->ID && $f2['claims']['sub'] === get_user_meta( $hv->ID, 'lc_idp_google', true ), t_code( $f2['res'] ) );
+
+	t_browser();
+	$gi = $gm_set( t_user() );
+	update_user_meta( $gi->ID, 'lc_idp_google', 'lctest-linked-' . $gi->ID );
+	$other_e = 'oa' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid';
+	$f2      = t_g_flow( 'signin', array( 'sub' => 'lctest-linked-' . $gi->ID, 'email' => $other_e ) );
+	t( 'identity already linked: signs in directly regardless of the email (non-authoritative too)', is_array( $f2['res'] ) && get_current_user_id() === $gi->ID, t_code( $f2['res'] ) );
+
 	/* ---- Discord ---------------------------------------------------------- */
 	$report( 'OAuth: Discord' );
 	t_browser();
@@ -1476,8 +1534,9 @@ try {
 	$http_before = count( $GLOBALS['lc_t_http'] );
 	$d           = t_d_flow( 'signin', array( 'email' => $de ) );
 	$du          = get_user_by( 'email', $de );
-	t( 'discord: new member with verified email, signed in', is_array( $d['res'] ) && $d['res']['new_account'] && $du && get_current_user_id() === $du->ID && lc_auth_email_verified( $du ), t_code( $d['res'] ) );
-	t( 'discord: display name from global_name; identity stored under lc_idp_discord', $du && 'Tess D' === $du->display_name && $d['profile']['id'] === get_user_meta( $du->ID, 'lc_idp_discord', true ) );
+	$du = ! empty( $d['profile']['id'] ) ? get_userdata( (int) ( lc_auth_idp_owners( 'discord', $d['profile']['id'] )[0] ?? 0 ) ) : false;
+	t( 'discord: new member (verified email, but Discord is never authoritative) has NO email, signed in', is_array( $d['res'] ) && $d['res']['new_account'] && $du && get_current_user_id() === $du->ID && '' === $du->user_email && false === get_user_by( 'email', $de ), t_code( $d['res'] ) );
+	t( 'discord: display name from global_name; identity stored under lc_idp_discord; masked hint kept', $du && 'Tess D' === $du->display_name && $d['profile']['id'] === get_user_meta( $du->ID, 'lc_idp_discord', true ) && lc_auth_mask_email( $de ) === ( get_user_meta( $du->ID, 'lc_idp_info', true )['discord']['hint'] ?? '' ) );
 	$reqs = array_slice( $GLOBALS['lc_t_http'], $http_before );
 	$urls = array_column( $reqs, 'url' );
 	t( 'discord: token, profile and revoke were called, in that order', array( 'https://discord.com/api/oauth2/token', 'https://discord.com/api/v10/users/@me', 'https://discord.com/api/oauth2/token/revoke' ) === $urls, implode( ' ', $urls ) );
@@ -1499,12 +1558,22 @@ try {
 	$nm = get_current_user_id();
 	t( 'discord unverified email: a member is created WITHOUT that email', is_array( $d['res'] ) && $nm && '' === get_userdata( $nm )->user_email && false === get_user_by( 'email', $ue ) );
 
+	// Discord is never authoritative: an existing account with that email is refused, verified or not.
 	t_browser();
 	$da = t_user();
 	lc_auth_mark_email_verified( $da->ID, $da->user_email );
 	lc_auth_dev_outbox_clear();
 	$d = t_d_flow( 'signin', array( 'email' => $da->user_email ) );
-	t( 'discord auto-link to a verified local email works and notifies', is_array( $d['res'] ) && get_current_user_id() === $da->ID && $d['profile']['id'] === get_user_meta( $da->ID, 'lc_idp_discord', true ) && 1 === t_outbox_count( $da->user_email ) );
+	t( 'discord verified=true + verified local email: oauth_email_exists, nothing linked, nobody notified, not signed in', 'oauth_email_exists' === t_code( $d['res'] ) && '' === (string) get_user_meta( $da->ID, 'lc_idp_discord', true ) && 0 === t_outbox_count( $da->user_email ) && 0 === get_current_user_id() );
+	t_browser();
+	$da2 = t_user();
+	$d   = t_d_flow( 'signin', array( 'email' => $da2->user_email ) );
+	t( 'discord verified=true + UNverified local email: oauth_email_exists too', 'oauth_email_exists' === t_code( $d['res'] ) && '' === (string) get_user_meta( $da2->ID, 'lc_idp_discord', true ) );
+	t_browser();
+	$dl = t_user();
+	update_user_meta( $dl->ID, 'lc_idp_discord', '99999000000' . $dl->ID );
+	$d = t_d_flow( 'signin', array( 'id' => '99999000000' . $dl->ID, 'email' => $da->user_email ) );
+	t( 'discord: an already-linked identity signs in directly whatever its email says', is_array( $d['res'] ) && get_current_user_id() === $dl->ID, t_code( $d['res'] ) );
 
 	t_browser();
 	$d = t_d_flow( 'signin', array( 'id' => 'not-digits' ) );
@@ -1556,15 +1625,24 @@ try {
 	$ln = t_user( 'subscriber', false );
 	t_session( $ln->ID );
 	$free = 'oa' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid';
-	$f3   = t_g_flow( 'link', array( 'email' => $free ) );
+	$f3   = t_g_flow( 'link', array( 'email' => $free, 'hd' => 'lc-test.invalid' ) );
 	$ln2  = get_userdata( $ln->ID );
-	t( 'link sets a missing email when the provider email is verified and free (and verifies it)', is_array( $f3['res'] ) && $free === $ln2->user_email && lc_auth_email_verified( $ln2 ) && add_query_arg( 'done', 'idp_email_set', lc_auth_account_url() ) === $f3['res']['redirect'], t_code( $f3['res'] ) );
+	t( 'link sets a missing email when the provider is authoritative and the address free (and verifies it)', is_array( $f3['res'] ) && $free === $ln2->user_email && lc_auth_email_verified( $ln2 ) && add_query_arg( 'done', 'idp_email_set', lc_auth_account_url() ) === $f3['res']['redirect'], t_code( $f3['res'] ) );
 	t_browser();
 	$ln = t_user( 'subscriber', false );
 	t_session( $ln->ID );
 	$taken = t_user();
-	$f3    = t_g_flow( 'link', array( 'email' => $taken->user_email ) );
+	$f3    = t_g_flow( 'link', array( 'email' => $taken->user_email, 'hd' => 'lc-test.invalid' ) );
 	t( 'link: a provider email that belongs to someone else is not copied (still linked)', is_array( $f3['res'] ) && '' === get_userdata( $ln->ID )->user_email && $f3['claims']['sub'] === get_user_meta( $ln->ID, 'lc_idp_google', true ) );
+	t_browser();
+	$ln = t_user( 'subscriber', false );
+	t_session( $ln->ID );
+	$f3 = t_g_flow( 'link', array( 'email' => 'oa' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid', 'email_verified' => false ) );
+	t_browser();
+	$ln = t_user( 'subscriber', false );
+	t_session( $ln->ID );
+	$f3 = t_g_flow( 'link', array( 'email' => 'oa' . bin2hex( random_bytes( 4 ) ) . '@lc-test.invalid' ) ); // Verified, but not authoritative.
+	t( 'link: a verified but NON-authoritative provider email is never copied', is_array( $f3['res'] ) && '' === get_userdata( $ln->ID )->user_email );
 	t_browser();
 	$ln = t_user( 'subscriber', false );
 	t_session( $ln->ID );
@@ -1627,6 +1705,95 @@ try {
 	t( 'last-method guard: with a wallet as well, Google can be unlinked', lc_auth_can_remove( get_userdata( $only->ID ), 'idp:google' ) && lc_auth_can_remove( get_userdata( $only->ID ), 'wallet:' . $wl['stake'] ) );
 	$ghost = t_user();
 	t( 'last-method guard: a provider that is not linked is not a method', ! lc_auth_can_remove( get_userdata( $ghost->ID ), 'idp:discord' ) );
+
+	// Last-method guard counts only USABLE methods (a switched-off provider is no way in).
+	$gd = t_user();
+	lc_auth_mark_email_verified( $gd->ID, $gd->user_email );
+	update_user_meta( $gd->ID, 'lc_idp_discord', 'lctest-guard-' . $gd->ID );
+	t( 'usable guard: with Discord enabled, email and Discord can each be removed', lc_auth_can_remove( get_userdata( $gd->ID ), 'idp:discord' ) && lc_auth_can_remove( get_userdata( $gd->ID ), 'email' ) );
+	$off_d = fn( $on, $id ) => 'discord' === $id ? false : $on;
+	add_filter( 'lc_auth_provider_enabled', $off_d, 10, 2 );
+	t( 'usable guard: Discord switched off -> it no longer counts, so the email cannot be removed', ! lc_auth_can_remove( get_userdata( $gd->ID ), 'email' ) && array( 'email' ) === lc_auth_usable_methods( get_userdata( $gd->ID ) ) );
+	t( 'usable guard: lc_auth_methods() still lists the dormant identity', in_array( 'idp:discord', lc_auth_methods( get_userdata( $gd->ID ) ), true ) );
+	$gd_only = t_user();
+	update_user_meta( $gd_only->ID, 'lc_idp_google', 'lctest-guard2-' . $gd_only->ID );
+	update_user_meta( $gd_only->ID, 'lc_idp_discord', 'lctest-guard2d-' . $gd_only->ID );
+	t( 'usable guard: Google + disabled Discord -> Google is the only usable method, cannot be removed', ! lc_auth_can_remove( get_userdata( $gd_only->ID ), 'idp:google' ) );
+	remove_filter( 'lc_auth_provider_enabled', $off_d, 10 );
+	t( 'usable guard: Discord back on -> counted again', lc_auth_can_remove( get_userdata( $gd_only->ID ), 'idp:google' ) );
+
+	// Magic-link takeover revocation also drops connected identities.
+	t_browser();
+	$rv = t_user(); // Unverified address, e.g. planted by someone else.
+	update_user_meta( $rv->ID, 'lc_idp_google', 'lctest-rv-' . $rv->ID );
+	update_user_meta( $rv->ID, 'lc_idp_discord', 'lctest-rvd-' . $rv->ID );
+	lc_auth_dev_outbox_clear();
+	t_request_link( $rv->user_email );
+	$tk = t_link_token( $rv->user_email );
+	$cr = '' !== $tk ? t_confirm( $tk ) : new WP_Error( 'no_token' );
+	t_track();
+	t( 'magic link on an unverified account: signs the real owner in', is_array( $cr ) && get_current_user_id() === $rv->ID, t_code( $cr ) );
+	t( 'magic link revocation: the Google and Discord identities are removed too', array() === lc_auth_idps( $rv->ID ) && empty( get_user_meta( $rv->ID, 'lc_idp_info', true )['google'] ) );
+
+	// Sub-resource GETs and prefetch.
+	$sf = array( 'HTTP_SEC_FETCH_MODE' => 'navigate', 'HTTP_SEC_FETCH_DEST' => 'document' );
+	foreach ( array_keys( $sf ) as $k ) {
+		unset( $_SERVER[ $k ] );
+	}
+	t( 'sec-fetch: no headers -> allowed (older browsers keep working)', ! lc_auth_oauth_subresource() );
+	$_SERVER['HTTP_SEC_FETCH_MODE'] = 'navigate';
+	$_SERVER['HTTP_SEC_FETCH_DEST'] = 'document';
+	t( 'sec-fetch: navigate + document -> allowed', ! lc_auth_oauth_subresource() );
+	$_SERVER['HTTP_SEC_FETCH_MODE'] = 'no-cors';
+	t( 'sec-fetch: mode no-cors -> rejected', lc_auth_oauth_subresource() );
+	$_SERVER['HTTP_SEC_FETCH_MODE'] = 'navigate';
+	$_SERVER['HTTP_SEC_FETCH_DEST'] = 'image';
+	t( 'sec-fetch: dest image -> rejected', lc_auth_oauth_subresource() );
+	unset( $_SERVER['HTTP_SEC_FETCH_MODE'] );
+	$_SERVER['HTTP_SEC_FETCH_DEST'] = 'iframe';
+	t( 'sec-fetch: dest alone is enough to reject', lc_auth_oauth_subresource() );
+	unset( $_SERVER['HTTP_SEC_FETCH_DEST'] );
+	t_browser();
+	$before                      = t_live_states();
+	$_SERVER['HTTP_SEC_PURPOSE'] = 'prefetch';
+	$res                         = lc_auth_oauth_start( 'google', 'signin', '' );
+	unset( $_SERVER['HTTP_SEC_PURPOSE'] );
+	t( 'prefetch: start returns without creating a state record or a cookie', 'oauth_prefetch' === t_code( $res ) && t_live_states() === $before );
+	t( 'panel anchors carry the no-prefetch class', 2 === substr_count( lc_auth_oauth_buttons( '' ), ' no-prefetch"' ) );
+
+	// Flow cookie is kept (same value) after a start.
+	t_browser();
+	$cv0 = $_COOKIE[ lc_auth_cookie_name( 'lcauth' ) ];
+	t_oauth_begin( 'google', 'signin', '' );
+	t( 'start: the flow cookie value is unchanged (only its lifetime is refreshed)', $cv0 === $_COOKIE[ lc_auth_cookie_name( 'lcauth' ) ] );
+
+	// Security notices cannot be silenced by filling the recipient bucket.
+	t_browser();
+	$sn = t_user();
+	lc_auth_mark_email_verified( $sn->ID, $sn->user_email );
+	$lim_fn = t_limits( array( 'rcpt_h' => 1, 'rcpt_d' => 1, 'security_d' => 2 ) );
+	lc_auth_dev_outbox_clear();
+	lc_auth_email_send( $sn->user_email, 's', 'b', 'signin' );
+	lc_auth_email_send( $sn->user_email, 's', 'b', 'signin' ); // Over the recipient cap: skipped.
+	t( 'security notice setup: the recipient bucket is full (second ordinary mail skipped)', 1 === t_outbox_count( $sn->user_email ) );
+	lc_auth_idp_notify( $sn, 'google', 'idp_linked' );
+	t( 'security notice: idp_linked still goes out with the recipient bucket full', 2 === t_outbox_count( $sn->user_email ) );
+	lc_auth_idp_notify( $sn, 'google', 'idp_unlinked' );
+	t( 'security notice: idp_unlinked too', 3 === t_outbox_count( $sn->user_email ) );
+	lc_auth_idp_notify( $sn, 'google', 'idp_linked' );
+	t( 'security notice: the small per-user bucket (2 here) stops a mail-bomb', 3 === t_outbox_count( $sn->user_email ) );
+	remove_filter( 'lc_auth_mail_limits', $lim_fn );
+	t_browser();
+	// The visitor buckets do not stop it either, but the global cap still applies (to unverified/unknown recipients only).
+	$lim_fn = t_limits( array( 'ip' => 0 ) );
+	$sn2    = t_user();
+	lc_auth_mark_email_verified( $sn2->ID, $sn2->user_email );
+	lc_auth_dev_outbox_clear();
+	lc_auth_email_send( $sn2->user_email, 's', 'b', 'signin' ); // Blocked by the visitor bucket (limit 0).
+	$ord = t_outbox_count( $sn2->user_email );
+	lc_auth_idp_notify( $sn2, 'google', 'idp_linked' );
+	t( 'security notice: not blocked by a full per-visitor bucket either', 0 === $ord && 1 === t_outbox_count( $sn2->user_email ), (string) $ord );
+	remove_filter( 'lc_auth_mail_limits', $lim_fn );
 
 	// Secrets never appear in request URLs; routes are GET-only and whitelisted.
 	$all_http = wp_json_encode( array_column( $GLOBALS['lc_t_http'], 'url' ) );

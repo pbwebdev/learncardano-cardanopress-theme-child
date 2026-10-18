@@ -131,7 +131,7 @@ $lc_date     = function ( $ts ) {
 			</li>
 		<?php endforeach; ?>
 	</ul>
-	<?php if ( count( $lc_methods ) < 2 ) : ?>
+	<?php if ( count( lc_auth_usable_methods( $lc_user ) ) < 2 ) : ?>
 		<p class="lc-form__desc"><?php esc_html_e( 'This is your only way to sign in, so it cannot be removed. Add another one first.', 'learncardano' ); ?></p>
 	<?php endif; ?>
 

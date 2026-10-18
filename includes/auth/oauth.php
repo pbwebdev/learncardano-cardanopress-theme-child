@@ -230,7 +230,12 @@ function lc_auth_oauth_start( $id, $intent, $redirect ) {
 		return lc_auth_oauth_error( 'unknown', 400 );
 	}
 
-	$flow     = lc_auth_flow( true );
+	$flow = lc_auth_flow( true );
+	// The flow lasts up to 10 minutes: re-issue the cookie (same value) with a fresh hour so it cannot expire mid-flow.
+	$cookie = lc_auth_get_cookie( 'lcauth' );
+	if ( '' !== $cookie ) {
+		lc_auth_set_cookie( 'lcauth', $cookie, HOUR_IN_SECONDS );
+	}
 	$state    = lc_auth_new_token();
 	$verifier = lc_auth_new_token();
 	$nonce    = lc_auth_new_token();
@@ -412,7 +417,7 @@ function lc_auth_oauth_exchange( array $p, array $creds, $id, $code, $verifier )
  * @param string $client_id Our client id.
  * @param string $nonce     The nonce we sent.
  * @param int    $now       Unix time (tests).
- * @return array{provider:string,subject:string,email:string,email_verified:bool,name:string}|WP_Error
+ * @return array{provider:string,subject:string,email:string,email_verified:bool,email_authoritative:bool,name:string}|WP_Error
  */
 function lc_auth_oauth_google_identity( $jwt, $client_id, $nonce, $now = 0 ) {
 	$now   = $now ? (int) $now : time();
@@ -462,7 +467,10 @@ function lc_auth_oauth_google_identity( $jwt, $client_id, $nonce, $now = 0 ) {
 	}
 	$email = isset( $c['email'] ) && is_string( $c['email'] ) ? strtolower( trim( $c['email'] ) ) : '';
 	$email = is_email( $email ) && strlen( $email ) <= 254 ? $email : '';
-	$ev    = isset( $c['email_verified'] ) && ( true === $c['email_verified'] || 'true' === $c['email_verified'] );
+	$ev    = isset( $c['email_verified'] ) && ( true === $c['email_verified'] || 'true' === $c['email_verified'] ) && '' !== $email;
+	// Authoritative (Google's own guidance): verified AND either a Gmail address or a Workspace account (non-empty hd claim).
+	$gmail = '' !== $email && 1 === preg_match( '/@(gmail|googlemail)\.com$/', $email );
+	$hd    = isset( $c['hd'] ) && is_string( $c['hd'] ) && '' !== trim( $c['hd'] );
 	$name  = '';
 	foreach ( array( 'given_name', 'name' ) as $k ) {
 		if ( '' === $name && isset( $c[ $k ] ) && is_string( $c[ $k ] ) ) {
@@ -473,7 +481,8 @@ function lc_auth_oauth_google_identity( $jwt, $client_id, $nonce, $now = 0 ) {
 		'provider'       => 'google',
 		'subject'        => $c['sub'],
 		'email'          => $email,
-		'email_verified' => $ev && '' !== $email,
+		'email_verified' => $ev,
+		'email_authoritative' => $ev && ( $gmail || $hd ),
 		'name'           => $name,
 	);
 }
@@ -542,6 +551,7 @@ function lc_auth_oauth_discord_identity( array $p, array $creds, $access_token )
 		'subject'        => $user['id'],
 		'email'          => $email,
 		'email_verified' => '' !== $email && ( true === ( $user['verified'] ?? false ) ),
+		'email_authoritative' => false, // Discord never proves control of an address.
 		'name'           => $name,
 	);
 }
@@ -551,7 +561,7 @@ function lc_auth_oauth_discord_identity( array $p, array $creds, $access_token )
 /**
  * Apply the linking rules to a proven identity.
  *
- * @param array  $ident  provider, subject, email, email_verified, name.
+ * @param array  $ident  provider, subject, email, email_verified, email_authoritative, name.
  * @param string $intent signin|link.
  * @param array  $rec    The state record (r = redirect).
  * @return array{redirect:string,new_account:bool}|WP_Error
@@ -567,30 +577,36 @@ function lc_auth_oauth_resolve( array $ident, $intent, array $rec ) {
 		);
 	};
 	// Same lock the email flows use for this address, so two sign-ups with one address cannot race.
-	$result = '' !== $ident['email'] && $ident['email_verified'] ? lc_auth_lock( 'email:' . md5( $ident['email'] ), $run ) : $run();
+	$result = '' !== $ident['email'] && ! empty( $ident['email_authoritative'] ) ? lc_auth_lock( 'email:' . md5( $ident['email'] ), $run ) : $run();
 	return is_wp_error( $result ) && 'lc_auth_busy' === $result->get_error_code() ? new WP_Error( 'busy' ) : $result;
 }
 
 /**
  * Sign-in matrix (UL = account holding this provider subject, UE = account
  * with the provider's verified email):
- * - UL exists: sign in (staff refused). If the provider email is verified and
- *   equals the account's email, that email becomes verified.
- * - no UL, verified provider email, UE exists:
+ * - UL exists: sign in (staff refused). If the provider is AUTHORITATIVE for
+ *   the email (email_authoritative) and it equals the account's email, that
+ *   email becomes verified.
+ * - no UL, provider email present, UE exists:
+ *     provider not authoritative (always Discord; Google unless Gmail or a
+ *       Workspace `hd`) -> refused (oauth_email_exists): sign in by email link
+ *       first, then connect on the account page ("connect once, then automatic");
  *     staff -> refused (password_only);
- *     UE's email not verified -> refused (oauth_email_exists): sign in by
- *       email link first, then connect on the account page;
+ *     UE's email not verified -> refused (oauth_email_exists);
  *     UE's email verified -> auto-link, notify that address, sign in.
  * - no UL, no UE: new member (lc_auth_create_member caps apply), with the
- *   email only if the provider verified it and it is free. A Discord user
- *   without an email gets an account with none.
+ *   email only if the provider is authoritative for it and it is free. Others
+ *   (Discord, non-Gmail Google without hd) get an account with no email and the
+ *   usual "add an email" nudge.
  *
  * @return array|WP_Error
  */
 function lc_auth_oauth_do_signin( array $ident, array $rec ) {
 	$provider = $ident['provider'];
 	$subject  = $ident['subject'];
-	$email    = $ident['email_verified'] ? $ident['email'] : '';
+	$auth     = ! empty( $ident['email_authoritative'] );
+	$email    = $auth ? $ident['email'] : ''; // Only an address the provider is authoritative for is ever acted on.
+	$hint     = $ident['email_verified'] ? $ident['email'] : ''; // Masked hint only.
 	$owners   = lc_auth_idp_owners( $provider, $subject );
 	if ( count( $owners ) > 1 ) {
 		lc_auth_log( 'idp_conflict', array( 'provider' => $provider, 'count' => count( $owners ) ) );
@@ -607,9 +623,14 @@ function lc_auth_oauth_do_signin( array $ident, array $rec ) {
 		if ( '' !== $email && strtolower( $user->user_email ) === $email && ! lc_auth_email_verified( $user ) ) {
 			lc_auth_mark_email_verified( $user->ID, $email );
 		}
-		lc_auth_idp_set( $user->ID, $provider, $subject, $email );
+		lc_auth_idp_set( $user->ID, $provider, $subject, $hint );
 	} else {
-		$existing = '' !== $email ? get_user_by( 'email', $email ) : false;
+		$existing = '' !== $hint ? get_user_by( 'email', $hint ) : false;
+		if ( $existing && ! $auth ) {
+			// Connect once, then automatic: a provider that is not authoritative for this address never joins an existing account by email.
+			lc_auth_log( 'idp_autolink_refused', array( 'user' => $existing->ID, 'provider' => $provider, 'why' => 'not_authoritative' ) );
+			return new WP_Error( 'oauth_email_exists' );
+		}
 		if ( $existing ) {
 			if ( lc_auth_is_privileged( $existing ) ) {
 				lc_auth_log( 'refused_privileged', array( 'user' => $existing->ID, 'method' => 'idp:' . $provider ) );
@@ -622,7 +643,7 @@ function lc_auth_oauth_do_signin( array $ident, array $rec ) {
 			if ( isset( lc_auth_idps( $existing->ID )[ $provider ] ) ) {
 				return new WP_Error( 'idp_has_other' ); // Same address, but a different account of this provider is already connected.
 			}
-			lc_auth_idp_set( $existing->ID, $provider, $subject, $email );
+			lc_auth_idp_set( $existing->ID, $provider, $subject, $hint );
 			lc_auth_log( 'idp_autolink', array( 'user' => $existing->ID, 'provider' => $provider ) );
 			lc_auth_idp_notify( $existing, $provider, 'idp_linked' );
 			$user = $existing;
@@ -639,7 +660,7 @@ function lc_auth_oauth_do_signin( array $ident, array $rec ) {
 				$code = $user->get_error_code();
 				return new WP_Error( 'lc_auth_rate' === $code ? 'rate' : ( 'lc_auth_signup_closed' === $code ? 'signup_closed' : 'oauth_failed' ) );
 			}
-			lc_auth_idp_set( $user->ID, $provider, $subject, $email );
+			lc_auth_idp_set( $user->ID, $provider, $subject, $hint );
 			$new = true;
 		}
 	}
@@ -665,7 +686,7 @@ function lc_auth_oauth_do_signin( array $ident, array $rec ) {
  *   (idp_has_other): disconnect first;
  * - otherwise store it and tell the verified address. If the account has no
  *   email and the provider's email is verified and free, it becomes the
- *   account's verified email.
+ *   account's verified email, but only when the provider is authoritative for it.
  *
  * @return array|WP_Error
  */
@@ -698,7 +719,7 @@ function lc_auth_oauth_do_link( array $ident, array $rec ) {
 	if ( $was_verified ) {
 		lc_auth_idp_notify( $user, $provider, 'idp_linked' );
 	}
-	if ( '' === $user->user_email && $ident['email_verified'] && '' !== $ident['email'] && ! email_exists( $ident['email'] ) ) {
+	if ( '' === $user->user_email && ! empty( $ident['email_authoritative'] ) && '' !== $ident['email'] && ! email_exists( $ident['email'] ) ) {
 		$res = wp_update_user( array( 'ID' => $user->ID, 'user_email' => $ident['email'] ) );
 		if ( ! is_wp_error( $res ) ) {
 			lc_auth_mark_email_verified( $user->ID, $ident['email'] );
@@ -730,8 +751,29 @@ function lc_auth_oauth_fail_redirect( WP_Error $err ) {
 	exit;
 }
 
+/**
+ * Refuse requests the browser makes as sub-resources (img, script, fetch, iframe)
+ * rather than as a page navigation: Sec-Fetch-Mode must be "navigate" and
+ * Sec-Fetch-Dest "document" when sent. Runs before any rate count or store
+ * write. Browsers that send no Sec-Fetch headers keep the current behaviour.
+ */
+function lc_auth_oauth_subresource() {
+	$mode = isset( $_SERVER['HTTP_SEC_FETCH_MODE'] ) && is_string( $_SERVER['HTTP_SEC_FETCH_MODE'] ) ? strtolower( $_SERVER['HTTP_SEC_FETCH_MODE'] ) : null;
+	$dest = isset( $_SERVER['HTTP_SEC_FETCH_DEST'] ) && is_string( $_SERVER['HTTP_SEC_FETCH_DEST'] ) ? strtolower( $_SERVER['HTTP_SEC_FETCH_DEST'] ) : null;
+	return ( null !== $mode && 'navigate' !== $mode ) || ( null !== $dest && 'document' !== $dest );
+}
+
+function lc_auth_oauth_reject_subresource() {
+	if ( lc_auth_oauth_subresource() ) {
+		status_header( 403 );
+		header( 'Cache-Control: no-store' );
+		exit;
+	}
+}
+
 /** GET /account/oauth/{provider}/ : the sign-in link in the panel. */
 function lc_auth_get_oauth_start() {
+	lc_auth_oauth_reject_subresource();
 	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a plain link; the state record is the protection.
 	$redirect = lc_auth_safe_redirect( isset( $_GET['redirect_to'] ) && is_string( $_GET['redirect_to'] ) ? wp_unslash( $_GET['redirect_to'] ) : '' );
 	if ( is_user_logged_in() || ( isset( $_SERVER['REQUEST_METHOD'] ) && 'HEAD' === strtoupper( (string) $_SERVER['REQUEST_METHOD'] ) ) ) {
@@ -753,6 +795,7 @@ function lc_auth_get_oauth_start() {
 
 /** GET /account/oauth/{provider}/callback/ */
 function lc_auth_get_oauth_callback() {
+	lc_auth_oauth_reject_subresource();
 	header( 'Referrer-Policy: no-referrer' ); // The code and state are in this URL.
 	$q = array();
 	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- the single-use state record is the check.
@@ -799,7 +842,7 @@ function lc_auth_oauth_buttons( $redirect ) {
 		}
 		/* translators: %s: provider name (Google, Discord) */
 		$text = sprintf( __( 'Continue with %s', 'learncardano' ), $p['label'] );
-		$out .= '<a class="lc-auth__sso lc-auth__sso--' . esc_attr( $id ) . '" href="' . esc_url( $url ) . '" rel="nofollow">' . lc_auth_oauth_logo( $id ) . '<span>' . esc_html( $text ) . '</span></a>';
+		$out .= '<a class="lc-auth__sso lc-auth__sso--' . esc_attr( $id ) . ' no-prefetch" href="' . esc_url( $url ) . '" rel="nofollow">' . lc_auth_oauth_logo( $id ) . '<span>' . esc_html( $text ) . '</span></a>';
 	}
 	return '' === $out ? '' : '<div class="lc-auth__sso-list">' . $out . '</div>';
 }
