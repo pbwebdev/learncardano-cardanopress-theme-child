@@ -559,5 +559,14 @@ img.pa__media-img,img.lep__media-img{width:100%;height:100%;object-fit:cover;dis
 .lc-spotify:hover .lc-spotify__play{transform:scale(1.06)}
 @media (max-width:480px){.lc-spotify{gap:12px;padding:12px}.lc-spotify__cover{width:88px;height:88px}.lc-spotify__title{font-size:14px}.lc-spotify__play{width:40px;height:40px}}
 
+/* Never scroll sideways. Decorations sit partly off-screen on purpose (the
+   751px .bg-hero-ellipses-01 at left:-341px ends 410px in, wider than a
+   phone), and WordPress's admin bar overflows on small screens. On <html>
+   this applies to the window; on <body> it's "clip" (not "hidden") so body
+   doesn't become a scroll container and position:sticky (the article table
+   of contents) keeps working. "clip" on body also stops iOS sideways panning. */
+html{overflow-x:hidden}
+body{overflow-x:clip}
+
 /* <picture> wrappers from includes/webp.php must not change layout */
 .lc-picture{display:contents}
