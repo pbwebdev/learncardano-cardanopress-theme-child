@@ -769,3 +769,37 @@ function lc_auth_get_oauth_callback() {
 	wp_safe_redirect( $res['redirect'], 303 );
 	exit;
 }
+
+/* ----------------------------------------------------------------------- UI */
+
+/** A small inline logo (decorative; the button text names the provider). */
+function lc_auth_oauth_logo( $id ) {
+	if ( 'google' === $id ) {
+		return '<svg class="lc-auth__logo" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" focusable="false"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.72A5.4 5.4 0 0 1 3.68 9c0-.6.1-1.18.29-1.72V4.95H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.05l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>';
+	}
+	if ( 'discord' === $id ) {
+		return '<svg class="lc-auth__logo" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" focusable="false"><path fill="#5865F2" d="M3.2 4.2Q6 2.2 9 2.2t5.8 2Q16.8 8 17 13q-2.4 2.4-4.6 2.4l-.9-1.4Q9 14.4 6.5 14l-.9 1.4Q3.4 15.4 1 13 1.2 8 3.2 4.2z"/><ellipse cx="6.4" cy="9.2" rx="1.3" ry="1.5" fill="#fff"/><ellipse cx="11.6" cy="9.2" rx="1.3" ry="1.5" fill="#fff"/></svg>';
+	}
+	return '';
+}
+
+/**
+ * The "Continue with …" links for the sign-in panel: plain GET links, only
+ * for enabled providers. Returns '' when none are enabled.
+ *
+ * @param string $redirect Where to land after signing in.
+ * @return string HTML (escaped).
+ */
+function lc_auth_oauth_buttons( $redirect ) {
+	$out = '';
+	foreach ( lc_auth_providers() as $id => $p ) {
+		$url = lc_auth_account_url( 'oauth/' . $id . '/' );
+		if ( '' !== $redirect && lc_auth_account_url() !== $redirect ) {
+			$url = add_query_arg( 'redirect_to', rawurlencode( $redirect ), $url );
+		}
+		/* translators: %s: provider name (Google, Discord) */
+		$text = sprintf( __( 'Continue with %s', 'learncardano' ), $p['label'] );
+		$out .= '<a class="lc-auth__sso lc-auth__sso--' . esc_attr( $id ) . '" href="' . esc_url( $url ) . '" rel="nofollow">' . lc_auth_oauth_logo( $id ) . '<span>' . esc_html( $text ) . '</span></a>';
+	}
+	return '' === $out ? '' : '<div class="lc-auth__sso-list">' . $out . '</div>';
+}

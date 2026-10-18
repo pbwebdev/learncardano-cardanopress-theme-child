@@ -14,6 +14,9 @@ $lc_verified = lc_auth_email_verified( $lc_user );
 $lc_wallets  = lc_auth_wallets( $lc_user->ID );
 $lc_info     = (array) get_user_meta( $lc_user->ID, 'lc_wallet_info', true );
 $lc_methods  = lc_auth_methods( $lc_user );
+lc_auth_load( 'oauth' );
+$lc_idps     = lc_auth_idps( $lc_user->ID );
+$lc_idp_info = (array) get_user_meta( $lc_user->ID, 'lc_idp_info', true );
 $lc_date     = function ( $ts ) {
 	return $ts ? wp_date( get_option( 'date_format' ), (int) $ts ) : '';
 };
@@ -93,6 +96,38 @@ $lc_date     = function ( $ts ) {
 					<input type="hidden" name="stake" value="<?php echo esc_attr( $lc_stake ); ?>">
 					<button type="submit" class="lc-auth__linkbtn" <?php disabled( ! lc_auth_can_remove( $lc_user, 'wallet:' . $lc_stake ) ); ?>><?php esc_html_e( 'Remove', 'learncardano' ); ?></button>
 				</form>
+			</li>
+		<?php endforeach; ?>
+		<?php foreach ( lc_auth_providers( true ) as $lc_pid => $lc_prov ) : ?>
+			<?php
+			$lc_on = isset( $lc_idps[ $lc_pid ] );
+			if ( ! $lc_on && empty( $lc_prov[enabled] ) ) {
+				continue; // Not set up on this site and not connected: nothing to show.
+			}
+			?>
+			<li>
+				<strong><?php echo esc_html( $lc_prov[label] ); ?></strong>
+				<?php if ( $lc_on ) : ?>
+					<?php if ( ! empty( $lc_idp_info[ $lc_pid ][hint] ) ) : ?>
+						<code><?php echo esc_html( $lc_idp_info[ $lc_pid ][hint] ); ?></code>
+					<?php endif; ?>
+					<small>
+						<?php
+						$lc_linked = $lc_date( $lc_idp_info[ $lc_pid ]['linked'] ?? 0 );
+						$lc_used   = $lc_date( $lc_idp_info[ $lc_pid ]['used'] ?? 0 );
+						echo esc_html( trim( ( $lc_linked ? sprintf( /* translators: %s: date */ __( 'Linked %s.', 'learncardano' ), $lc_linked ) : '' ) . ( $lc_used ? ' ' . sprintf( /* translators: %s: date */ __( 'Last used %s.', 'learncardano' ), $lc_used ) : '' ) ) );
+						?>
+					</small>
+					<?php lc_auth_form_open( 'unlink', 'lc-auth__inline' ); ?>
+						<input type="hidden" name="method" value="idp:<?php echo esc_attr( $lc_pid ); ?>">
+						<button type="submit" class="lc-auth__linkbtn" <?php disabled( ! lc_auth_can_remove( $lc_user, 'idp:' . $lc_pid ) ); ?>><?php esc_html_e( 'Disconnect', 'learncardano' ); ?></button>
+					</form>
+				<?php else : ?>
+					<?php lc_auth_form_open( 'link_oauth', 'lc-auth__inline' ); ?>
+						<input type="hidden" name="provider" value="<?php echo esc_attr( $lc_pid ); ?>">
+						<button type="submit" class="lc-auth__linkbtn"><?php esc_html_e( 'Connect', 'learncardano' ); ?></button>
+					</form>
+				<?php endif; ?>
 			</li>
 		<?php endforeach; ?>
 	</ul>

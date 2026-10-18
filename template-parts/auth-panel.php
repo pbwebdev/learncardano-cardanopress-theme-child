@@ -11,6 +11,8 @@
 
 $lc_redirect = (string) $lc_panel['redirect'];
 $lc_privacy  = function_exists( 'get_privacy_policy_url' ) ? get_privacy_policy_url() : '';
+lc_auth_load( 'oauth' );
+$lc_sso      = lc_auth_enabled() ? lc_auth_oauth_buttons( $lc_redirect ) : ''; // Google/Discord links, enabled providers only (already escaped).
 ?>
 <div class="lc-auth__panel" data-lc-auth-panel data-context="<?php echo esc_attr( $lc_panel['context'] ); ?>" data-redirect="<?php echo esc_url( $lc_redirect ); ?>">
 	<h2 class="lc-auth__title" id="lc-auth-title"><?php echo esc_html( $lc_panel['title'] ); ?></h2>
@@ -23,6 +25,11 @@ $lc_privacy  = function_exists( 'get_privacy_policy_url' ) ? get_privacy_policy_
 			<ul class="lc-auth__wallets" data-lc-auth-wallets hidden></ul>
 			<p class="lc-auth__or"><span><?php esc_html_e( 'or', 'learncardano' ); ?></span></p>
 		</div>
+
+		<?php if ( '' !== $lc_sso ) : ?>
+			<?php echo $lc_sso; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in lc_auth_oauth_buttons(). ?>
+			<p class="lc-auth__or"><span><?php esc_html_e( 'or', 'learncardano' ); ?></span></p>
+		<?php endif; ?>
 
 		<form method="post" action="<?php echo esc_url( lc_auth_account_url() ); ?>" class="lc-form lc-auth__form" data-lc-auth-email>
 			<input type="hidden" name="lc_action" value="email_link">
