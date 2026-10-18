@@ -22,3 +22,17 @@ php test-cose.php <dir-with-cardano-crypto.php>      # from a scratch dir holdin
 ```
 
 The argument is a directory containing `cardano-crypto.php` (directly or under `includes/auth/`). Output is PASS/FAIL per case; exit code is non-zero on any failure.
+
+## Account-system flow tests (staging only)
+
+`test-flows.php` exercises the R2 account system (wallet sign-in/link/claim, email link, email change, display names, delete) through the same internal functions the `/account/*` handlers call, with real sodium-made wallet signatures. It refuses to run on production, creates users only with `@lc-test.invalid` addresses and meta `lc_test=1`, and removes them (and test transients and the dev outbox) when done.
+
+```
+scp -r tools/auth ~/lc-tools/             # tools/ is not deployed
+wp --path=$HOME/www/staging2.learncardano.io/public_html eval-file ~/lc-tools/auth/test-flows.php
+wp --path=… eval-file ~/lc-tools/auth/outbox.php email=x@lc-test.invalid   # newest sign-in link mailed to a test address
+```
+
+Run `wp rewrite flush` after deploying the theme (the deploy does not flush); the tests check that the `/account/` rule exists.
+
+`tools/accounts/migrate-cardanopress.php` is the one-off clean-up of CardanoPress-era accounts (dry run by default; `apply <backup-dir>`, `restore <backup.json>`).
