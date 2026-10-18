@@ -376,6 +376,64 @@
 		window.addEventListener('scroll', onScroll, { passive: true });
 	}
 
+	/* ---------- sign-in modal (assets/js/auth.js), loaded on first use ---------- */
+
+	// Any [data-lc-auth-open] link or "Log in to Reply" link opens the sign-in
+	// dialog. auth.js and auth.css are fetched on the first hover/focus/click;
+	// if anything fails the link just works as a normal link to /account/.
+	const authTrigger = '[data-lc-auth-open], a.comment-reply-login';
+	let authPromise = null;
+	function loadAuth() {
+		if (!cfg.auth) {
+			return Promise.reject(new Error('auth off'));
+		}
+		if (!authPromise) {
+			const css = new Promise(function (resolve) {
+				const link = document.createElement('link');
+				link.rel = 'stylesheet';
+				link.href = cfg.auth.css;
+				link.onload = link.onerror = function () { resolve(); };
+				document.head.appendChild(link);
+				setTimeout(resolve, 2000);
+			});
+			const js = new Promise(function (resolve, reject) {
+				const script = document.createElement('script');
+				script.src = cfg.auth.js;
+				script.async = true;
+				script.onload = function () { window.lcAuth ? resolve(window.lcAuth) : reject(new Error('no lcAuth')); };
+				script.onerror = reject;
+				document.head.appendChild(script);
+			});
+			authPromise = Promise.all([js, css, loadCss()]).then(function (r) { return r[0]; });
+			authPromise.catch(function () { authPromise = null; });
+		}
+		return authPromise;
+	}
+	['pointerover', 'focusin'].forEach(function (type) {
+		document.addEventListener(type, function (event) {
+			if (cfg.auth && event.target.closest && event.target.closest(authTrigger)) {
+				loadAuth().catch(function () {});
+			}
+		}, { passive: true });
+	});
+	document.addEventListener('click', function (event) {
+		const el = event.target.closest && event.target.closest(authTrigger);
+		if (!el || event.defaultPrevented || event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+			return;
+		}
+		if (!cfg.auth || typeof HTMLDialogElement === 'undefined') {
+			return; // Follow the link.
+		}
+		event.preventDefault();
+		loadAuth().then(function (auth) {
+			auth.open({ context: el.dataset.lcAuthOpen || 'comment', redirect: el.dataset.lcAuthRedirect || location.href, trigger: el });
+		}).catch(function () {
+			if (el.href) {
+				location.assign(el.href);
+			}
+		});
+	});
+
 	function init() {
 		document.querySelectorAll('form[data-lc-form]').forEach(function (form) {
 			// Forms inside the popup's <template> are not in the document yet.

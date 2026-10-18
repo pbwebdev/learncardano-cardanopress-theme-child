@@ -971,6 +971,8 @@ function lc_forms_register_assets() {
 			'token'      => LC_FORM_TOKEN_ACTION,
 			'css'        => add_query_arg( 'ver', file_exists( $dir . $css ) ? (string) filemtime( $dir . $css ) : '', $uri . $css ),
 			'recaptcha'  => $keys ? $keys['site'] : '',
+			// Sign-in modal assets (includes/auth/account.php); forms.js loads them on the first click.
+			'auth'       => function_exists( 'lc_auth_client_config' ) ? lc_auth_client_config() : null,
 			'strings'    => array(
 				'sending' => __( 'Sending…', 'learncardano' ),
 				'failed'  => lc_form_message_text( 'failed' ),
