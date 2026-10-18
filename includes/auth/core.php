@@ -301,6 +301,7 @@ function lc_auth_mail_limits() {
 			'rcpt_d'    => 10,
 			'ip'        => 10,
 			'ip_coarse' => 50,
+			'security_d' => 10, // Security notices (idp_linked, idp_unlinked, wallet_linked) per recipient.
 		)
 	);
 }
@@ -328,7 +329,8 @@ function lc_auth_mail_cap_alert() {
  * verified address, so an abuser who burns the budget cannot lock every real
  * member out of signing in; only unknown and unverified addresses are stopped.
  *
- * @param string $to Recipient address.
+ * @param string $to       Recipient address.
+ * @param bool   $security A security notice: skips the recipient and visitor buckets, uses mail_sec_d.
  * @return string '' when allowed, else the name of the bucket that said no.
  */
 function lc_auth_mail_check( $to, $security = false ) {

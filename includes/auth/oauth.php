@@ -783,7 +783,10 @@ function lc_auth_get_oauth_start() {
 	$res = lc_auth_oauth_start( lc_auth_oauth_route_provider(), 'signin', $redirect );
 	if ( is_wp_error( $res ) ) {
 		if ( 'oauth_prefetch' === $res->get_error_code() ) {
-			wp_safe_redirect( $redirect, 303 ); // A prefetch gets bounced back with no side effects.
+			// A prefetch gets nothing it could cache or follow; the real click comes back as a navigation.
+			status_header( 503 );
+			header( 'Retry-After: 0' );
+			header( 'Cache-Control: no-store' );
 			exit;
 		}
 		lc_auth_oauth_fail_redirect( new WP_Error( $res->get_error_code(), '', array( 'redirect' => $redirect ) ) );
