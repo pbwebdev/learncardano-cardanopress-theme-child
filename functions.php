@@ -130,12 +130,6 @@ add_filter('get_comment_author', function ($author) {
 	return $author;
 });
 
-add_action('init', 'enable_proposal_comments');
-function enable_proposal_comments()
-{
-	add_post_type_support('proposal', 'comments');
-}
-
 /**
  * Resolve an episode's thumbnail URL, falling back to the bundled cover art.
  * The episode cards now render real images with lc_card_image(); this stays
@@ -333,7 +327,7 @@ add_filter(
  * views, where the hero H1 is Chivo and the body text Mulish. Without it the
  * browser only finds them after style.css and fonts.css are parsed, and the
  * swap from the fallback font reflows the hero and pushes the cards down.
- * The older templates (plain pages, 404, proposals) use Open Sans / Rubik
+ * The older templates (plain pages, 404) use Open Sans / Rubik
  * above the fold instead, so they preload those. Skipped on the front page
  * and podcast episodes, whose preloaded LCP image should not compete.
  */
@@ -341,10 +335,7 @@ function lc_preload_fonts() {
 	if ( is_front_page() || is_singular( 'podcasts' ) ) {
 		return;
 	}
-	$older = is_404()
-		|| is_singular( 'proposal' )
-		|| is_post_type_archive( 'proposal' )
-		|| ( is_page() && ! get_page_template_slug() );
+	$older = is_404() || ( is_page() && ! get_page_template_slug() );
 	$fonts = $older ? array( 'rubik-latin-var', 'open-sans-latin-var' ) : array( 'chivo-latin-var', 'mulish-latin-var' );
 	foreach ( $fonts as $font ) {
 		printf(
