@@ -90,7 +90,7 @@ if ( ! $lc_has_q ) {
 				<a href="<?php echo esc_url( get_permalink( get_option( 'page_for_posts' ) ) ); ?>"><?php esc_html_e( 'Articles', 'learncardano' ); ?></a>,
 				<a href="<?php echo esc_url( get_post_type_archive_link( 'podcasts' ) ); ?>"><?php esc_html_e( 'Podcasts', 'learncardano' ); ?></a>,
 				<a href="<?php echo esc_url( get_post_type_archive_link( 'sfwd-courses' ) ); ?>"><?php esc_html_e( 'Courses', 'learncardano' ); ?></a>,
-				<a href="<?php echo esc_url( home_url( '/knowledge-base/' ) ); ?>"><?php esc_html_e( 'Knowledge base', 'learncardano' ); ?></a>.
+				<a href="<?php echo esc_url( ( lc_kb_hub_url() ? lc_kb_hub_url() : home_url( '/kb/' ) ) ); ?>"><?php esc_html_e( 'Knowledge base', 'learncardano' ); ?></a>.
 			</p>
 		<?php else : ?>
 			<p class="pa__empty"><?php esc_html_e( 'Type a word or two in the box above to search the site.', 'learncardano' ); ?></p>
