@@ -77,3 +77,29 @@ if ( ! is_admin() ) {
 		20
 	);
 }
+
+/**
+ * When a single post shows its featured image as the hero (above the
+ * content), images inside the content are never the LCP: keep them all
+ * lazy and without fetchpriority so they don't compete with the hero.
+ * WordPress would otherwise load the first few eagerly at high priority.
+ */
+add_filter(
+	'wp_get_loading_optimization_attributes',
+	function ( $attrs, $tag, $attr, $context ) {
+		if ( 'the_content' !== $context || ! is_singular() ) {
+			return $attrs;
+		}
+		$post_id  = get_queried_object_id();
+		$thumb_id = get_post_thumbnail_id( $post_id );
+		// No hero, or the featured image sits inside the content: leave WordPress's choice.
+		if ( ! $thumb_id || false !== strpos( (string) get_post_field( 'post_content', $post_id ), 'wp-image-' . $thumb_id ) ) {
+			return $attrs;
+		}
+		unset( $attrs['fetchpriority'] );
+		$attrs['loading'] = 'lazy';
+		return $attrs;
+	},
+	10,
+	4
+);
