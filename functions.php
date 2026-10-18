@@ -1,6 +1,7 @@
 <?php
 
 require_once 'includes/security.php';
+require_once 'includes/cardanopress-lockdown.php';
 require_once 'includes/social-feed.php';
 require_once 'includes/webp.php';
 require_once 'includes/lockbox.php';
@@ -110,32 +111,25 @@ function cardanopress_child_bootstrap_class(string $key): string
 	return $class_string;
 }
 
+// Member sign-in is paused while CardanoPress is replaced (see
+// includes/cardanopress-lockdown.php). Always return the fields: this used
+// to return nothing for signed-in visitors.
 add_filter('comment_form_defaults', function ($fields) {
-
-	if (!is_user_logged_in()) :
-
-
-        $button = do_shortcode('[cardanopress_template name="part/modal-trigger" if="!isConnected"]');
-        $fields['must_log_in'] = "<p>Login with your wallet to comment</p>" . $button ;
-
-		return $fields;
-
-	endif;
+	if ( ! is_user_logged_in() ) {
+		$fields['must_log_in'] = '<p class="must-log-in">' . esc_html__( 'Member sign-in is paused while we upgrade it. Comments will reopen soon.', 'learncardano' ) . '</p>';
+	}
+	return $fields;
 });
 
-add_filter('get_comment_author', function ($author, $comment_ID, $comment) {
-	// Get the current post object
-	$post = get_post();
-
-	// The user ids are the same, lets append our extra text
-	if (strlen($author) >= 10) {
-		$author = substr($author, 0, 5) . "...";
-	} else {
-		$author = $author;
+// Wallet-created accounts are named after md5(stake address); show those as
+// "Cardano member" instead of the hex string. Every other name is left as
+// written (this used to cut any name of 10+ characters to 5).
+add_filter('get_comment_author', function ($author) {
+	if ( preg_match( '/^([0-9a-f]{32}|stake(_test)?1[0-9a-z]{20,}|addr(_test)?1[0-9a-z]{20,})$/', (string) $author ) ) {
+		return __( 'Cardano member', 'learncardano' );
 	}
-
 	return $author;
-}, 10, 3);
+});
 
 add_action('init', 'enable_proposal_comments');
 function enable_proposal_comments()
