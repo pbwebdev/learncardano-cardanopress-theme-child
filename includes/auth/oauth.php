@@ -230,12 +230,12 @@ function lc_auth_oauth_start( $id, $intent, $redirect ) {
 		return lc_auth_oauth_error( 'unknown', 400 );
 	}
 
-	$flow = lc_auth_flow( true );
-	// The flow lasts up to 10 minutes: re-issue the cookie (same value) with a fresh hour so it cannot expire mid-flow.
+	// The flow lasts up to 10 minutes: re-issue an existing cookie (same value) with a fresh hour so it cannot expire mid-flow.
 	$cookie = lc_auth_get_cookie( 'lcauth' );
 	if ( '' !== $cookie ) {
 		lc_auth_set_cookie( 'lcauth', $cookie, HOUR_IN_SECONDS );
 	}
+	$flow = lc_auth_flow( true ); // Makes a new one-hour cookie when there was none.
 	$state    = lc_auth_new_token();
 	$verifier = lc_auth_new_token();
 	$nonce    = lc_auth_new_token();
