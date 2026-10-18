@@ -187,13 +187,15 @@ add_action(
 
 /**
  * Gallery images: WordPress gives them the generic full-width sizes hint,
- * so 3-across thumbnails loaded the 768px file. The core gallery is 2-across
- * under 600px and 3-across in the 720px article column above that.
+ * so gallery thumbnails loaded the 768px file. The core gallery (default
+ * columns) is 2-across under 600px; above that, in the 720px article
+ * column, a 2-image gallery is 2-across (~352px) and larger ones 3-across.
  */
 add_filter(
 	'render_block_core/gallery',
 	function ( $html ) {
-		return preg_replace( '/<img(?![^>]*\ssizes=)/i', '<img sizes="(max-width: 600px) 50vw, 240px"', $html );
+		$desktop = 2 === substr_count( $html, '<img' ) ? '360px' : '240px';
+		return preg_replace( '/<img(?![^>]*\ssizes=)/i', '<img sizes="(max-width: 600px) 50vw, ' . $desktop . '"', $html );
 	}
 );
 
