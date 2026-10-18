@@ -52,22 +52,53 @@ function lc_auth_panel_token_ok( $token ) {
 
 /* ----------------------------------------------------------------- sending */
 
-/** wp_mail wrapper. Off production wp_mail() returns false by design; that is not an error. */
+/**
+ * wp_mail wrapper, and the ONE gate every email of this system passes
+ * (sign-in links, wallet-first and password notices, email change and verify
+ * links, wallet-linked notices): per-recipient, per-visitor and global caps,
+ * see lc_auth_mail_check(). Over a limit the mail is skipped silently and the
+ * caller gets the same "sent" answer, so nothing reveals the limit or whether
+ * an address has an account. The limits are only LOOKED at first and counted
+ * just before the mail goes out, so a skipped mail uses no budget.
+ *
+ * Off production wp_mail() returns false by design; that is not an error.
+ *
+ * @param string         $to      Recipient.
+ * @param string         $subject Subject.
+ * @param string|Closure $body    Text, or a closure that builds it (so a link
+ *                                token is only made when the mail will go out).
+ * @param string         $kind    signin|wallet_first|password|email_change|email_verify|wallet_linked.
+ */
 function lc_auth_email_send( $to, $subject, $body, $kind ) {
+	$blocked = lc_auth_mail_check( $to );
+	if ( '' !== $blocked ) {
+		lc_auth_log( 'mail_capped', array( 'kind' => $kind, 'bucket' => $blocked ) );
+		return true;
+	}
+	lc_auth_mail_count( $to );
+	if ( $body instanceof Closure ) {
+		$body = $body();
+	}
 	$sent = wp_mail( $to, $subject, $body );
 	lc_auth_log( 'mail', array( 'kind' => $kind, 'sent' => (int) $sent ) );
 	return $sent;
 }
 
 /**
- * Make a link token (replacing the previous one for the same purpose and
- * address) and return it.
+ * Make a link token and return it. A sign-in address keeps up to 3 live
+ * tokens (a 4th drops the oldest), so someone who keeps requesting links for
+ * an address cannot cancel the owner's link; every other purpose keeps one,
+ * and an email change is kept per user AND address, so another member cannot
+ * cancel somebody's pending change by asking for the same address.
  */
 function lc_auth_email_issue( $purpose, $email, $user_id, $redirect ) {
-	$slot = 'lc_mli_' . substr( lc_auth_hmac( 'mli', $purpose . '|' . $email ), 0, 32 );
-	$prev = get_transient( $slot );
-	if ( is_string( $prev ) && 0 === strpos( $prev, 'lc_ml_' ) ) {
-		delete_transient( $prev );
+	$keep = 'signin' === $purpose ? 3 : 1;
+	$slot = 'lc_mli_' . substr( lc_auth_hmac( 'mli', $purpose . '|' . $email . ( 'email_change' === $purpose ? '|' . (int) $user_id : '' ) ), 0, 32 );
+	$list = get_transient( $slot );
+	$list = is_string( $list ) ? array( $list ) : ( is_array( $list ) ? array_values( $list ) : array() ); // A string is the old single-pointer format.
+	$list = array_values( array_filter( $list, fn( $k ) => is_string( $k ) && 0 === strpos( $k, 'lc_ml_' ) && false !== get_transient( $k ) ) );
+	while ( count( $list ) >= $keep ) {
+		delete_transient( array_shift( $list ) );
 	}
 	$token = lc_auth_store_put(
 		'ml',
@@ -80,7 +111,8 @@ function lc_auth_email_issue( $purpose, $email, $user_id, $redirect ) {
 		),
 		LC_AUTH_LINK_TTL
 	);
-	set_transient( $slot, lc_auth_store_key( 'ml', $token ), LC_AUTH_LINK_TTL );
+	$list[] = lc_auth_store_key( 'ml', $token );
+	set_transient( $slot, $list, LC_AUTH_LINK_TTL );
 	return $token;
 }
 
@@ -126,16 +158,16 @@ function lc_auth_email_request( array $in ) {
 	if ( ! lc_auth_panel_token_ok( $in['lc_token'] ?? '' ) ) {
 		return array( 'ok' => false, 'code' => 'reload', 'status' => 400 );
 	}
-	$retry = lc_auth_rate( 'ml_ip', null, 5, 15 * MINUTE_IN_SECONDS );
+	$retry = lc_auth_rate( 'ml_ip', null, 5, 15 * MINUTE_IN_SECONDS ) ?: lc_auth_rate( 'ml_coarse', lc_auth_coarse_subject(), 25, 15 * MINUTE_IN_SECONDS );
 	if ( $retry ) {
 		return array( 'ok' => false, 'code' => 'rate', 'status' => 429, 'retry' => $retry );
 	}
-	// Per-address and global limits stay silent: the answer must not change.
-	$hour = lc_auth_rate( 'ml_email_h', $email, 3, HOUR_IN_SECONDS );
-	$day  = lc_auth_rate( 'ml_email_d', $email, 6, DAY_IN_SECONDS );
-	$cap  = lc_auth_rate( 'ml_global', 'all', (int) apply_filters( 'lc_auth_email_daily_cap', 250 ), DAY_IN_SECONDS );
-	if ( $hour || $day || $cap ) {
-		lc_auth_log( 'email_limited', array( 'scope' => $cap ? 'global' : 'address' ) );
+	// Per address AND visitor, so a stranger hammering an address cannot use up
+	// the owner's turns; the absolute ceilings for an address (5 an hour, 10 a
+	// day, any visitor) and the site-wide cap are in the mail gate. This one
+	// stays silent: the answer must not change.
+	if ( lc_auth_rate( 'ml_email_h', lc_auth_email_key( $email ) . '|' . lc_auth_ip_subject(), 3, HOUR_IN_SECONDS ) ) {
+		lc_auth_log( 'email_limited', array( 'scope' => 'address' ) );
 		return $generic;
 	}
 
@@ -165,15 +197,18 @@ function lc_auth_email_request( array $in ) {
 			'wallet_first'
 		);
 	} else {
-		$token = lc_auth_email_issue( 'signin', $email, $user ? $user->ID : 0, $redirect );
+		$uid = $user ? $user->ID : 0;
 		lc_auth_email_send(
 			$email,
 			__( 'Your Learn Cardano sign-in link', 'learncardano' ),
-			sprintf(
-				/* translators: %s: sign-in link */
-				__( "Use this link to sign in to Learn Cardano. It works once and expires in 15 minutes:\n\n%s\n\nIf you didn't ask for this, ignore this email: nobody can sign in without the link.", 'learncardano' ),
-				lc_auth_email_link_url( $token )
-			),
+			// Built only if the mail is allowed out: a skipped request makes no token.
+			function () use ( $email, $uid, $redirect ) {
+				return sprintf(
+					/* translators: %s: sign-in link */
+					__( "Use this link to sign in to Learn Cardano. It works once and expires in 15 minutes:\n\n%s\n\nIf you didn't ask for this, ignore this email: nobody can sign in without the link.", 'learncardano' ),
+					lc_auth_email_link_url( lc_auth_email_issue( 'signin', $email, $uid, $redirect ) )
+				);
+			},
 			'signin'
 		);
 	}
@@ -195,15 +230,17 @@ function lc_auth_email_change_request( WP_User $user, $new ) {
 	}
 	$other = email_exists( $new );
 	if ( ! $other || (int) $other === $user->ID ) {
-		$token = lc_auth_email_issue( 'email_change', $new, $user->ID, '' );
+		$uid = $user->ID;
 		lc_auth_email_send(
 			$new,
 			__( 'Confirm your new Learn Cardano email address', 'learncardano' ),
-			sprintf(
-				/* translators: %s: confirmation link */
-				__( "Open this link while you are signed in to your Learn Cardano account to make this your email address. It works once and expires in 15 minutes:\n\n%s\n\nIf you didn't ask for this, ignore this email.", 'learncardano' ),
-				lc_auth_email_link_url( $token )
-			),
+			function () use ( $new, $uid ) {
+				return sprintf(
+					/* translators: %s: confirmation link */
+					__( "Open this link while you are signed in to your Learn Cardano account to make this your email address. It works once and expires in 15 minutes:\n\n%s\n\nIf you didn't ask for this, ignore this email.", 'learncardano' ),
+					lc_auth_email_link_url( lc_auth_email_issue( 'email_change', $new, $uid, '' ) )
+				);
+			},
 			'email_change'
 		);
 	}
@@ -220,15 +257,18 @@ function lc_auth_email_verify_request( WP_User $user ) {
 	if ( $retry ) {
 		return array( 'ok' => false, 'code' => 'rate', 'retry' => $retry );
 	}
-	$token = lc_auth_email_issue( 'email_verify', strtolower( $user->user_email ), $user->ID, '' );
+	$addr = strtolower( $user->user_email );
+	$uid  = $user->ID;
 	lc_auth_email_send(
 		$user->user_email,
 		__( 'Verify your Learn Cardano email address', 'learncardano' ),
-		sprintf(
-			/* translators: %s: confirmation link */
-			__( "Open this link to verify this email address for your Learn Cardano account. It works once and expires in 15 minutes:\n\n%s\n\nIf you didn't ask for this, ignore this email.", 'learncardano' ),
-			lc_auth_email_link_url( $token )
-		),
+		function () use ( $addr, $uid ) {
+			return sprintf(
+				/* translators: %s: confirmation link */
+				__( "Open this link to verify this email address for your Learn Cardano account. It works once and expires in 15 minutes:\n\n%s\n\nIf you didn't ask for this, ignore this email.", 'learncardano' ),
+				lc_auth_email_link_url( lc_auth_email_issue( 'email_verify', $addr, $uid, '' ) )
+			);
+		},
 		'email_verify'
 	);
 	return array( 'ok' => true, 'code' => 'email_check' );

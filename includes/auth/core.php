@@ -171,6 +171,59 @@ function lc_auth_ip_subject() {
 }
 
 /**
+ * A wider rate-limit subject for the same visitor: IPv4 /24, IPv6 /48. A single
+ * IPv6 customer owns a whole /48 (65 536 /64s) and an IPv4 attacker usually
+ * rents several neighbouring addresses, so the per-IP buckets alone are cheap
+ * to step around. A second bucket on this subject, at about 5x the per-IP
+ * limit, makes that expensive without hurting a shared office or campus much.
+ *
+ * @param string|null $ip Address to reduce (default: the visitor's; for tests).
+ */
+function lc_auth_coarse_subject( $ip = null ) {
+	$ip  = null === $ip ? lc_client_ip() : (string) $ip;
+	$bin = '' === $ip ? false : inet_pton( $ip );
+	if ( false === $bin ) {
+		return $ip;
+	}
+	if ( 16 === strlen( $bin ) && 0 === strpos( $bin, str_repeat( "\0", 10 ) . "\xff\xff" ) ) {
+		$bin = substr( $bin, 12 ); // ::ffff:a.b.c.d is an IPv4 visitor.
+	}
+	if ( 4 === strlen( $bin ) ) {
+		return implode( '.', array_slice( array_map( 'ord', str_split( $bin ) ), 0, 3 ) ) . '.0/24';
+	}
+	return bin2hex( substr( $bin, 0, 6 ) ) . '/48';
+}
+
+/**
+ * The key an address is rate-limited under: lowercase, no "+tag" in the local
+ * part, and for Gmail no dots (googlemail.com is gmail.com). Without this one
+ * mailbox is thousands of "different" addresses, which defeats every
+ * per-address limit. Only for limit keys: never use it to send or store.
+ *
+ * @param string $email Address.
+ */
+function lc_auth_email_key( $email ) {
+	$email = strtolower( trim( (string) $email ) );
+	$at    = strrpos( $email, '@' );
+	if ( false === $at ) {
+		return $email;
+	}
+	$local  = substr( $email, 0, $at );
+	$domain = substr( $email, $at + 1 );
+	$plus   = strpos( $local, '+' );
+	if ( false !== $plus && $plus > 0 ) {
+		$local = substr( $local, 0, $plus );
+	}
+	if ( 'googlemail.com' === $domain ) {
+		$domain = 'gmail.com';
+	}
+	if ( 'gmail.com' === $domain ) {
+		$local = str_replace( '.', '', $local );
+	}
+	return $local . '@' . $domain;
+}
+
+/**
  * Count one hit against a bucket. Same idea as lc_delegation_rate_limited().
  *
  * @param string      $bucket  Bucket name.
@@ -229,6 +282,141 @@ function lc_auth_lock( $key, callable $fn ) {
 		$wpdb->delete( $wpdb->options, array( 'option_name' => $name ) );
 	}
 }
+
+/* ------------------------------------------------------------------ mail gate */
+
+/**
+ * Limits for every email this system sends, as one filterable array
+ * (lc_auth_mail_limits) so tests can use small numbers.
+ *
+ * - rcpt_h / rcpt_d: per recipient (normalised, see lc_auth_email_key()).
+ * - ip / ip_coarse: mails caused by the current visitor, per 15 minutes.
+ * - The site-wide daily cap has its own filter, lc_auth_email_daily_cap.
+ */
+function lc_auth_mail_limits() {
+	return (array) apply_filters(
+		'lc_auth_mail_limits',
+		array(
+			'rcpt_h'    => 5,
+			'rcpt_d'    => 10,
+			'ip'        => 10,
+			'ip_coarse' => 50,
+		)
+	);
+}
+
+/** The site-wide daily mail cap. */
+function lc_auth_mail_global_cap() {
+	return (int) apply_filters( 'lc_auth_email_daily_cap', 200 );
+}
+
+/** Tell the site admin, once a day, that the global mail cap was reached. */
+function lc_auth_mail_cap_alert() {
+	if ( get_transient( 'lc_auth_mail_cap_alerted' ) ) {
+		return;
+	}
+	set_transient( 'lc_auth_mail_cap_alerted', 1, DAY_IN_SECONDS );
+	lc_auth_log( 'mail_cap_reached' );
+	wp_mail( get_option( 'admin_email' ), 'Learn Cardano: daily email cap reached', 'The account system hit its daily limit for emails. Mail to people with a verified account still goes out; sign-up and unverified addresses get nothing until the window resets. If this is a real surge, raise it with the lc_auth_email_daily_cap filter; if it is abuse, look for "mail_capped" lines in the log.' );
+}
+
+/**
+ * May an email go to $to? The LOOK-ONLY half of the gate (nothing is counted),
+ * so a request that ends up sending nothing never uses any budget.
+ *
+ * At the global daily cap mail still goes to an EXISTING account with a
+ * verified address, so an abuser who burns the budget cannot lock every real
+ * member out of signing in; only unknown and unverified addresses are stopped.
+ *
+ * @param string $to Recipient address.
+ * @return string '' when allowed, else the name of the bucket that said no.
+ */
+function lc_auth_mail_check( $to ) {
+	$lim = lc_auth_mail_limits();
+	$key = lc_auth_email_key( $to );
+	if ( lc_auth_rate( 'mail_rcpt_h', $key, (int) $lim['rcpt_h'], HOUR_IN_SECONDS, false ) ) {
+		return 'rcpt_hour';
+	}
+	if ( lc_auth_rate( 'mail_rcpt_d', $key, (int) $lim['rcpt_d'], DAY_IN_SECONDS, false ) ) {
+		return 'rcpt_day';
+	}
+	if ( lc_auth_rate( 'mail_ip', null, (int) $lim['ip'], 15 * MINUTE_IN_SECONDS, false ) ) {
+		return 'ip';
+	}
+	if ( lc_auth_rate( 'mail_coarse', lc_auth_coarse_subject(), (int) $lim['ip_coarse'], 15 * MINUTE_IN_SECONDS, false ) ) {
+		return 'ip_coarse';
+	}
+	if ( lc_auth_rate( 'mail_global', 'all', lc_auth_mail_global_cap(), DAY_IN_SECONDS, false ) ) {
+		lc_auth_mail_cap_alert();
+		$user = get_user_by( 'email', (string) $to );
+		if ( ! $user || ! lc_auth_email_verified( $user ) ) {
+			return 'global';
+		}
+	}
+	return '';
+}
+
+/** The COUNTING half: call once, right before a mail really goes out. */
+function lc_auth_mail_count( $to ) {
+	$lim = lc_auth_mail_limits();
+	$key = lc_auth_email_key( $to );
+	lc_auth_rate( 'mail_rcpt_h', $key, (int) $lim['rcpt_h'], HOUR_IN_SECONDS );
+	lc_auth_rate( 'mail_rcpt_d', $key, (int) $lim['rcpt_d'], DAY_IN_SECONDS );
+	lc_auth_rate( 'mail_ip', null, (int) $lim['ip'], 15 * MINUTE_IN_SECONDS );
+	lc_auth_rate( 'mail_coarse', lc_auth_coarse_subject(), (int) $lim['ip_coarse'], 15 * MINUTE_IN_SECONDS );
+	lc_auth_rate( 'mail_global', 'all', lc_auth_mail_global_cap(), DAY_IN_SECONDS );
+}
+
+/**
+ * Core's lost-password form (wp-login.php?action=lostpassword) is open to
+ * anyone, mails any account and had no limit at all. Throttle it per visitor
+ * and per account; an error stops core before it sends anything.
+ *
+ * @param WP_Error      $errors    Errors so far.
+ * @param WP_User|false $user_data The account found, if any.
+ */
+add_action(
+	'lostpassword_post',
+	function ( $errors, $user_data = false ) {
+		$ip     = lc_auth_rate( 'pw_reset_ip', null, 5, 15 * MINUTE_IN_SECONDS );
+		$coarse = lc_auth_rate( 'pw_reset_coarse', lc_auth_coarse_subject(), 25, 15 * MINUTE_IN_SECONDS );
+		$user   = $user_data instanceof WP_User ? lc_auth_rate( 'pw_reset_user', (string) $user_data->ID, 3, HOUR_IN_SECONDS ) : 0;
+		if ( $ip || $coarse || $user ) {
+			lc_auth_log( 'pw_reset_limited', array( 'scope' => $user ? 'user' : 'ip' ) );
+			$errors->add( 'lc_auth_rate', esc_html__( 'Too many requests. Please try again later.', 'learncardano' ) );
+		}
+	},
+	10,
+	2
+);
+
+/**
+ * The reset email itself goes through the same mail gate as ours (recipient,
+ * visitor and global caps; verified accounts still get it at the global cap).
+ * Returning false makes core stop quietly and answer as if it had sent.
+ *
+ * @param bool    $send       Whether to send.
+ * @param string  $user_login Login.
+ * @param WP_User $user_data  The account.
+ */
+add_filter(
+	'send_retrieve_password_email',
+	function ( $send, $user_login = '', $user_data = null ) {
+		unset( $user_login );
+		if ( ! $send || ! $user_data instanceof WP_User || '' === (string) $user_data->user_email ) {
+			return $send;
+		}
+		$blocked = lc_auth_mail_check( $user_data->user_email );
+		if ( '' !== $blocked ) {
+			lc_auth_log( 'mail_capped', array( 'kind' => 'pw_reset', 'bucket' => $blocked ) );
+			return false;
+		}
+		lc_auth_mail_count( $user_data->user_email );
+		return true;
+	},
+	10,
+	3
+);
 
 /* ------------------------------------------------------------------- logging */
 
@@ -369,6 +557,7 @@ function lc_auth_text( $code ) {
 		'busy'            => __( 'Something else is updating this account right now. Please try again.', 'learncardano' ),
 		'disabled'        => __( 'Sign-in by email or wallet is switched off for now. If you have a password, use that.', 'learncardano' ),
 		'signup_closed'   => __( 'New accounts are paused right now. Please try again later.', 'learncardano' ),
+		'wallet_signup_full' => __( 'New wallet sign-ups are paused for today. Please try again tomorrow, or sign up with your email address instead.', 'learncardano' ),
 		'password_only'   => __( 'This account signs in with a password. Please use the password sign-in.', 'learncardano' ),
 		'link_expired'    => __( 'That link has expired or was already used. Request a new one below.', 'learncardano' ),
 		'link_failed'     => __( 'We could not sign you in with that link. Request a new one below.', 'learncardano' ),
@@ -510,7 +699,7 @@ function lc_auth_create_member( array $a ) {
 	if ( ! lc_auth_signup_enabled() ) {
 		return new WP_Error( 'lc_auth_signup_closed', lc_auth_text( 'signup_closed' ), array( 'status' => 403 ) );
 	}
-	$retry = lc_auth_rate( 'signup_ip', null, 10, HOUR_IN_SECONDS );
+	$retry = lc_auth_rate( 'signup_ip', null, 10, HOUR_IN_SECONDS ) ?: lc_auth_rate( 'signup_coarse', lc_auth_coarse_subject(), 50, HOUR_IN_SECONDS );
 	if ( $retry ) {
 		return new WP_Error( 'lc_auth_rate', lc_auth_text( 'rate' ), array( 'status' => 429, 'retry' => $retry ) );
 	}
@@ -551,10 +740,38 @@ function lc_auth_create_member( array $a ) {
 
 /* -------------------------------------------------- email verified / methods */
 
-/** Record that $email was proven by its owner (clicked from the inbox). */
+/**
+ * Record that $email was proven by its owner (clicked from the inbox). Only an
+ * HMAC of the address is kept: the meta says "this address was verified"
+ * without being a second copy of the address in the database.
+ */
 function lc_auth_mark_email_verified( $user_id, $email ) {
-	update_user_meta( $user_id, 'lc_email_verified', strtolower( trim( $email ) ) );
+	update_user_meta( $user_id, 'lc_email_verified', lc_auth_hmac( 'ev', strtolower( trim( $email ) ) ) );
 	update_user_meta( $user_id, 'lc_email_verified_at', time() );
+}
+
+/**
+ * Does the stored "verified" value belong to $email? Values written before the
+ * HMAC change are the plaintext address (they contain "@"); those are compared
+ * as before and, on a match, rewritten as an HMAC on the spot.
+ *
+ * @param int    $user_id User.
+ * @param string $email   Address to check.
+ */
+function lc_auth_verified_matches( $user_id, $email ) {
+	$v     = (string) get_user_meta( $user_id, 'lc_email_verified', true );
+	$email = strtolower( trim( (string) $email ) );
+	if ( '' === $v || '' === $email ) {
+		return false;
+	}
+	if ( false !== strpos( $v, '@' ) ) {
+		if ( strtolower( $v ) !== $email ) {
+			return false;
+		}
+		update_user_meta( $user_id, 'lc_email_verified', lc_auth_hmac( 'ev', $email ) ); // One-off upgrade of a legacy value.
+		return true;
+	}
+	return hash_equals( lc_auth_hmac( 'ev', $email ), $v );
 }
 
 /**
@@ -566,8 +783,7 @@ function lc_auth_email_verified( $user ) {
 	if ( ! $user instanceof WP_User || '' === (string) $user->user_email ) {
 		return false;
 	}
-	$v = (string) get_user_meta( $user->ID, 'lc_email_verified', true );
-	return '' !== $v && strtolower( $v ) === strtolower( $user->user_email );
+	return lc_auth_verified_matches( $user->ID, $user->user_email );
 }
 
 /** Stake addresses linked to a user (lc_wallet meta, several rows allowed). */
@@ -629,8 +845,7 @@ add_filter(
 		if ( ! $u || ! lc_is_legacy_wallet_account( $u ) ) {
 			return $send; // Staff and everyone else keep core's "email changed" notice.
 		}
-		$v = (string) get_user_meta( (int) $user['ID'], 'lc_email_verified', true );
-		return $send && '' !== $v && strtolower( $v ) === strtolower( (string) $user['user_email'] );
+		return $send && lc_auth_verified_matches( (int) $user['ID'], (string) $user['user_email'] );
 	},
 	10,
 	2
