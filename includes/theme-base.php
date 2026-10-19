@@ -108,7 +108,7 @@ function lc_login_logo() {
 	?>
 	<style type="text/css">
 		body.login h1 a {
-			background-image: url( <?php echo esc_url( get_stylesheet_directory_uri() . '/images/android-chrome-192x192.png' ); ?> );
+			background-image: url( <?php echo esc_url( get_stylesheet_directory_uri() . '/assets/brand/icon-192.png' ); ?> );
 			background-position: center;
 			background-size: contain;
 			background-repeat: no-repeat;
