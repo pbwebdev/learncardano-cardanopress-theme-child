@@ -1,0 +1,369 @@
+{
+	"note": "Locators for `rebrand-db.php export targets.json <out.json>`. No values here: export fills old/old_sha256 from the database; you then fill new. verify:true = Rank Math key name assumed from its usual option structure; confirm with `wp option pluck rank-math-options-titles <key>` or the scan output before relying on it. create:true = the row/key may be absent and may be created.",
+	"targets": [
+		{
+			"id": "opt-blogname",
+			"type": "option",
+			"option": "blogname"
+		},
+		{
+			"id": "opt-blogdescription",
+			"type": "option",
+			"option": "blogdescription"
+		},
+		{
+			"id": "rm-kg-name",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"knowledgegraph_name"
+			]
+		},
+		{
+			"id": "rm-website-name",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"website_name"
+			]
+		},
+		{
+			"id": "rm-website-alternate-name",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"website_alternate_name"
+			],
+			"create": true,
+			"verify": true,
+			"note": "Rank Math Titles & Meta > Local SEO > Website Alternate Name; absent until set once. Intended value: Learn Cardano (old name kept as alternateName)."
+		},
+		{
+			"id": "rm-kg-logo",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"knowledgegraph_logo"
+			],
+			"note": "URL; new may be {\"media\": \"logo-square-600.png\", \"as\": \"url\"}"
+		},
+		{
+			"id": "rm-kg-logo-id",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"knowledgegraph_logo_id"
+			],
+			"note": "attachment ID; new may be {\"media\": \"logo-square-600.png\", \"as\": \"id\"}"
+		},
+		{
+			"id": "rm-og-image",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"open_graph_image"
+			],
+			"note": "URL; new may be {\"media\": \"og-default-1200x630.jpg\", \"as\": \"url\"}"
+		},
+		{
+			"id": "rm-og-image-id",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"open_graph_image_id"
+			],
+			"note": "attachment ID; new may be {\"media\": \"og-default-1200x630.jpg\", \"as\": \"id\"}"
+		},
+		{
+			"id": "rm-pt-podcasts-archive-title",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"pt_podcasts_archive_title"
+			],
+			"verify": true
+		},
+		{
+			"id": "rm-pt-podcasts-archive-description",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"pt_podcasts_archive_description"
+			],
+			"verify": true
+		},
+		{
+			"id": "rm-pt-sfwd-courses-archive-title",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"pt_sfwd-courses_archive_title"
+			],
+			"verify": true
+		},
+		{
+			"id": "rm-pt-sfwd-courses-archive-description",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"pt_sfwd-courses_archive_description"
+			],
+			"verify": true
+		},
+		{
+			"id": "rm-pt-concept-archive-description",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"pt_concept_archive_description"
+			],
+			"verify": true
+		},
+		{
+			"id": "rm-pt-comparison-archive-description",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"pt_comparison_archive_description"
+			],
+			"verify": true
+		},
+		{
+			"id": "rm-pt-pitfall-archive-description",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"pt_pitfall_archive_description"
+			],
+			"verify": true
+		},
+		{
+			"id": "rm-pt-recipe-archive-description",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"pt_recipe_archive_description"
+			],
+			"verify": true
+		},
+		{
+			"id": "page-7-title",
+			"type": "post_field",
+			"post_id": 7,
+			"field": "post_title",
+			"note": "Home page"
+		},
+		{
+			"id": "page-7-excerpt",
+			"type": "post_field",
+			"post_id": 7,
+			"field": "post_excerpt"
+		},
+		{
+			"id": "page-7-content",
+			"type": "post_field",
+			"post_id": 7,
+			"field": "post_content"
+		},
+		{
+			"id": "page-7-rm-title",
+			"type": "post_meta",
+			"post_id": 7,
+			"key": "rank_math_title",
+			"create": true
+		},
+		{
+			"id": "page-7-rm-description",
+			"type": "post_meta",
+			"post_id": 7,
+			"key": "rank_math_description",
+			"create": true
+		},
+		{
+			"id": "page-104-content",
+			"type": "post_field",
+			"post_id": 104,
+			"field": "post_content"
+		},
+		{
+			"id": "page-24728-edits",
+			"type": "post_content_edits",
+			"post_id": 24728
+		},
+		{
+			"id": "page-29578-edits",
+			"type": "post_content_edits",
+			"post_id": 29578
+		},
+		{
+			"id": "page-27613-content",
+			"type": "post_field",
+			"post_id": 27613,
+			"field": "post_content"
+		},
+		{
+			"id": "page-29404-content",
+			"type": "post_field",
+			"post_id": 29404,
+			"field": "post_content"
+		},
+		{
+			"id": "page-26223-content",
+			"type": "post_field",
+			"post_id": 26223,
+			"field": "post_content"
+		},
+		{
+			"id": "page-26725-rm-title",
+			"type": "post_meta",
+			"post_id": 26725,
+			"key": "rank_math_title",
+			"create": true
+		},
+		{
+			"id": "page-26725-rm-description",
+			"type": "post_meta",
+			"post_id": 26725,
+			"key": "rank_math_description",
+			"create": true
+		},
+		{
+			"id": "block-25691-content",
+			"type": "post_field",
+			"post_id": 25691,
+			"field": "post_content",
+			"note": "wp_block (reusable block)"
+		},
+		{
+			"id": "cat-21-name",
+			"type": "term_field",
+			"taxonomy": "category",
+			"term_id": 21,
+			"field": "name"
+		},
+		{
+			"id": "cat-21-description",
+			"type": "term_field",
+			"taxonomy": "category",
+			"term_id": 21,
+			"field": "description"
+		},
+		{
+			"id": "cat-21-rm-title",
+			"type": "term_meta",
+			"term_id": 21,
+			"key": "rank_math_title",
+			"create": true
+		},
+		{
+			"id": "cat-21-rm-description",
+			"type": "term_meta",
+			"term_id": 21,
+			"key": "rank_math_description",
+			"create": true
+		},
+		{
+			"id": "cat-21-rm-focus-keyword",
+			"type": "term_meta",
+			"term_id": 21,
+			"key": "rank_math_focus_keyword",
+			"create": true
+		},
+		{
+			"id": "pcat-13-name",
+			"type": "term_field",
+			"taxonomy": "pcategory",
+			"term_id": 13,
+			"field": "name"
+		},
+		{
+			"id": "pcat-13-description",
+			"type": "term_field",
+			"taxonomy": "pcategory",
+			"term_id": 13,
+			"field": "description"
+		},
+		{
+			"id": "pcat-47-description",
+			"type": "term_field",
+			"taxonomy": "pcategory",
+			"term_id": 47,
+			"field": "description"
+		},
+		{
+			"id": "pcat-48-description",
+			"type": "term_field",
+			"taxonomy": "pcategory",
+			"term_id": 48,
+			"field": "description"
+		},
+		{
+			"id": "pcat-49-description",
+			"type": "term_field",
+			"taxonomy": "pcategory",
+			"term_id": 49,
+			"field": "description"
+		},
+		{
+			"id": "user-451-display-name",
+			"type": "user_field",
+			"user_id": 451,
+			"field": "display_name",
+			"note": "publishing author (editor user 451)"
+		},
+		{
+			"id": "user-451-nickname",
+			"type": "user_meta",
+			"user_id": 451,
+			"key": "nickname"
+		},
+		{
+			"id": "att-24888-alt",
+			"type": "post_meta",
+			"post_id": 24888,
+			"key": "_wp_attachment_image_alt",
+			"create": false
+		},
+		{
+			"id": "att-27184-alt",
+			"type": "post_meta",
+			"post_id": 27184,
+			"key": "_wp_attachment_image_alt",
+			"create": false
+		},
+		{
+			"id": "att-27184-title",
+			"type": "post_field",
+			"post_id": 27184,
+			"field": "post_title"
+		},
+		{
+			"id": "menu-24943-content",
+			"type": "post_field",
+			"post_id": 24943,
+			"field": "post_content",
+			"note": "nav_menu_item description"
+		},
+		{
+			"id": "acf-28436-content",
+			"type": "post_field",
+			"post_id": 28436,
+			"field": "post_content",
+			"note": "acf-post-type definition (serialized PHP array stored as post_content): replace the whole string; keep serialized string lengths correct (s:N:) in new/new_file"
+		}
+	],
+	"leave": [
+		{
+			"id": "page-30372-title",
+			"type": "post_field",
+			"post_id": 30372,
+			"field": "post_title",
+			"why": "KB hub page title: decide later whether it carries the brand; left unchanged in this pass"
+		},
+		{
+			"id": "example-pattern-leave",
+			"key": "postmeta:*:_wp_attachment_metadata",
+			"why": "Example of a pattern leave (fnmatch on scan keys): attachment metadata (file names) is never copy."
+		}
+	]
+}

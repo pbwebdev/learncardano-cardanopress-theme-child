@@ -188,7 +188,7 @@ while ( have_posts() ) :
 									<?php if ( has_post_thumbnail( $lc_post ) ) : ?>
 										<?php echo get_the_post_thumbnail( $lc_post, 'medium_large', array( 'alt' => '', 'loading' => 'lazy', 'sizes' => '(max-width: 780px) 100vw, 344px' ) ); ?>
 									<?php else : ?>
-										<div class="pa__placeholder" aria-hidden="true"><span class="pa__placeholder-mark">Learn Cardano</span></div>
+										<div class="pa__placeholder" aria-hidden="true"><span class="pa__placeholder-mark">Learn Crypto</span></div>
 									<?php endif; ?>
 								</div>
 								<div class="lca__rcard-body">

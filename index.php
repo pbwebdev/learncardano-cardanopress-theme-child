@@ -16,7 +16,7 @@ get_header();
     <div class="container">
         <div class="row justify-content-md-center">
             <div class="col-md-8 text-center">
-                <h1>Cardano Resources & Tutorials</h1>
+                <h1>Crypto Resources &amp; Tutorials</h1>
             </div>
         </div>
     </div>

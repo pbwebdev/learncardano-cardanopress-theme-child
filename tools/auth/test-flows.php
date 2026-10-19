@@ -27,6 +27,18 @@ lc_auth_load( 'oauth' );
 require_once ABSPATH . 'wp-admin/includes/user.php';
 add_filter( 'send_auth_cookies', '__return_false' );
 
+// Brand regression: record every wp_mail call made during the suite (passes the value through untouched).
+$GLOBALS['lc_t_mails'] = array();
+add_filter(
+	'pre_wp_mail',
+	function ( $return, $atts = array() ) {
+		$GLOBALS['lc_t_mails'][] = array( 'subject' => (string) ( $atts['subject'] ?? '' ), 'message' => (string) ( $atts['message'] ?? '' ) );
+		return $return;
+	},
+	-100,
+	2
+);
+
 $GLOBALS['lc_t'] = array( 'pass' => 0, 'fail' => 0, 'users' => array(), 'comments' => array() );
 
 function t( $name, $ok, $detail = '' ) {
@@ -1044,7 +1056,7 @@ try {
 	$rw = t_wallet();
 	$ch = t_challenge( $rw, 'link', wp_create_nonce( 'lc_wallet_link' ) );
 	t( 'wallet link with a 5 min old sign-in works', is_array( $ch ), t_code( $ch ) );
-	t( 'link challenge names the account', is_array( $ch ) && false !== strpos( $ch['message'], 'Learn Cardano account “' . lc_public_name( get_userdata( $ra->ID ) ) . '”.' ) );
+	t( 'link challenge names the account', is_array( $ch ) && false !== strpos( $ch['message'], 'Learn Crypto account “' . lc_public_name( get_userdata( $ra->ID ) ) . '”.' ) );
 	lc_auth_dev_outbox_clear();
 	if ( is_array( $ch ) ) {
 		list( $sig, $key ) = t_sign( $rw, $ch['message'] );
@@ -1102,6 +1114,8 @@ try {
 	t( 'display names: good ones accepted', ! in_array( false, array_map( 'lc_auth_validate_display_name', $names_ok ), true ) );
 	$rejected = array_filter( $names_bad, fn( $n ) => false === lc_auth_validate_display_name( $n ) );
 	t( 'display names: bad ones refused (' . count( $rejected ) . '/' . count( $names_bad ) . ')', count( $rejected ) === count( $names_bad ), implode( ' | ', array_diff( $names_bad, $rejected ) ) );
+	t( 'display names: "Learn Crypto" is reserved for non-staff', false === lc_auth_validate_display_name( 'Learn Crypto' ) && false === lc_auth_validate_display_name( 'learncrypto' ) && false === lc_auth_validate_display_name( 'Learn Crypto Podcast' ) );
+	t( 'mail from name: empty or "WordPress" becomes "Learn Crypto"', 'Learn Crypto' === apply_filters( 'wp_mail_from_name', 'WordPress' ) && 'Learn Crypto' === apply_filters( 'wp_mail_from_name', '' ) );
 	$mach = t_user();
 	wp_update_user( array( 'ID' => $mach->ID, 'display_name' => md5( 'a' ) ) );
 	t( 'public name: a hex name shows as "Cardano member"', 'Cardano member' === lc_public_name( get_userdata( $mach->ID ) ) );
@@ -1859,6 +1873,14 @@ try {
 	$routes = lc_auth_routes();
 	t( 'routes: start and callback for both providers are whitelisted, GET only', isset( $routes['oauth/google']['GET'], $routes['oauth/google/callback']['GET'], $routes['oauth/discord']['GET'], $routes['oauth/discord/callback']['GET'] ) && 1 === count( $routes['oauth/google'] ) && 1 === count( $routes['oauth/discord/callback'] ) && is_callable( $routes['oauth/google']['GET'] ) && is_callable( $routes['oauth/discord/callback']['GET'] ) );
 
+	$brand_bad = array();
+	foreach ( $GLOBALS['lc_t_mails'] as $m ) {
+		if ( false !== stripos( $m['subject'] . "
+" . $m['message'], 'Learn Cardano' ) ) {
+			$brand_bad[] = $m['subject'];
+		}
+	}
+	t( 'brand: none of the ' . count( $GLOBALS['lc_t_mails'] ) . ' emails sent during the suite mention "Learn Cardano"', array() === $brand_bad, implode( ' | ', array_unique( $brand_bad ) ) );
 } catch ( Throwable $e ) {
 	t( 'no exception', false, get_class( $e ) . ': ' . $e->getMessage() . ' @' . basename( $e->getFile() ) . ':' . $e->getLine() );
 } finally {

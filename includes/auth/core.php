@@ -318,7 +318,7 @@ function lc_auth_mail_cap_alert() {
 	}
 	set_transient( 'lc_auth_mail_cap_alerted', 1, DAY_IN_SECONDS );
 	lc_auth_log( 'mail_cap_reached' );
-	wp_mail( get_option( 'admin_email' ), 'Learn Cardano: daily email cap reached', 'The account system hit its daily limit for emails. Mail to people with a verified account still goes out; sign-up and unverified addresses get nothing until the window resets. If this is a real surge, raise it with the lc_auth_email_daily_cap filter; if it is abuse, look for "mail_capped" lines in the log.' );
+	wp_mail( get_option( 'admin_email' ), 'Learn Crypto: daily email cap reached', 'The account system hit its daily limit for emails. Mail to people with a verified account still goes out; sign-up and unverified addresses get nothing until the window resets. If this is a real surge, raise it with the lc_auth_email_daily_cap filter; if it is abuse, look for "mail_capped" lines in the log.' );
 }
 
 /**
@@ -602,7 +602,7 @@ function lc_auth_text( $code ) {
 		'oauth_failed'    => __( 'We could not complete that sign-in. Please try again.', 'learncardano' ),
 		'oauth_unavailable' => __( 'That sign-in method is not available right now.', 'learncardano' ),
 		'oauth_email_exists' => __( 'This email address already has an account. Sign in with an email link first (below), then click Connect next to Google or Discord on your account page. After that, they sign you straight in.', 'learncardano' ),
-		'idp_in_use'      => __( 'That account is already connected to a different Learn Cardano account. Sign in with it there, or disconnect it from that account first.', 'learncardano' ),
+		'idp_in_use'      => __( 'That account is already connected to a different Learn Crypto account. Sign in with it there, or disconnect it from that account first.', 'learncardano' ),
 		'idp_has_other'   => __( 'You already have a different account connected for this provider. Disconnect it first.', 'learncardano' ),
 		'idp_conflict'    => __( 'That account is connected more than once. Please contact us so we can sort it out.', 'learncardano' ),
 		'idp_linked'      => __( 'Account connected.', 'learncardano' ),
@@ -746,7 +746,7 @@ function lc_auth_create_member( array $a ) {
 	// A flood of sign-ups alerts the owner once a day instead of closing the door.
 	if ( lc_auth_rate( 'signup_global', 'all', (int) apply_filters( 'lc_auth_signup_daily_alert', 100 ), DAY_IN_SECONDS ) && ! get_transient( 'lc_auth_signup_alerted' ) ) {
 		set_transient( 'lc_auth_signup_alerted', 1, DAY_IN_SECONDS );
-		wp_mail( get_option( 'admin_email' ), 'Learn Cardano: unusual number of new sign-ups', 'More than 100 new accounts were created in the last 24 hours. Sign-up stays open; set LC_AUTH_SIGNUP to false in wp-config.php to pause it.' );
+		wp_mail( get_option( 'admin_email' ), 'Learn Crypto: unusual number of new sign-ups', 'More than 100 new accounts were created in the last 24 hours. Sign-up stays open; set LC_AUTH_SIGNUP to false in wp-config.php to pause it.' );
 	}
 
 	$email = isset( $a['email'] ) ? strtolower( trim( (string) $a['email'] ) ) : '';

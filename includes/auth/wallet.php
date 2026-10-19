@@ -39,7 +39,7 @@ const LC_AUTH_CHALLENGE_TTL = 600;
 function lc_auth_wallet_message( $stake, $intent, $nonce, $issued, $expires, $name = '' ) {
 	$sign_in = 'signin' === $intent;
 	$name    = trim( preg_replace( '/\s+/', ' ', (string) $name ) );
-	$link    = '' === $name ? 'connect this wallet to your Learn Cardano account.' : 'connect this wallet to the Learn Cardano account “' . $name . '”.';
+	$link    = '' === $name ? 'connect this wallet to your Learn Crypto account.' : 'connect this wallet to the Learn Crypto account “' . $name . '”.';
 	return wp_parse_url( home_url(), PHP_URL_HOST ) . ' wants you to ' . ( $sign_in ? 'sign in with your Cardano wallet.' : $link ) . "\n\n"
 		. 'Stake address: ' . $stake . "\n"
 		. "Network: Mainnet\n"
@@ -194,10 +194,10 @@ function lc_auth_wallet_notify( WP_User $user, $stake ) {
 	lc_auth_load( 'email' );
 	lc_auth_email_send(
 		$user->user_email,
-		__( 'A wallet was connected to your Learn Cardano account', 'learncardano' ),
+		__( 'A wallet was connected to your Learn Crypto account', 'learncardano' ),
 		sprintf(
 			/* translators: 1: masked stake address, 2: account page URL */
-			__( "A Cardano wallet (%1\$s) was just connected to your Learn Cardano account.\n\nIf this was you, there is nothing to do. If it wasn't, remove the wallet and sign out everywhere else on your account page:\n%2\$s", 'learncardano' ),
+			__( "A Cardano wallet (%1\$s) was just connected to your Learn Crypto account.\n\nIf this was you, there is nothing to do. If it wasn't, remove the wallet and sign out everywhere else on your account page:\n%2\$s", 'learncardano' ),
 			lc_auth_mask_stake( $stake ),
 			lc_auth_account_url()
 		),
@@ -245,7 +245,7 @@ function lc_auth_wallet_signup_alert( $ceiling ) {
 	}
 	set_transient( 'lc_auth_wallet_signup_alerted', 1, DAY_IN_SECONDS );
 	lc_auth_log( 'wallet_signup_ceiling' );
-	wp_mail( get_option( 'admin_email' ), 'Learn Cardano: wallet sign-up ceiling reached', sprintf( 'More than %d new wallet-only accounts were created in 24 hours, so new wallet sign-ups are refused until the window resets (wallets that already have an account still sign in). Raise it with the lc_auth_wallet_signup_daily_cap filter if this is real growth.', (int) $ceiling ) );
+	wp_mail( get_option( 'admin_email' ), 'Learn Crypto: wallet sign-up ceiling reached', sprintf( 'More than %d new wallet-only accounts were created in 24 hours, so new wallet sign-ups are refused until the window resets (wallets that already have an account still sign in). Raise it with the lc_auth_wallet_signup_daily_cap filter if this is real growth.', (int) $ceiling ) );
 }
 
 /**

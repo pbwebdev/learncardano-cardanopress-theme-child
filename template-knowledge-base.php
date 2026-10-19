@@ -75,7 +75,7 @@ uksort( $lc_filter['era'], $lc_by_order( array( 'byron', 'shelley', 'goguen', 'm
 			array(
 				'title'       => get_the_title(),
 				'subtitle'    => has_excerpt() ? get_the_excerpt() : __( 'Concepts, recipes, pitfalls and more for building on Cardano, from your first wallet connection to a working dApp.', 'learncardano' ),
-				'placeholder' => __( 'Search Learn Cardano', 'learncardano' ),
+				'placeholder' => __( 'Search Learn Crypto', 'learncardano' ),
 				'post_type'   => '',
 			)
 		);

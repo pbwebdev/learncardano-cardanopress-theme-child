@@ -14,7 +14,7 @@ $lc_category = get_queried_object();
 $lc_subtitle = category_description();
 if ( ! $lc_subtitle ) {
 	/* translators: %s: category name */
-	$lc_subtitle = sprintf( __( 'Every Learn Cardano article filed under %s.', 'learncardano' ), single_cat_title( '', false ) );
+	$lc_subtitle = sprintf( __( 'Every Learn Crypto article filed under %s.', 'learncardano' ), single_cat_title( '', false ) );
 }
 ?>
 

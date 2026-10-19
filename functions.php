@@ -139,7 +139,7 @@ if ( ! function_exists( 'lc_episode_thumb_url' ) ) {
 	function lc_episode_thumb_url( $size = 'medium_large' ) {
 		$url = get_the_post_thumbnail_url( get_the_ID(), $size );
 		if ( ! $url ) {
-			$url = get_stylesheet_directory_uri() . '/images/learn-cardano-podcast-cover.jpg';
+			$url = get_stylesheet_directory_uri() . '/assets/brand/podcast-cover-856.jpg';
 		}
 		return $url;
 	}
@@ -216,8 +216,8 @@ function lc_card_image( $args = array() ) {
 
 	// Cover art fallback (the same image lc_episode_thumb_url() falls back to).
 	unset( $attr['sizes'] );
-	$cover = get_stylesheet_directory_uri() . '/images/learn-cardano-podcast-cover';
-	$html  = '<img src="' . esc_url( $cover . '.jpg' ) . '" width="1400" height="1400"';
+	$cover = get_stylesheet_directory_uri() . '/assets/brand/podcast-cover-856';
+	$html  = '<img src="' . esc_url( $cover . '.jpg' ) . '" width="856" height="856"';
 	foreach ( $attr as $name => $value ) {
 		$html .= ' ' . $name . '="' . esc_attr( $value ) . '"';
 	}

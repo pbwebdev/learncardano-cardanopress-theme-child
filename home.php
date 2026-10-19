@@ -23,8 +23,8 @@ get_header();
 		'template-parts/archive-hero',
 		null,
 		array(
-			'title'           => 'Cardano Resources & Tutorials',
-			'subtitle'        => 'Tutorials, explainers, governance updates and news from across the Cardano ecosystem.',
+			'title'           => 'Crypto Resources & Tutorials',
+			'subtitle'        => 'Tutorials, explainers and news from across crypto, with a strong focus on Cardano.',
 			'pills'           => lc_blog_category_pills(),
 			'pills_label'     => __( 'Article categories', 'learncardano' ),
 		)

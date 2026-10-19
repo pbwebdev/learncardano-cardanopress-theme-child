@@ -50,7 +50,7 @@ if ( $is_article ) {
 			?>
 		<?php else : ?>
 			<div class="pa__media-img pa__placeholder" aria-hidden="true">
-				<span class="pa__placeholder-mark">Learn Cardano</span>
+				<span class="pa__placeholder-mark">Learn Crypto</span>
 			</div>
 		<?php endif; ?>
 		<?php if ( $show_badge ) : ?>

@@ -1,0 +1,58 @@
+{
+	"note": "Old-brand matches that brand-crawl.mjs does not count. A match is allowed when one of these regexes (flags default \"i\") matches a range of the page covering the whole old-brand match. Optional \"window\" (chars searched around the match, default 400, 0 = whole document). Optional \"urls\" limits a pattern to page URLs matching that regex. Keep this list short: every entry hides text from the check.",
+	"patterns": [
+		{
+			"id": "absolute-url",
+			"re": "(?:https?:)?//[^\\s\"'<>()]+",
+			"why": "Any absolute URL (links, src, srcset, canonical, sitemap, feed links, JSON-LD @id/url). The domain learncardano.io and plugin paths such as /plugins/cardanopress/ are not visible copy."
+		},
+		{
+			"id": "escaped-url",
+			"re": "https?:\\\\/\\\\/[^\\s\"'<>()]+",
+			"why": "JSON-escaped URLs (https:\\/\\/learncardano.io\\/...) in inline scripts and JSON-LD."
+		},
+		{
+			"id": "relative-asset-path",
+			"re": "/(?:wp-content|wp-json|wp-includes)/[^\\s\"'<>()]*",
+			"why": "Theme/plugin paths such as /wp-content/themes/learncardano-cardanopress-theme-child/."
+		},
+		{
+			"id": "url-attribute",
+			"re": "\\b(?:href|src|srcset|action|poster|data-src|data-srcset|data-bg)\\s*=\\s*(\"[^\"]*\"|'[^']*')",
+			"why": "URL-carrying attributes whose value contains learncardano / learn-cardano / cardanopress (slugs, image file names)."
+		},
+		{
+			"id": "domain-or-email",
+			"re": "[\\w.+-]*@?[\\w-]*learn-?cardano\\.(?:io|com)\\b[^\\s\"'<>()]*",
+			"why": "Bare domain mentions in lower-case technical contexts and email addresses (hello@learncardano.io)."
+		},
+		{
+			"id": "lowercase-slug",
+			"re": "(?<![A-Za-z])(?:learncardano|cardanopress)[\\w-]*|[\\w-]*-(?:learncardano|cardanopress)\\b[\\w-]*",
+			"flags": "",
+			"why": "Lower-case identifiers only (case-sensitive): CSS classes, ids, handles (cardanopress-*, learncardano-*). Capitalised copy is still caught."
+		},
+		{
+			"id": "formerly",
+			"re": "formerly(?:\\s+(?:known\\s+as|called))?\\s+(?:the\\s+)?(?:<[^>]+>\\s*)?Learn\\s*Cardano(?:\\s+Podcast)?",
+			"why": "Deliberate continuity line: \"formerly Learn Cardano\"."
+		},
+		{
+			"id": "jsonld-alternateName",
+			"re": "\"alternateName\"\\s*:\\s*(?:\\[[^\\]]*\\]|\"[^\"]*\")",
+			"why": "Rank Math website_alternate_name / Organization alternateName keeps the old name on purpose."
+		},
+		{
+			"id": "discord-server-name",
+			"re": "Learn\\s*Cardano(?:\\s*</a>)?\\s+Discord(?:\\s+server)?|discord\\.gg/V6mZGYUPNW[^>]*>\\s*Learn\\s*Cardano",
+			"why": "The community Discord server is still named \"Learn Cardano\" (invite discord.gg/V6mZGYUPNW, seen in quiz 26291's result message). Verify the server name before relying on this."
+		},
+		{
+			"id": "historical-archive-listing",
+			"re": "<(article|item)\\b[\\s\\S]*?</\\1>",
+			"window": 0,
+			"urls": "/(?:feed/|\\?s=|podcasts/$|category/|podcast-category/|resources/$)",
+			"why": "Archive, search and feed pages list historical episodes and posts whose titles/excerpts keep the old name (historical content is not rebranded). Only on those URLs and only inside <article> cards / RSS <item>s (window 0 = whole document). Review INFO by running without this entry once."
+		}
+	]
+}

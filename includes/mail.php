@@ -3,7 +3,7 @@
  * Outgoing mail without WP Mail SMTP: send through Resend's SMTP relay
  * (smtp.resend.com:465, implicit TLS, user "resend", the API key from the
  * LC_RESEND_API_KEY constant in wp-config.php) with the From settings WP Mail
- * SMTP used: address always mail@learncardano.io, name "Learn Cardano" unless
+ * SMTP used: address always mail@learncardano.io, name "Learn Crypto" unless
  * the sender set its own (WP Mail SMTP had "force from name" off).
  *
  * Anything other than production (staging2 is a full clone with real
@@ -13,7 +13,7 @@
  */
 
 defined( 'LC_MAIL_FROM_EMAIL' ) || define( 'LC_MAIL_FROM_EMAIL', 'mail@learncardano.io' );
-defined( 'LC_MAIL_FROM_NAME' ) || define( 'LC_MAIL_FROM_NAME', 'Learn Cardano' );
+defined( 'LC_MAIL_FROM_NAME' ) || define( 'LC_MAIL_FROM_NAME', 'Learn Crypto' );
 
 /**
  * Staging and local copies must never email anyone: short-circuit wp_mail().

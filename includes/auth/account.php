@@ -41,7 +41,7 @@ function lc_auth_needs_name( WP_User $user ) {
 function lc_auth_staff_names() {
 	static $names = null;
 	if ( null === $names ) {
-		$names = (array) apply_filters( 'lc_auth_reserved_names', array( 'admin', 'administrator', 'moderator', 'support', 'staff', 'learn cardano', 'learncardano', 'adaoz' ) );
+		$names = (array) apply_filters( 'lc_auth_reserved_names', array( 'admin', 'administrator', 'moderator', 'support', 'staff', 'learn cardano', 'learncardano', 'learn crypto', 'learncrypto', 'learn crypto podcast', 'adaoz' ) );
 		foreach ( get_users( array( 'capability__in' => array( 'edit_posts', 'moderate_comments', 'list_users' ), 'fields' => array( 'display_name', 'user_login', 'user_nicename' ) ) ) as $u ) {
 			$names[] = $u->display_name;
 			$names[] = $u->user_login;
@@ -264,7 +264,7 @@ function lc_auth_delete_account( WP_User $user ) {
 	}
 	wp_delete_user( $user->ID, $reassign );
 	if ( '' !== $email ) {
-		wp_mail( $email, __( 'Your Learn Cardano account was deleted', 'learncardano' ), __( "Your Learn Cardano account has been deleted, and your comments no longer carry your name.
+		wp_mail( $email, __( 'Your Learn Crypto account was deleted', 'learncardano' ), __( "Your Learn Crypto account has been deleted, and your comments no longer carry your name.
 
 If this wasn't you, reply to this email.", 'learncardano' ) );
 	}
@@ -520,7 +520,7 @@ function lc_auth_admin_box( $user ) {
 		return;
 	}
 	$wallets = lc_auth_wallets( $user->ID );
-	echo '<h2>' . esc_html__( 'Sign-in methods (Learn Cardano)', 'learncardano' ) . '</h2><table class="form-table" role="presentation">';
+	echo '<h2>' . esc_html__( 'Sign-in methods (Learn Crypto)', 'learncardano' ) . '</h2><table class="form-table" role="presentation">';
 	wp_nonce_field( 'lc_auth_admin_' . $user->ID, 'lc_auth_admin_nonce' );
 	echo '<tr><th>' . esc_html__( 'Email', 'learncardano' ) . '</th><td>' . esc_html( $user->user_email ?: '—' ) . ' &middot; ';
 	if ( lc_auth_email_verified( $user ) ) {

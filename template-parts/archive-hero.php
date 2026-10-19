@@ -19,7 +19,7 @@ $args = wp_parse_args(
 		'subtitle'    => '',
 		// Searches the whole site unless post_type names a search.php
 		// filter group (see includes/search.php).
-		'placeholder' => __( 'Search Learn Cardano', 'learncardano' ),
+		'placeholder' => __( 'Search Learn Crypto', 'learncardano' ),
 		'post_type'   => '',
 		'show_search' => true,
 		'pills'       => array(),

@@ -20,8 +20,8 @@ get_header();
 <main class="podcast-archive <?php echo lc_layout_class( 'content-full' ); ?>">
 
 	<section class="pa__hero">
-		<h1 class="pa__h1">Learn Cardano Podcast Episode Archives</h1>
-		<p class="pa__sub">View all of the latest episodes produced by the Learn Cardano Podcast.</p>
+		<h1 class="pa__h1">Learn Crypto Podcast Episodes</h1>
+		<p class="pa__sub">View all of the latest episodes of the Learn Crypto Podcast.</p>
 		<form class="pa__search" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
 			<label class="sr-only" for="pa-search"><?php echo esc_html_x( 'Search episodes', 'label', 'learncardano' ); ?></label>
 			<input id="pa-search" class="pa__search-input" type="search" name="s" value="<?php echo esc_attr( get_search_query() ); ?>" placeholder="Search episodes">

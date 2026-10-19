@@ -186,13 +186,13 @@ function lc_auth_idp_notify( WP_User $user, $provider, $kind ) {
 	$all   = lc_auth_providers( true );
 	$label = isset( $all[ $provider ]['label'] ) ? $all[ $provider ]['label'] : ucfirst( $provider );
 	if ( 'idp_linked' === $kind ) {
-		$subject = __( 'A sign-in method was connected to your Learn Cardano account', 'learncardano' );
+		$subject = __( 'A sign-in method was connected to your Learn Crypto account', 'learncardano' );
 		/* translators: 1: provider name, 2: account page URL */
-		$body = __( "Your %1\$s account was just connected to your Learn Cardano account, so you can now sign in with it.\n\nIf this was you, there is nothing to do. If it wasn't, disconnect it and sign out everywhere else on your account page:\n%2\$s", 'learncardano' );
+		$body = __( "Your %1\$s account was just connected to your Learn Crypto account, so you can now sign in with it.\n\nIf this was you, there is nothing to do. If it wasn't, disconnect it and sign out everywhere else on your account page:\n%2\$s", 'learncardano' );
 	} else {
-		$subject = __( 'A sign-in method was removed from your Learn Cardano account', 'learncardano' );
+		$subject = __( 'A sign-in method was removed from your Learn Crypto account', 'learncardano' );
 		/* translators: 1: provider name, 2: account page URL */
-		$body = __( "Your %1\$s account was just disconnected from your Learn Cardano account.\n\nIf this wasn't you, check your sign-in methods and sign out everywhere else on your account page:\n%2\$s", 'learncardano' );
+		$body = __( "Your %1\$s account was just disconnected from your Learn Crypto account.\n\nIf this wasn't you, check your sign-in methods and sign out everywhere else on your account page:\n%2\$s", 'learncardano' );
 	}
 	lc_auth_email_send( $user->user_email, $subject, sprintf( $body, $label, lc_auth_account_url() ), $kind );
 }

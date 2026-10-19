@@ -119,15 +119,15 @@ function lc_form_definitions() {
 			'notifications' => array(
 				array(
 					'to'       => 'admin',
-					'subject'  => 'Learn Cardano: Contact submission from {form_title}',
-					'body'     => "{all_fields}\n\n&nbsp;\n\nEmail from the Learn Cardano website.",
+					'subject'  => 'Learn Crypto: Contact submission from {form_title}',
+					'body'     => "{all_fields}\n\n&nbsp;\n\nEmail from the Learn Crypto website.",
 					'reply_to' => 'email',
 				),
 				array(
 					'to'        => 'email',
-					'from_name' => 'Learn Cardano',
+					'from_name' => 'Learn Crypto',
 					'subject'   => "You're email has been sent!",
-					'body'      => "Hello!\n\nThanks for contacting the Learn Cardano team.\n\nWe do get flooded with requests for support, collaborations, partnerships and interview requests.\n\nWe'll get back to you as soon as possible.\n\nRegards\n\nPeter &amp; Learn Cardano team\n\n&nbsp;\n<ul>\n \t<li><span style=\"font-size: xx-small;\"><a href=\"https://bit.ly/3Qzf7OI\" target=\"_blank\" rel=\"noopener\">YouTube</a></span></li>\n \t<li><span style=\"font-size: xx-small;\"><a href=\"https://spoti.fi/3PdFXdZ\" target=\"_blank\" rel=\"noopener\">Spotify</a></span></li>\n \t<li><span style=\"font-size: xx-small;\"><a href=\"https://chatsoon.app/id/peter-bui-5ec50167\" target=\"_blank\" rel=\"noopener\">Follow &amp; contact Peter (Chatsoon)</a></span></li>\n</ul>",
+					'body'      => "Hello!\n\nThanks for contacting the Learn Crypto team.\n\nWe do get flooded with requests for support, collaborations, partnerships and interview requests.\n\nWe'll get back to you as soon as possible.\n\nRegards\n\nPeter &amp; the Learn Crypto team\n\n&nbsp;\n<ul>\n \t<li><span style=\"font-size: xx-small;\"><a href=\"https://bit.ly/3Qzf7OI\" target=\"_blank\" rel=\"noopener\">YouTube</a></span></li>\n \t<li><span style=\"font-size: xx-small;\"><a href=\"https://spoti.fi/3PdFXdZ\" target=\"_blank\" rel=\"noopener\">Spotify</a></span></li>\n \t<li><span style=\"font-size: xx-small;\"><a href=\"https://chatsoon.app/id/peter-bui-5ec50167\" target=\"_blank\" rel=\"noopener\">Follow &amp; contact Peter (Chatsoon)</a></span></li>\n</ul>",
 				),
 			),
 		),
@@ -921,7 +921,7 @@ function lc_form_send_notifications( $form, $values, $source, $notes = array() )
 		$body = str_replace( '{all_fields}', lc_form_all_fields( $form, $values, $source, $notes ), $notification['body'] );
 		$body = wpautop( $body );
 
-		$from_name = isset( $notification['from_name'] ) ? $notification['from_name'] : 'Learn Cardano';
+		$from_name = isset( $notification['from_name'] ) ? $notification['from_name'] : 'Learn Crypto';
 		$headers   = array(
 			'Content-Type: text/html; charset=UTF-8',
 			'From: ' . $from_name . ' <mail@learncardano.io>',

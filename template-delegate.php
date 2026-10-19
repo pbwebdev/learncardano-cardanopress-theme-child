@@ -94,7 +94,7 @@ $lc_check   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 
 					<div data-show="success" hidden>
 						<h3><?php esc_html_e( 'Transaction submitted 🎉', 'learncardano' ); ?></h3>
-						<p><?php esc_html_e( 'Your delegation to ADAOZ is on the way. Rewards start flowing in 2–3 epochs (around 10–15 days). Thank you for supporting Learn Cardano.', 'learncardano' ); ?></p>
+						<p><?php esc_html_e( 'Your delegation to ADAOZ is on the way. Rewards start flowing in 2–3 epochs (around 10–15 days). Thank you for supporting Learn Crypto.', 'learncardano' ); ?></p>
 						<p><?php esc_html_e( 'Transaction:', 'learncardano' ); ?> <a id="dp-tx-link" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'view on Cardanoscan', 'learncardano' ); ?></a></p>
 						<button type="button" class="dlg__btn dlg__btn--ghost" data-action="reset"><?php esc_html_e( 'Done', 'learncardano' ); ?></button>
 					</div>

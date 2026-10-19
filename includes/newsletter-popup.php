@@ -56,7 +56,7 @@ function lc_newsletter_popup_markup() {
 		<div class="lc-popup__box">
 			<button type="button" class="lc-popup__close" data-lc-popup-close aria-label="<?php esc_attr_e( 'Close', 'learncardano' ); ?>"><span aria-hidden="true">&times;</span></button>
 			<h3 class="lc-popup__title" id="lc-popup-27449-title"><?php esc_html_e( 'Keep Up To Date!', 'learncardano' ); ?></h3>
-			<p class="lc-popup__text"><?php esc_html_e( 'Sign up for our newsletter. Latest Cardano news, airdrops, courses and everything you need to know about Cardano and Midnight.', 'learncardano' ); ?></p>
+			<p class="lc-popup__text"><?php esc_html_e( 'Sign up for our newsletter. Latest crypto news, airdrops, courses and everything you need to know about Cardano, Midnight and the wider crypto space.', 'learncardano' ); ?></p>
 			<div class="lc-popup__form" data-lc-popup-slot></div>
 			<template data-lc-popup-template><?php echo $form; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built and escaped by template-parts/form-*.php. ?></template>
 		</div>

@@ -181,10 +181,10 @@ function lc_auth_email_request( array $in ) {
 	if ( $user && lc_auth_is_privileged( $user ) ) {
 		lc_auth_email_send(
 			$email,
-			__( 'Signing in to Learn Cardano', 'learncardano' ),
+			__( 'Signing in to Learn Crypto', 'learncardano' ),
 			sprintf(
 				/* translators: 1: login URL, 2: lost password URL */
-				__( "This Learn Cardano account signs in with a password, not an email link.\n\nSign in: %1\$s\nForgot it? %2\$s\n\nIf you didn't ask for this, you can ignore this email.", 'learncardano' ),
+				__( "This Learn Crypto account signs in with a password, not an email link.\n\nSign in: %1\$s\nForgot it? %2\$s\n\nIf you didn't ask for this, you can ignore this email.", 'learncardano' ),
 				wp_login_url(),
 				wp_lostpassword_url()
 			),
@@ -193,10 +193,10 @@ function lc_auth_email_request( array $in ) {
 	} elseif ( $user && lc_auth_email_needs_wallet( $user ) ) {
 		lc_auth_email_send(
 			$email,
-			__( 'Signing in to Learn Cardano', 'learncardano' ),
+			__( 'Signing in to Learn Crypto', 'learncardano' ),
 			sprintf(
 				/* translators: %s: sign-in page URL */
-				__( "This email address is on a Learn Cardano account that signs in with a Cardano wallet.\n\nSign in with that wallet first, then verify this address on your account page:\n%s\n\nIf you didn't ask for this, you can ignore this email.", 'learncardano' ),
+				__( "This email address is on a Learn Crypto account that signs in with a Cardano wallet.\n\nSign in with that wallet first, then verify this address on your account page:\n%s\n\nIf you didn't ask for this, you can ignore this email.", 'learncardano' ),
 				lc_auth_account_url()
 			),
 			'wallet_first'
@@ -205,12 +205,12 @@ function lc_auth_email_request( array $in ) {
 		$uid = $user ? $user->ID : 0;
 		lc_auth_email_send(
 			$email,
-			__( 'Your Learn Cardano sign-in link', 'learncardano' ),
+			__( 'Your Learn Crypto sign-in link', 'learncardano' ),
 			// Built only if the mail is allowed out: a skipped request makes no token.
 			function () use ( $email, $uid, $redirect ) {
 				return sprintf(
 					/* translators: %s: sign-in link */
-					__( "Use this link to sign in to Learn Cardano. It works once and expires in 15 minutes:\n\n%s\n\nIf you didn't ask for this, ignore this email: nobody can sign in without the link.", 'learncardano' ),
+					__( "Use this link to sign in to Learn Crypto. It works once and expires in 15 minutes:\n\n%s\n\nIf you didn't ask for this, ignore this email: nobody can sign in without the link.", 'learncardano' ),
 					lc_auth_email_link_url( lc_auth_email_issue( 'signin', $email, $uid, $redirect ) )
 				);
 			},
@@ -238,11 +238,11 @@ function lc_auth_email_change_request( WP_User $user, $new ) {
 		$uid = $user->ID;
 		lc_auth_email_send(
 			$new,
-			__( 'Confirm your new Learn Cardano email address', 'learncardano' ),
+			__( 'Confirm your new Learn Crypto email address', 'learncardano' ),
 			function () use ( $new, $uid ) {
 				return sprintf(
 					/* translators: %s: confirmation link */
-					__( "Open this link while you are signed in to your Learn Cardano account to make this your email address. It works once and expires in 15 minutes:\n\n%s\n\nIf you didn't ask for this, ignore this email.", 'learncardano' ),
+					__( "Open this link while you are signed in to your Learn Crypto account to make this your email address. It works once and expires in 15 minutes:\n\n%s\n\nIf you didn't ask for this, ignore this email.", 'learncardano' ),
 					lc_auth_email_link_url( lc_auth_email_issue( 'email_change', $new, $uid, '' ) )
 				);
 			},
@@ -266,11 +266,11 @@ function lc_auth_email_verify_request( WP_User $user ) {
 	$uid  = $user->ID;
 	lc_auth_email_send(
 		$user->user_email,
-		__( 'Verify your Learn Cardano email address', 'learncardano' ),
+		__( 'Verify your Learn Crypto email address', 'learncardano' ),
 		function () use ( $addr, $uid ) {
 			return sprintf(
 				/* translators: %s: confirmation link */
-				__( "Open this link to verify this email address for your Learn Cardano account. It works once and expires in 15 minutes:\n\n%s\n\nIf you didn't ask for this, ignore this email.", 'learncardano' ),
+				__( "Open this link to verify this email address for your Learn Crypto account. It works once and expires in 15 minutes:\n\n%s\n\nIf you didn't ask for this, ignore this email.", 'learncardano' ),
 				lc_auth_email_link_url( lc_auth_email_issue( 'email_verify', $addr, $uid, '' ) )
 			);
 		},

@@ -12,7 +12,7 @@ get_header();
 $lc_term_sub = term_description();
 if ( ! $lc_term_sub ) {
 	/* translators: %s: podcast category name */
-	$lc_term_sub = sprintf( __( 'Every Learn Cardano Podcast episode filed under %s.', 'learncardano' ), single_term_title( '', false ) );
+	$lc_term_sub = sprintf( __( 'Every Learn Crypto Podcast episode filed under %s.', 'learncardano' ), single_term_title( '', false ) );
 }
 ?>
     <main class="<?php echo lc_layout_class( 'content-full' ); ?>">

@@ -13,7 +13,7 @@ get_header();
     <main class="content pt-5 w-100">
 		
 <!--
-  Learn Cardano — Parallax Tag Cloud Hero (v6)
+  Learn Crypto: Parallax Tag Cloud Hero (v6)
   ---------------------------------------------
   v6 RESPONSIVE FIX:
   - Mobile (<600px): all pills hidden, just headline + sub on clean bg
@@ -51,8 +51,8 @@ get_header();
 <div class="lc-hero">
   <div class="lc-scene" id="lcScene">
     <div class="lc-center">
-      <h1 class="lc-headline" id="lcHeadline"><span class="lc-headline-text">Cardano Podcast for You</span></h1>
-      <p class="lc-sub">Keep up to date with core Cardano news, projects, development and ideas coming from the Cardano Community. For beginners to experts wanting to know more about Cardano &amp; blockchain technology.</p>
+      <h1 class="lc-headline" id="lcHeadline"><span class="lc-headline-text">Crypto Podcast for You</span></h1>
+      <p class="lc-sub">Keep up to date with core crypto news, projects, development and ideas coming from the global crypto community. For beginners to experts wanting to know more about crypto &amp; blockchain technology.</p>
     </div>
   </div>
 </div>
@@ -265,12 +265,14 @@ get_header();
     { text: 'Plutus',         x: 78,   y: 48, depth: 0.5, href: '#' },
     { text: 'Hydra',          x: 10.8, y: 70, depth: 1.7, href: '#' },
     { text: 'Stake Pools',    x: 13.7, y: 15, depth: 1.2, href: '#' },
-    { text: 'eUTxO',          x: 87.7, y: 48, depth: 1.8, href: '#' },
+    { text: 'Bitcoin',         x: 87.7, y: 48, depth: 1.8, href: '/?s=bitcoin' },
     { text: 'Governance',     x: 82,   y: 77, depth: 1.5, href: '#' },
-    { text: 'CIPs',           x: 54,   y: 14, depth: 0.4, href: '#' },
-    { text: 'Partner Chains', x: 89,   y: 38, depth: 1.9, href: '#' },
-    { text: 'Ouroboros',      x: 6,    y: 50, depth: 0.6, href: '#' },
-    { text: 'Aiken',          x: 27,   y: 84, depth: 1.4, href: '#' },
+    { text: 'Ethereum',        x: 54,   y: 14, depth: 0.4, href: '/?s=ethereum' },
+    { text: 'DeFi',            x: 89,   y: 38, depth: 1.9, href: '/?s=defi' },
+    { text: 'Stablecoins',     x: 6,    y: 50, depth: 0.6, href: '/?s=stablecoins' },
+    { text: 'Regulation',      x: 27,   y: 84, depth: 1.4, href: '/?s=regulation' },
+    { text: 'Wallets',         x: 4,    y: 22, depth: 1.1, href: '/?s=wallets' },
+    { text: 'Security',        x: 72,   y: 68, depth: 0.9, href: '/?s=security' },
     { text: 'Podcast',    x: 35, y: 12, depth: 1.3, href: '/podcast' },
     { text: 'Courses',    x: 73, y: 14, depth: 0.9, href: '/courses' },
     { text: 'Interviews', x: 19, y: 84, depth: 1.0, href: '/interviews' },

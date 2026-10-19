@@ -127,7 +127,7 @@ function lc_episode_video_schema( $post_id, $youtube_id, $description ) {
 		'url'          => 'https://www.youtube.com/watch?v=' . $youtube_id,
 		'publisher'    => array(
 			'@type' => 'Organization',
-			'name'  => 'Learn Cardano',
+			'name'  => get_bloginfo( 'name' ),
 			'url'   => home_url( '/' ),
 		),
 	);

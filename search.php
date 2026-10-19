@@ -19,7 +19,7 @@ $lc_has_q = ( '' !== trim( $lc_query ) );
 $lc_total = $lc_has_q ? (int) $wp_query->found_posts : 0;
 
 if ( ! $lc_has_q ) {
-	$lc_title    = __( 'Search Learn Cardano', 'learncardano' );
+	$lc_title    = __( 'Search Learn Crypto', 'learncardano' );
 	$lc_subtitle = esc_html__( 'Search articles, podcast episodes, courses and the developer knowledge base.', 'learncardano' );
 } else {
 	/* translators: %s: the search terms */
@@ -43,7 +43,7 @@ if ( ! $lc_has_q ) {
 		array(
 			'title'       => $lc_title,
 			'subtitle'    => $lc_subtitle,
-			'placeholder' => __( 'Search Learn Cardano', 'learncardano' ),
+			'placeholder' => __( 'Search Learn Crypto', 'learncardano' ),
 			// Keep the active filter when the search is refined.
 			'post_type'   => lc_search_current_group(),
 			'pills'       => $lc_has_q ? lc_search_pills() : array(),

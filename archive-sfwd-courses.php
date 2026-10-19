@@ -23,7 +23,7 @@ get_header();
 		'template-parts/archive-hero',
 		null,
 		array(
-			'title'       => __( 'Learn Cardano Courses', 'learncardano' ),
+			'title'       => __( 'Learn Crypto Courses', 'learncardano' ),
 			'subtitle'    => __( 'Free, step-by-step courses on Cardano wallets, DEXs and DeFi. No sign-up needed: your progress is saved in this browser.', 'learncardano' ),
 			'show_search' => false,
 		)

@@ -14,10 +14,10 @@
             <div class="container col-10">
                 <div class="row">
                     <div class="col align-self-center mb-3">
-                        <h2>About Learn Cardano Podcast</h2>
+                        <h2>About Learn Crypto</h2>
                         <h3>Hi, I'm Peter, I've been podcasting since 2013</h3>
                         <p>After years of trading and learning about crypto, I decided that Cardano was my chain of choice
-                            and put all my efforts into understanding everything about Cardano. Learn Cardano is where I share
+                            and put all my efforts into understanding everything about Cardano and the broader crypto and blockchain space. Learn Crypto is where I share
                             all that I learn with you.</p>
                         <?php // Peter's personal links and contact live on his Chatsoon profile. ?>
                         <p><a class="btn btn-primary" href="https://chatsoon.app/id/peter-bui-5ec50167" target="_blank" rel="noopener"><?php esc_html_e( 'Follow & contact Peter', 'learncardano' ); ?><span class="visually-hidden"> <?php esc_html_e( '(opens Chatsoon in a new tab)', 'learncardano' ); ?></span></a></p>
@@ -62,9 +62,9 @@
             <div class="container">
                 <div class="row py-5">
                     <div class="col-md-3">
-                        <h3>Learn Cardano Podcast</h3>
-                        <p>Providing awesome Cardano & blockchain related content for beginners to experts alike.</p>
-                        <p>Building for Cardano</p>
+                        <h3>Learn Crypto</h3>
+                        <p>Providing awesome crypto &amp; blockchain related content for beginners to experts alike.</p>
+                        <p>Building for Cardano &amp; Crypto</p>
                         <?php if ( !function_exists('dynamic_sidebar') || !dynamic_sidebar("Footer Col 1") ) : ?>
                         <?php endif;?>
                     </div>
@@ -110,8 +110,6 @@
 			<div class="row">
         		        <div class="copyright text-center">
                 			<small>Copyright &copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="text-light"><?php bloginfo( 'name' ); ?></a></small> -
-                        		<span class="small">Powered by <a href="https://cardanopress.io" class="text-light">CardanoPress</a></span>
-							-
 							<span class="small">Built by <a href="https://meshwithus.com.au" target="_blank" rel="noopener" class="text-light" title="WordPress design and development, Gold Coast">Mesh With Us</a></span>
 							<?php if ( ! function_exists( 'lc_auth_is_private_view' ) || ! lc_auth_is_private_view() ) : ?>
 							- <span class="small"><a href="<?php echo esc_url( get_privacy_policy_url() ); ?>" class="text-light" data-lc-consent-open><?php esc_html_e( 'Cookie settings', 'learncardano' ); ?></a></span>
@@ -136,11 +134,11 @@
 	<div class="lc-spreaker fixed-bottom">
 		<button type="button" class="lc-spreaker__play" id="lc-spreaker-play" data-src="<?php echo esc_url( $lc_spreaker_src ); ?>">
 			<span class="lc-spreaker__icon" aria-hidden="true"><?php echo lc_icon( 'play' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG. ?></span>
-			<span class="lc-spreaker__label"><?php esc_html_e( 'Play the Learn Cardano Podcast', 'learncardano' ); ?></span>
+			<span class="lc-spreaker__label"><?php esc_html_e( 'Play the latest podcast episode', 'learncardano' ); ?></span>
 			<span class="lc-spreaker__meta"><?php esc_html_e( 'Spreaker player', 'learncardano' ); ?></span>
 		</button>
 	</div>
-	<noscript><iframe src="<?php echo esc_url( $lc_spreaker_src ); ?>" width="100%" height="50px" title="Learn Cardano Podcast" frameborder="0" loading="lazy" class="fixed-bottom"></iframe></noscript>
+	<noscript><iframe src="<?php echo esc_url( $lc_spreaker_src ); ?>" width="100%" height="50px" title="Learn Crypto Podcast" frameborder="0" loading="lazy" class="fixed-bottom"></iframe></noscript>
 	<script>
 	(function () {
 		var btn = document.getElementById('lc-spreaker-play');
@@ -150,7 +148,7 @@
 			frame.src = btn.getAttribute('data-src');
 			frame.width = '100%';
 			frame.setAttribute('height', '50px');
-			frame.title = 'Learn Cardano Podcast';
+			frame.title = 'Learn Crypto Podcast';
 			frame.setAttribute('frameborder', '0');
 			frame.className = 'fixed-bottom';
 			btn.parentNode.parentNode.replaceChild(frame, btn.parentNode);

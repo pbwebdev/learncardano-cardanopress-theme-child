@@ -39,7 +39,7 @@ $lc_spotify_id = function_exists('lc_spotify_id') ? lc_spotify_id(get_field('spo
                 'datePublished' => get_the_date('Y-m-d'),
                 'partOfSeries'  => array(
                     '@type' => 'PodcastSeries',
-                    'name'  => 'Learn Cardano Podcast',
+                    'name'  => 'Learn Crypto Podcast',
                     'url'   => home_url('/podcasts/'),
                 ),
             );
@@ -163,7 +163,7 @@ $lc_spotify_id = function_exists('lc_spotify_id') ? lc_spotify_id(get_field('spo
                                 <div class="hero-host">
                                     <div class="hosted-wrapper">
                                         <!-- <img src="--><?php //echo get_theme_root_uri(); 
-                                                            ?><!--/learncardano-cardanopress-theme-child/images/peter-bui-55x55.jpg" alt="Peter Bui - Learn Cardano Podcast" class="hosted-picture float-start">-->
+                                                            ?><!--/learncardano-cardanopress-theme-child/images/peter-bui-55x55.jpg" alt="Peter Bui - Learn Crypto Podcast" class="hosted-picture float-start">-->
                                         <p class="hosted-text">Episode by Peter Bui on <span class="episode-date"> <?php the_time('F jS, Y') ?></span></p>
                                     </div>
                                 </div>
@@ -173,7 +173,7 @@ $lc_spotify_id = function_exists('lc_spotify_id') ? lc_spotify_id(get_field('spo
                                     // Spotify facade: the embed is ~800KB of third-party script, so a
                                     // 152px card of the same size stands in until it's clicked. Without
                                     // JS the card links to the episode on Spotify.
-                                    $lc_cover = get_stylesheet_directory_uri() . '/images/learn-cardano-podcast-cover-360x360';
+                                    $lc_cover = get_stylesheet_directory_uri() . '/assets/brand/podcast-cover-360';
                                     ?>
                                     <a class="lc-spotify" href="<?php echo esc_url('https://open.spotify.com/episode/' . $lc_spotify_id); ?>" data-src="<?php echo esc_url('https://open.spotify.com/embed/episode/' . $lc_spotify_id . '?utm_source=generator&theme=0'); ?>" target="_blank" rel="noopener">
                                         <picture>
@@ -182,7 +182,7 @@ $lc_spotify_id = function_exists('lc_spotify_id') ? lc_spotify_id(get_field('spo
                                         </picture>
                                         <span class="lc-spotify__text">
                                             <span class="lc-spotify__title"><?php the_title(); ?></span>
-                                            <span class="lc-spotify__show"><?php esc_html_e('Learn Cardano Podcast', 'learncardano'); ?></span>
+                                            <span class="lc-spotify__show"><?php esc_html_e('Learn Crypto Podcast', 'learncardano'); ?></span>
                                             <span class="lc-spotify__cta">
                                                 <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/images/platforms/spotify.svg'); ?>" width="20" height="20" alt="" loading="lazy" decoding="async">
                                                 <?php esc_html_e('Listen on Spotify', 'learncardano'); ?>
