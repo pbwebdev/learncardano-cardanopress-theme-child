@@ -84,7 +84,7 @@
                             array( 'https://podcasts.apple.com/podcast/learn-cardano-podcast/id1560654454', 'apple-podcasts', 'Listen on', 'Apple Podcasts' ),
                             array( 'https://open.spotify.com/show/11FpPiHPzivZoSOTgVcfgT', 'spotify', 'Listen on', 'Spotify' ),
                             array( 'https://www.iheart.com/podcast/53-learn-cardano-podcast-80684119/', 'iheart', 'Listen on', 'iHeart' ),
-                            array( 'https://www.spreaker.com/show/learn-cardano-podcast', 'spreaker', 'Listen on', 'Spreaker' ),
+                            array( 'https://www.spreaker.com/podcast/learn-crypto-podcast--4856207', 'spreaker', 'Listen on', 'Spreaker' ),
                         );
                         ?>
                         <div class="lc-platforms">
