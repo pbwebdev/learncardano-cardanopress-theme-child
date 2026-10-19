@@ -23,7 +23,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const BRAND_RE = /Learn\s*Cardano|Cardano Podcast|LearnCardano|CardanoPress/gi;
-const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36';
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Safari/537.36';
 const CONCURRENCY = 4;
 const TIMEOUT_MS = 15000;
 const SAMPLE_PER_SITEMAP = 15;

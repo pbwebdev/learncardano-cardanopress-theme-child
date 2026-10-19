@@ -350,6 +350,12 @@
 			"post_id": 28436,
 			"field": "post_content",
 			"note": "acf-post-type definition (serialized PHP array stored as post_content): replace the whole string; keep serialized string lengths correct (s:N:) in new/new_file"
+		},
+		{
+			"id": "page-7-thumbnail",
+			"type": "post_meta",
+			"post_id": 7,
+			"key": "_thumbnail_id"
 		}
 	],
 	"leave": [

@@ -1,0 +1,614 @@
+{
+	"tool": "learncardano-cardanopress-theme-child/tools/rebrand/rebrand-db.php",
+	"version": "1.0.0",
+	"note": "Copy deck: Learn Cardano to Learn Crypto",
+	"items": [
+		{
+			"id": "opt-blogname",
+			"type": "option",
+			"option": "blogname",
+			"old": "Learn Cardano",
+			"old_sha256": "5cb8ea30899e8e287056d3a38ce41abf05f9cb7a14ac477e006d72db35b6a4b6",
+			"new": "Learn Crypto"
+		},
+		{
+			"id": "opt-blogdescription",
+			"type": "option",
+			"option": "blogdescription",
+			"old": "Learn everything about Cardano!",
+			"old_sha256": "d11012cd0301a6a036079faab9c3a8bc9072f5483315d079ce4c2747bdd45392",
+			"new": "Learn everything about crypto!"
+		},
+		{
+			"id": "rm-kg-name",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"knowledgegraph_name"
+			],
+			"old": "Learn Cardano",
+			"old_sha256": "5cb8ea30899e8e287056d3a38ce41abf05f9cb7a14ac477e006d72db35b6a4b6",
+			"new": "Learn Crypto"
+		},
+		{
+			"id": "rm-website-name",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"website_name"
+			],
+			"old": "Learn Cardano",
+			"old_sha256": "5cb8ea30899e8e287056d3a38ce41abf05f9cb7a14ac477e006d72db35b6a4b6",
+			"new": "Learn Crypto"
+		},
+		{
+			"id": "rm-website-alternate-name",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"website_alternate_name"
+			],
+			"create": true,
+			"verify": true,
+			"note": "Rank Math Titles & Meta > Local SEO > Website Alternate Name; absent until set once. Intended value: Learn Cardano (old name kept as alternateName).",
+			"old": null,
+			"absent": true,
+			"new": "Learn Cardano"
+		},
+		{
+			"id": "rm-kg-logo",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"knowledgegraph_logo"
+			],
+			"note": "URL; new may be {\"media\": \"logo-square-600.png\", \"as\": \"url\"}",
+			"old": "{{home}}/wp-content/uploads/2024/02/lear-cardano-podcast-237x237-1.jpg",
+			"old_sha256": "2366c2192105eda070dc9fbe8144c0624cf27511427ce91986d466fc7f98bd6b",
+			"new": {
+				"media": "logo-square-600.png",
+				"as": "url"
+			}
+		},
+		{
+			"id": "rm-kg-logo-id",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"knowledgegraph_logo_id"
+			],
+			"note": "attachment ID; new may be {\"media\": \"logo-square-600.png\", \"as\": \"id\"}",
+			"old": 27184,
+			"old_sha256": "4c9cd158ecf158d6a7390b39f59792ea4ef6deb55f90b6ba04c547f991f940e3",
+			"new": {
+				"media": "logo-square-600.png",
+				"as": "id"
+			}
+		},
+		{
+			"id": "rm-og-image",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"open_graph_image"
+			],
+			"note": "URL; new may be {\"media\": \"og-default-1200x630.jpg\", \"as\": \"url\"}",
+			"old": "{{home}}/wp-content/uploads/2022/06/learn-cardano-podcast-social-1200x675-1.jpg",
+			"old_sha256": "eb1896f0683531864326223b3d570160bf3f2efac111f8e26ee1a3fad29002e9",
+			"new": {
+				"media": "learn-crypto-og-default.jpg",
+				"as": "url"
+			}
+		},
+		{
+			"id": "rm-og-image-id",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"open_graph_image_id"
+			],
+			"note": "attachment ID; new may be {\"media\": \"og-default-1200x630.jpg\", \"as\": \"id\"}",
+			"old": 24888,
+			"old_sha256": "002d13fb78942ee4d1bccc517a04d1055e0fdbfabb3d7da843e5a0fa5230ab71",
+			"new": {
+				"media": "learn-crypto-og-default.jpg",
+				"as": "id"
+			}
+		},
+		{
+			"id": "rm-pt-podcasts-archive-title",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"pt_podcasts_archive_title"
+			],
+			"verify": true,
+			"old": "Cardano Podcast Episodes %page% %sep% %sitename%",
+			"old_sha256": "0f021c9caa4e1938f8dcca80818261f4fd8764e68665ec63252922ff2b8ce2ca",
+			"new": "Learn Crypto Podcast Episodes %page% %sep% %sitename%"
+		},
+		{
+			"id": "rm-pt-podcasts-archive-description",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"pt_podcasts_archive_description"
+			],
+			"verify": true,
+			"old": "Every episode of the Learn Cardano Podcast: Cardano news, interviews and explainers on staking, governance and the ecosystem, for beginners to experts.",
+			"old_sha256": "bbbd9c2c709c34c1da6e189c1404f1e7d7e194b27abfab9ea8ecf6c9a9ba3bd6",
+			"new": "Every episode of the Learn Crypto Podcast: crypto and Cardano news, interviews and explainers on staking, governance, DeFi and the wider ecosystem, for beginners to experts."
+		},
+		{
+			"id": "rm-pt-concept-archive-description",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"pt_concept_archive_description"
+			],
+			"verify": true,
+			"old": "Core Cardano ideas explained for developers, with Ethereum comparisons and common misconceptions, from the Learn Cardano knowledge base.",
+			"old_sha256": "099feb129207ccc99049e7b7907a1ce4de61f52450cfd302fa768450658ab66a",
+			"new": "Core Cardano ideas explained for developers, with Ethereum comparisons and common misconceptions, from the Learn Crypto knowledge base."
+		},
+		{
+			"id": "rm-pt-comparison-archive-description",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"pt_comparison_archive_description"
+			],
+			"verify": true,
+			"old": "Side-by-side comparisons of Cardano developer tools and approaches, each with a clear recommendation, from the Learn Cardano knowledge base.",
+			"old_sha256": "34adca485c65e028a23995116234536e0ff7161b62fc2903f6d37a12a18291d2",
+			"new": "Side-by-side comparisons of Cardano developer tools and approaches, each with a clear recommendation, from the Learn Crypto knowledge base."
+		},
+		{
+			"id": "rm-pt-pitfall-archive-description",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"pt_pitfall_archive_description"
+			],
+			"verify": true,
+			"old": "Errors Cardano builders commonly hit, what causes them and how to fix them, from the Learn Cardano developer knowledge base.",
+			"old_sha256": "8bbdf6dc5e0d2f9a1baf1df9807b368c6d64fdf0cfe556c0f1af8544b786d582",
+			"new": "Errors Cardano builders commonly hit, what causes them and how to fix them, from the Learn Crypto developer knowledge base."
+		},
+		{
+			"id": "rm-pt-recipe-archive-description",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"pt_recipe_archive_description"
+			],
+			"verify": true,
+			"old": "Step-by-step Cardano development recipes with code, prerequisites and AI-ready prompts, from the Learn Cardano developer knowledge base.",
+			"old_sha256": "9913c5d48bf43694cd05e06332538e9e8f5e9de2fff2092e88a899dc08411a54",
+			"new": "Step-by-step Cardano development recipes with code, prerequisites and AI-ready prompts, from the Learn Crypto developer knowledge base."
+		},
+		{
+			"id": "page-7-title",
+			"type": "post_field",
+			"post_id": 7,
+			"field": "post_title",
+			"note": "Home page",
+			"post_type": "page",
+			"old": "Learn Cardano: Podcast, Tutorials, Courses About Cardano",
+			"old_sha256": "3af0f5f1b78fad9662ce4cbd0c6bd2d1b6ba18fb459956cc3b855f9486b75f33",
+			"new": "Learn Crypto: Podcast, Tutorials and Courses About Crypto and Cardano"
+		},
+		{
+			"id": "page-7-content",
+			"type": "post_field",
+			"post_id": 7,
+			"field": "post_content",
+			"post_type": "page",
+			"old": "<div class=\"serp-preview expanded-preview mobile-preview\">\r\n<div class=\"serp-preview-wrapper\">\r\n<div class=\"serp-preview-body\" tabindex=\"0\" role=\"button\">\r\n<div class=\"group\">\r\n<div class=\"serp-description\">Learn Cardano provides educational content via our YouTube channel, audio podcast and array of online courses and online community.</div>\r\n</div>\r\n</div>\r\n</div>\r\n</div>",
+			"old_sha256": "5135f27505a91a36fe7d74477c1bc33f254aa11807b1c07d442e04510556ec45",
+			"new": "<div class=\"serp-preview expanded-preview mobile-preview\">\r\n<div class=\"serp-preview-wrapper\">\r\n<div class=\"serp-preview-body\" tabindex=\"0\" role=\"button\">\r\n<div class=\"group\">\r\n<div class=\"serp-description\">Learn Crypto provides crypto and Cardano education through our YouTube channel, podcast, online courses and community.</div>\r\n</div>\r\n</div>\r\n</div>\r\n</div>"
+		},
+		{
+			"id": "page-7-rm-title",
+			"type": "post_meta",
+			"post_id": 7,
+			"key": "rank_math_title",
+			"create": true,
+			"old": "Learn Cardano: Podcast, Tutorials, Courses About Cardano",
+			"old_sha256": "3af0f5f1b78fad9662ce4cbd0c6bd2d1b6ba18fb459956cc3b855f9486b75f33",
+			"new": "Learn Crypto: Podcast, Tutorials and Courses About Crypto and Cardano"
+		},
+		{
+			"id": "page-7-rm-description",
+			"type": "post_meta",
+			"post_id": 7,
+			"key": "rank_math_description",
+			"create": true,
+			"old": "Learn Cardano provides educational content via our YouTube channel, audio podcast and array of online courses and online community.",
+			"old_sha256": "84a204bc310801e85e35535e6fe1ec5b0d86714ce671527d81da3560f0907f95",
+			"new": "Learn Crypto provides crypto and Cardano education through our YouTube channel, podcast, online courses and community."
+		},
+		{
+			"id": "page-104-content",
+			"type": "post_field",
+			"post_id": 104,
+			"field": "post_content",
+			"post_type": "page",
+			"old": "<!-- wp:paragraph -->\r\n<p>Learn Cardano aims to educate new users that are interested in learning more about the Cardano ecosystem by providing resources, tutorials, learning material, workshops and much more to bridge the knowledge gap between the newcomers to the ecosystem, and the experts building the Cardano blockchain.</p>\r\n<!-- /wp:paragraph -->",
+			"old_sha256": "d17dcbab04fdefcbc4f3fc641dd98c553160ea9be5c41feeaf3692710d10aae6",
+			"new": "<!-- wp:paragraph -->\r\n<p>Learn Crypto (formerly Learn Cardano) aims to educate new users that are interested in learning more about crypto and the Cardano ecosystem by providing resources, tutorials, learning material, workshops and much more to bridge the knowledge gap between the newcomers to the ecosystem, and the experts building the Cardano blockchain.</p>\r\n<!-- /wp:paragraph -->"
+		},
+		{
+			"id": "page-24728-edits",
+			"type": "post_content_edits",
+			"post_id": 24728,
+			"post_type": "page",
+			"content_old_sha256": "f242959d3d251735162251fe1003109d4da21f3adf914a99a939524b78600840",
+			"edits": [
+				{
+					"find": "how Learn Cardano, Trading as PP Ventures",
+					"replace": "how Learn Crypto (formerly Learn Cardano), Trading as PP Ventures",
+					"count": 1
+				},
+				{
+					"find": "through the <strong>Learn Cardano</strong> brand and its associated properties",
+					"replace": "through the <strong>Learn Crypto</strong> brand and its associated properties",
+					"count": 1
+				},
+				{
+					"find": "the Learn Cardano main website, including the Learn Cardano Podcast, blog",
+					"replace": "the Learn Crypto main website, including the Learn Crypto Podcast, blog",
+					"count": 1
+				},
+				{
+					"find": "<strong>Learn Cardano newsletter</strong>",
+					"replace": "<strong>Learn Crypto newsletter</strong>",
+					"count": 1
+				},
+				{
+					"find": "operated under the Learn Cardano brand that link to this Policy",
+					"replace": "operated under the Learn Crypto brand that link to this Policy",
+					"count": 1
+				},
+				{
+					"find": "<tr><td>Brand</td><td>Learn Cardano</td></tr>",
+					"replace": "<tr><td>Brand</td><td>Learn Crypto (formerly Learn Cardano)</td></tr>",
+					"count": 1
+				}
+			]
+		},
+		{
+			"id": "page-29578-edits",
+			"type": "post_content_edits",
+			"post_id": 29578,
+			"post_type": "page",
+			"content_old_sha256": "3ac6bce0c2f7be7d2949bc6577c9e63ac85ff9dc43ec411f9ef91ed5a49b0599",
+			"edits": [
+				{
+					"find": "in respect of the <strong>Learn Cardano</strong> brand and its associated properties",
+					"replace": "in respect of the <strong>Learn Crypto</strong> (formerly Learn Cardano) brand and its associated properties",
+					"count": 1
+				},
+				{
+					"find": "including the Learn Cardano Podcast, blog, newsletter, courses",
+					"replace": "including the Learn Crypto Podcast, blog, newsletter, courses",
+					"count": 1
+				},
+				{
+					"find": "<strong>Learn Cardano newsletter</strong>",
+					"replace": "<strong>Learn Crypto newsletter</strong>",
+					"count": 1
+				},
+				{
+					"find": "operated under the Learn Cardano brand that link to these Terms",
+					"replace": "operated under the Learn Crypto brand that link to these Terms",
+					"count": 1
+				},
+				{
+					"find": "the reputation of Learn Cardano, the ADAOZ stake pool",
+					"replace": "the reputation of Learn Crypto, the ADAOZ stake pool",
+					"count": 1
+				},
+				{
+					"find": "6.1 Role of Learn Cardano</h3>",
+					"replace": "6.1 Role of Learn Crypto</h3>",
+					"count": 1
+				},
+				{
+					"find": "conducted under Learn Cardano's editorial standards",
+					"replace": "conducted under Learn Crypto's editorial standards",
+					"count": 1
+				},
+				{
+					"find": "including the Learn Cardano name and logo, the ADAOZ name and logo, the Learn Cardano Podcast, course",
+					"replace": "including the Learn Crypto name and logo (and the former Learn Cardano name), the ADAOZ name and logo, the Learn Crypto Podcast, course",
+					"count": 1
+				},
+				{
+					"find": "<li>Use the Learn Cardano or ADAOZ name, logo",
+					"replace": "<li>Use the Learn Crypto, Learn Cardano or ADAOZ name, logo",
+					"count": 1
+				}
+			]
+		},
+		{
+			"id": "page-27613-content",
+			"type": "post_field",
+			"post_id": 27613,
+			"field": "post_content",
+			"post_type": "page",
+			"old": "<!-- wp:html -->\n<div id=\"myShop\">\n    <a href=\"https://learn-cardano.myspreadshop.com.au\">Learn Cardano Online Store</a>\n</div>\n\n<script>\n    var spread_shop_config = {\n        shopName: 'learn-cardano',\n        locale: 'us_AU',\n        prefix: 'https://learn-cardano.myspreadshop.com.au',\n        baseId: 'myShop'\n    };\n</script>\n\n<script type=\"text/javascript\"\n        src=\"https://learn-cardano.myspreadshop.com.au/shopfiles/shopclient/shopclient.nocache.js\">\n</script>\n<!-- /wp:html -->",
+			"old_sha256": "9f279d34f61bad5b41a6cf9df5fd1fbcc151ff9b97db27523c64da0d1f523113",
+			"new": "<!-- wp:html -->\n<div id=\"myShop\">\n    <a href=\"https://learn-cardano.myspreadshop.com.au\">Learn Crypto Online Store</a>\n</div>\n\n<script>\n    var spread_shop_config = {\n        shopName: 'learn-cardano',\n        locale: 'us_AU',\n        prefix: 'https://learn-cardano.myspreadshop.com.au',\n        baseId: 'myShop'\n    };\n</script>\n\n<script type=\"text/javascript\"\n        src=\"https://learn-cardano.myspreadshop.com.au/shopfiles/shopclient/shopclient.nocache.js\">\n</script>\n<!-- /wp:html -->"
+		},
+		{
+			"id": "page-29404-content",
+			"type": "post_field",
+			"post_id": 29404,
+			"field": "post_content",
+			"post_type": "page",
+			"old": "<!-- wp:heading {\"level\":3} -->\n<h3 class=\"wp-block-heading\">Keep Up To Date!</h3>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Sign up for our newsletter. Latest Cardano news, airdrops, courses and everything you need to know about Cardano and Midnight.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[lc_form id=\"newsletter\"]\n<!-- /wp:shortcode -->",
+			"old_sha256": "a2b04396ee01d9036351a58cfa0965ff9a6ff0b2202d54db24fae1b03885e97f",
+			"new": "<!-- wp:heading {\"level\":3} -->\n<h3 class=\"wp-block-heading\">Keep Up To Date!</h3>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Sign up for our newsletter. Latest crypto news, airdrops, courses and everything you need to know about Cardano, Midnight and the wider crypto space.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[lc_form id=\"newsletter\"]\n<!-- /wp:shortcode -->"
+		},
+		{
+			"id": "page-26223-content",
+			"type": "post_field",
+			"post_id": 26223,
+			"field": "post_content",
+			"post_type": "page",
+			"old": "<!-- wp:heading {\"level\":1} -->\n<h1 class=\"wp-block-heading\">Interview Booking</h1>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Thank you for your interest in scheduling an interview. <strong>Learn Cardano</strong> features credible projects building on Cardano and Midnight with a proven track record of delivering genuine value to the ecosystem. We maintain editorial independence and do not accept promotional content disguised as interviews.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Our Metrics</h2>\n<!-- /wp:heading -->\n\n<!-- wp:image {\"id\":29554,\"scale\":\"cover\",\"sizeSlug\":\"full\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-full\"><img src=\"{{home}}/wp-content/uploads/2026/04/learn_cardano_5yr_channel_stats-1.svg\" alt=\"\" class=\"wp-image-29554\" style=\"object-fit:cover\"/></figure>\n<!-- /wp:image -->\n\n<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">What You Get</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>When you book an interview with Learn Cardano, here's what's included:</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p><strong>Video Content</strong></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><!-- wp:list-item -->\n<li>Full interview published on YouTube (primary platform)</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Short-form clips (minimum 3) extracted and shared across YouTube Shorts, Instagram Reels, TikTok, and X</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Edited for pacing and engagement; we handle all post-production</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p><strong>Written Content</strong></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><!-- wp:list-item -->\n<li>Blog post published on LearnCardano covering key discussion points, with links to your project and socials</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>SEO-optimised for Cardano ecosystem discovery</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p><strong>Social &amp; Promotion</strong></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><!-- wp:list-item -->\n<li>Dedicated X posts for the full interview announcement</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Individual X posts for each short-form clip (minimum 3 posts)</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Cross-posted to our Instagram and TikTok audiences</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Mentioned in our weekly newsletter ([link to newsletter])</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p><strong>Podcast Distribution</strong></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><!-- wp:list-item -->\n<li>Full audio episode distributed to Spotify and major podcast platforms (following week after YouTube release)</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Interview remains live across all platforms indefinitely</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p><strong>Timeline</strong></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><!-- wp:list-item -->\n<li>Shorts and clips: Distributed over 2 weeks post-release across platforms</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>YouTube release: [X days after recording]</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Podcast/Spotify release: 7 days after YouTube</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Blog post: Published alongside YouTube release</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">What We Do Not Cover or Mention</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><!-- wp:list-item -->\n<li>Token launches, token sales, or pre-sale announcements of any kind</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Financial advice or price speculation (buying, selling, or investment recommendations)</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Projects in early development stages without mainnet deployment or demonstrable traction</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Sponsored content or paid promotional placements</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Projects that lack transparency about team, funding, or technical implementation</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Pump-and-dump schemes, Ponzi structures, or other financially exploitative models</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Unvetted or anonymous team members without verifiable track records</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Rebrand attempts of failed projects under new names</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Why These Standards?</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Learn Cardano exists to surface <em>real innovation</em> in the Cardano and Midnight ecosystems. Our audience trusts us to filter signal from noise. Maintaining these standards protects that trust and ensures every interview represents genuine value, not marketing spend.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">How We Vet Projects</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>All submissions go through our editorial review process. We assess projects based on: technical merit, team credibility, ecosystem contribution, and alignment with Cardano/Midnight values. We prioritise projects that are shipping, not talking. If your project doesn't fit, we'll let you know within 1–2 weeks with transparent feedback.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Recording &amp; Logistics</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><!-- wp:list-item -->\n<li>Interviews are 30–60 minutes</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Conducted via <a href=\"https://riverside.com/\">Riverside </a>(we handle setup and recording)</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>You'll receive a copy of the raw video for your own use</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>We handle all editing, thumbnails, and publishing</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Standard Interviews (Free)</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Regular interviews are added to our release queue at no cost. Our vetting process typically takes 1–2 weeks. You can view our upcoming release schedule on our <a href=\"link-here\">Scheduled Release Google Calendar</a> (subject to change). We publish roughly 3 free interviews a month.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p><strong>Support us while you wait:</strong> If you'd like to support the channel, consider buying us a coffee or becoming a member on <a href=\"https://buymeacoffee.com/learncardano\">Buy Me a Coffee</a>.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Fast-Tracked Interviews ($999 USD)</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>If you require an expedited interview or a specific release date, we offer priority scheduling for a one-off fee of <strong>$999 USD</strong>. Payable via credit card, $ADA or stablecoins.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>Fast-tracked interviews:</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><!-- wp:list-item -->\n<li>Skip the queue and are scheduled within 14 days</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Receive the same editorial standards and vetting as regular interviews</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Are clearly labelled as \"sponsored\" in video description and podcast feed metadata</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p><strong>Pay via:</strong></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><!-- wp:list-item -->\n<li>Direct payment link (add Stripe/PayPal)</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li><a href=\"https://buymeacoffee.com/learncardano\">Buy Me a Coffee – Project Sponsor tier</a> ($999/month, includes one priority)</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Multi-Platform Publishing</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Interviews are exclusive to Learn Cardano for 7 days after the YouTube release. After that, you're welcome to republish on your own channels or platforms.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Ready to Book?</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Book in a quick 15min pre-chat. Let us get to know your project and what you want to achieve from an interview.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:html -->\n<!-- Calendly inline widget begin -->\n<div class=\"calendly-inline-widget\" data-url=\"https://calendly.com/learncardano/crypto-chat?hide_event_type_details=1&hide_gdpr_banner=1&primary_color=dc10ff\" style=\"min-width:320px;height:700px;\"></div>\n<script type=\"text/javascript\" src=\"https://assets.calendly.com/assets/external/widget.js\" async></script>\n<!-- Calendly inline widget end -->\n<!-- /wp:html -->\n\n<!-- wp:paragraph -->\n<p>Alternatively, just email us at mail [at] learncardano.io with:</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><!-- wp:list-item -->\n<li>Brief overview of your project</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Why an interview would benefit the Cardano/Midnight community</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Proposed topics or angles</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>Preferred interview date (if fast-tracked)</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>We'll respond within 3 business days.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Cancellations &amp; Rescheduling</h2>\n<!-- /wp:heading -->\n\n<!-- wp:quote -->\n<blockquote class=\"wp-block-quote\"><!-- wp:paragraph -->\n<p>We understand things happen. Free interviews can be rescheduled with 6 hours' notice.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>Fast-tracked interviews ($999) must be rescheduled or cancelled with 48 hours notice, or the fee is forfeited.</p>\n<!-- /wp:paragraph --></blockquote>\n<!-- /wp:quote -->\n\n<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Questions?</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Contact: mail [at] learncardano.io </p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p></p>\n<!-- /wp:paragraph -->",
+			"old_sha256": "9374d6962833c6fcd1c2c48c101601dca0baa82c46d87379a77cf916ec286315",
+			"new": null,
+			"new_file": "page-26223-content.html"
+		},
+		{
+			"id": "page-26725-rm-title",
+			"type": "post_meta",
+			"post_id": 26725,
+			"key": "rank_math_title",
+			"create": true,
+			"old": "Cardano Resources & Tutorials %sep% %sitename%",
+			"old_sha256": "8934adc508633acad5f54a96c1bf2769f9fd0a884ef6f22328b5ae946744c168",
+			"new": "Crypto Resources & Tutorials %sep% %sitename%"
+		},
+		{
+			"id": "page-26725-rm-description",
+			"type": "post_meta",
+			"post_id": 26725,
+			"key": "rank_math_description",
+			"create": true,
+			"old": "Cardano tutorials, explainers, governance updates and news from Learn Cardano: plain-English guides for ADA holders, stakers and builders.",
+			"old_sha256": "37279c294ac5521161e6cb726fb67ebb87d322076b2c5e8427dce11ba4a80c53",
+			"new": "Crypto and Cardano tutorials, explainers, governance updates and news from Learn Crypto: plain-English guides for holders, stakers and builders."
+		},
+		{
+			"id": "block-25691-content",
+			"type": "post_field",
+			"post_id": 25691,
+			"field": "post_content",
+			"note": "wp_block (reusable block)",
+			"post_type": "wp_block",
+			"old": "<!-- wp:paragraph -->\n<p>Investing in cryptocurrencies is risky and volatile. Only invest in what you understand and consult a financial advisor before making any decisions. Past performance doesn't guarantee future results and you could lose money. You are solely responsible for your investments and Learn Cardano isn't liable for any losses.</p>\n<!-- /wp:paragraph -->",
+			"old_sha256": "7343abe5937acd3c82491def244e8179278259376d3723cfa27fb8b384b022b5",
+			"new": "<!-- wp:paragraph -->\n<p>Investing in cryptocurrencies is risky and volatile. Only invest in what you understand and consult a financial advisor before making any decisions. Past performance doesn't guarantee future results and you could lose money. You are solely responsible for your investments and Learn Crypto isn't liable for any losses.</p>\n<!-- /wp:paragraph -->"
+		},
+		{
+			"id": "cat-21-name",
+			"type": "term_field",
+			"taxonomy": "category",
+			"term_id": 21,
+			"field": "name",
+			"old": "Learn Cardano Podcast",
+			"old_sha256": "8c7a754cc3045a8e2cfb86c0dc61caa206ec8774a4080306d8dce009eed35b66",
+			"new": "Learn Crypto Podcast"
+		},
+		{
+			"id": "cat-21-description",
+			"type": "term_field",
+			"taxonomy": "category",
+			"term_id": 21,
+			"field": "description",
+			"old": "The Learn Cardano Podcast is aimed at beginners to help them understand and learn all the complex concepts of Cardano and Blockchain.",
+			"old_sha256": "498878c79331aad6f7936de6eb209074503558948baeb2e0c1d229780696a3c5",
+			"new": "The Learn Crypto Podcast is aimed at beginners to help them understand and learn the complex concepts of crypto, Cardano and blockchain."
+		},
+		{
+			"id": "cat-21-rm-title",
+			"type": "term_meta",
+			"term_id": 21,
+			"key": "rank_math_title",
+			"create": true,
+			"old": "Learn Cardano Podcast - Helping Everyone Understand Cardano",
+			"old_sha256": "2cfe4098cdac218c33203502895a67e360737d0295fafaf7f33dd777132056d8",
+			"new": "Learn Crypto Podcast - Helping Everyone Understand Crypto"
+		},
+		{
+			"id": "cat-21-rm-description",
+			"type": "term_meta",
+			"term_id": 21,
+			"key": "rank_math_description",
+			"create": true,
+			"old": "The Learn Cardano Podcast is aimed at beginners to help them understand and learn all the complex concepts of Cardano and Blockchain.",
+			"old_sha256": "9085471ea44e3a5365c3c0770ef30c6cf095a9e2d6b4f05eaa4f79ce830dfd1e",
+			"new": "The Learn Crypto Podcast is aimed at beginners to help them understand and learn the complex concepts of crypto, Cardano and blockchain."
+		},
+		{
+			"id": "cat-21-rm-focus-keyword",
+			"type": "term_meta",
+			"term_id": 21,
+			"key": "rank_math_focus_keyword",
+			"create": true,
+			"old": "cardano podcast",
+			"old_sha256": "b0e8b038f47fdfef9a2cde0bed8fe50975e54953e0917e8ab53694a30c260ed9",
+			"new": "crypto podcast"
+		},
+		{
+			"id": "pcat-13-name",
+			"type": "term_field",
+			"taxonomy": "pcategory",
+			"term_id": 13,
+			"field": "name",
+			"old": "Learn Cardano",
+			"old_sha256": "5cb8ea30899e8e287056d3a38ce41abf05f9cb7a14ac477e006d72db35b6a4b6",
+			"new": "Cardano"
+		},
+		{
+			"id": "pcat-13-description",
+			"type": "term_field",
+			"taxonomy": "pcategory",
+			"term_id": 13,
+			"field": "description",
+			"old": "Learn Cardano Podcast episodes explaining Cardano news, technology and ecosystem projects, for beginners through to experts.",
+			"old_sha256": "9807f32e60732fafbf86abfda96b29d2c57321eb5ca22181986c45e9fc6cf4d3",
+			"new": "Episodes explaining Cardano news, technology and ecosystem projects, for beginners through to experts."
+		},
+		{
+			"id": "pcat-47-description",
+			"type": "term_field",
+			"taxonomy": "pcategory",
+			"term_id": 47,
+			"field": "description",
+			"old": "Learn Cardano Podcast episodes about NFTs on Cardano: projects, marketplaces, minting and how Cardano NFTs work.",
+			"old_sha256": "6b92b2e43d926441ea12001809835363c31cbbf647502bd73f1a45f037ae2cc4",
+			"new": "Learn Crypto Podcast episodes about NFTs on Cardano: projects, marketplaces, minting and how Cardano NFTs work."
+		},
+		{
+			"id": "pcat-48-description",
+			"type": "term_field",
+			"taxonomy": "pcategory",
+			"term_id": 48,
+			"field": "description",
+			"old": "Learn Cardano Podcast episodes on crypto security: protecting your wallet, avoiding scams and staying safe on Cardano.",
+			"old_sha256": "93e4ad57d5d369d452ea07ef4a4c2017ced8e4d3a12ff388ed452cb8042fa30e",
+			"new": "Learn Crypto Podcast episodes on crypto security: protecting your wallet, avoiding scams and staying safe on Cardano."
+		},
+		{
+			"id": "pcat-49-description",
+			"type": "term_field",
+			"taxonomy": "pcategory",
+			"term_id": 49,
+			"field": "description",
+			"old": "Learn Cardano Podcast interviews with Cardano founders, builders and community members about their projects and the ecosystem.",
+			"old_sha256": "808801e63b790b3c0f621021a1e7483421b70c36df8de8622b4e202f6bc940de",
+			"new": "Learn Crypto Podcast interviews with Cardano founders, builders and community members about their projects and the ecosystem."
+		},
+		{
+			"id": "user-451-display-name",
+			"type": "user_field",
+			"user_id": 451,
+			"field": "display_name",
+			"note": "publishing author (editor user 451)",
+			"old": "LearnCardano",
+			"old_sha256": "64a655313c3e1deeb5f6333fe986db940f3a63cb012dac66c7e66ccc0e41025f",
+			"new": "Learn Crypto"
+		},
+		{
+			"id": "user-451-nickname",
+			"type": "user_meta",
+			"user_id": 451,
+			"key": "nickname",
+			"old": "LearnCardano",
+			"old_sha256": "64a655313c3e1deeb5f6333fe986db940f3a63cb012dac66c7e66ccc0e41025f",
+			"new": "Learn Crypto"
+		},
+		{
+			"id": "menu-24943-content",
+			"type": "post_field",
+			"post_id": 24943,
+			"field": "post_content",
+			"note": "nav_menu_item description",
+			"post_type": "nav_menu_item",
+			"old": "Learn Cardano Podcast episodes",
+			"old_sha256": "6b9eca60d67a0da25fc5fc4d4baa0d9e912f152daf28b5b8d9fd57f674cae152",
+			"new": "Learn Crypto Podcast episodes"
+		},
+		{
+			"id": "acf-28436-content",
+			"type": "post_content_edits",
+			"post_id": 28436,
+			"note": "acf-post-type definition (serialized PHP array stored as post_content): replace the whole string; keep serialized string lengths correct (s:N:) in new/new_file",
+			"post_type": "acf-post-type",
+			"content_old_sha256": "d7473ea55540e24e002ba19b27b4d175f9f20fc713ead93eae90e0cedcd249be",
+			"edits": [
+				{
+					"find": "s:11:\"description\";s:30:\"Learn Cardano Podcast episodes\";",
+					"replace": "s:11:\"description\";s:29:\"Learn Crypto Podcast episodes\";",
+					"count": 1
+				}
+			]
+		},
+		{
+			"id": "page-7-thumbnail",
+			"type": "post_meta",
+			"post_id": 7,
+			"key": "_thumbnail_id",
+			"old": "24888",
+			"new": {
+				"media": "learn-crypto-og-default.jpg",
+				"as": "id"
+			},
+			"note": "Homepage featured image is what Rank Math shares as og:image for the home page."
+		}
+	],
+	"leave": [
+		{
+			"id": "rm-pt-sfwd-courses-archive-title",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"pt_sfwd-courses_archive_title"
+			],
+			"why": "Not branded by name (brand comes from %sitename%); Cardano wording is accurate for the Cardano wallet/DEX/DeFi courses."
+		},
+		{
+			"id": "rm-pt-sfwd-courses-archive-description",
+			"type": "option_key",
+			"option": "rank-math-options-titles",
+			"path": [
+				"pt_sfwd-courses_archive_description"
+			],
+			"why": "Not branded; describes Cardano wallet, DEX and DeFi courses accurately, so no change."
+		},
+		{
+			"id": "page-7-excerpt",
+			"type": "post_field",
+			"post_id": 7,
+			"field": "post_excerpt",
+			"why": "Excerpt is empty on live; nothing to rebrand (the meta description is handled by page-7-rm-description)."
+		},
+		{
+			"id": "att-24888-alt",
+			"type": "post_meta",
+			"post_id": 24888,
+			"key": "_wp_attachment_image_alt",
+			"why": "Alt text of the old podcast artwork; the image is being replaced as the default OG image and the old file keeps its historical description."
+		},
+		{
+			"id": "att-27184-alt",
+			"type": "post_meta",
+			"post_id": 27184,
+			"key": "_wp_attachment_image_alt",
+			"why": "Old 2024 podcast cover artwork; historical, left as is."
+		},
+		{
+			"id": "att-27184-title",
+			"type": "post_field",
+			"post_id": 27184,
+			"field": "post_title",
+			"why": "Old 2024 podcast cover artwork; historical, left as is."
+		},
+		{
+			"id": "page-30372-title",
+			"type": "post_field",
+			"post_id": 30372,
+			"field": "post_title",
+			"why": "KB hub page title: decide later whether it carries the brand; left unchanged in this pass"
+		},
+		{
+			"id": "example-pattern-leave",
+			"key": "postmeta:*:_wp_attachment_metadata",
+			"why": "Example of a pattern leave (fnmatch on scan keys): attachment metadata (file names) is never copy."
+		}
+	]
+}
