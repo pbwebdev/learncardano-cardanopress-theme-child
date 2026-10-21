@@ -416,7 +416,7 @@ get_header();
 				</p>
 			</div>
 			<figure class="pk__device">
-				<?php echo $lc_img( 'youtube-channel.jpg', 1090, 860, __( 'The Learn Crypto YouTube channel page (formerly Learn Cardano), showing the channel banner, subscriber count and recent videos on Australian crypto tax and regulation.', 'learncardano' ), 'pk__device-img', true ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img. ?>
+				<?php echo $lc_img( 'youtube-channel-learn-crypto.jpg', 1090, 860, __( 'The Learn Crypto YouTube channel page, showing the channel banner, subscriber count and recent videos on Australian crypto regulation, AI agents and borrowing against crypto.', 'learncardano' ), 'pk__device-img', true ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img. ?>
 			</figure>
 		</div>
 
