@@ -9,6 +9,44 @@
 ( function () {
 	'use strict';
 
+	// Calendly: load its widget script only when the booking section gets near
+	// the screen, so the heavy scheduler never slows the first view of the page.
+	( function () {
+		var box = document.querySelector( '.calendly-inline-widget' );
+		if ( ! box ) {
+			return;
+		}
+		var loaded = false;
+		function load() {
+			if ( loaded ) {
+				return;
+			}
+			loaded = true;
+			var s = document.createElement( 'script' );
+			s.src = 'https://assets.calendly.com/assets/external/widget.js';
+			s.async = true;
+			document.body.appendChild( s );
+		}
+		if ( ! ( 'IntersectionObserver' in window ) ) {
+			load();
+			return;
+		}
+		var io = new IntersectionObserver( function ( entries ) {
+			if ( entries.some( function ( e ) { return e.isIntersecting; } ) ) {
+				io.disconnect();
+				load();
+			}
+		}, { rootMargin: '800px 0px' } );
+		io.observe( box );
+		// A link to #book jumps straight there: start loading at once.
+		document.addEventListener( 'click', function ( e ) {
+			var a = e.target.closest && e.target.closest( 'a[href="#book"]' );
+			if ( a ) {
+				load();
+			}
+		} );
+	}() );
+
 	// Charts marked [data-pk-draw] start hidden and draw in on first view.
 	var charts = document.querySelectorAll( '[data-pk-draw]' );
 

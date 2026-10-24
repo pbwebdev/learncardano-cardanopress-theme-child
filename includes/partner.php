@@ -15,7 +15,7 @@ function lc_is_partner_view() {
 }
 
 /**
- * Partner styles, the count-up script and Calendly's embed script, on the
+ * Partner styles and the page script (count-up, chart draw-in, and Calendly loaded only near the booking section), on the
  * partner page only, so no other page pays for them.
  */
 function lc_partner_enqueue() {
@@ -31,9 +31,8 @@ function lc_partner_enqueue() {
 	wp_enqueue_script( 'lc-partner', $uri . $js, array(), file_exists( $dir . $js ) ? (string) filemtime( $dir . $js ) : null, true );
 	wp_script_add_data( 'lc-partner', 'strategy', 'defer' );
 
-	// The booking section's inline scheduler. Async: it only fills the embed box.
-	wp_enqueue_script( 'lc-calendly', 'https://assets.calendly.com/assets/external/widget.js', array(), null, true );
-	wp_script_add_data( 'lc-calendly', 'strategy', 'async' );
+	// Calendly's inline scheduler (about 3 MB of script and CSS, plus Stripe) is not
+	// enqueued here: partner.js loads it when the booking section nears the screen.
 }
 add_action( 'wp_enqueue_scripts', 'lc_partner_enqueue' );
 

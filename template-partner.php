@@ -310,8 +310,8 @@ $lc_calendly_url = 'https://calendly.com/chatwithpete/crypto-chat?hide_event_typ
  * An <img> from images/partner/ with intrinsic size (no layout shift) and
  * lazy loading unless it is above the fold.
  */
-$lc_img = function ( $file, $width, $height, $alt, $class = '', $eager = false ) {
-	return sprintf(
+$lc_img = function ( $file, $width, $height, $alt, $class = '', $eager = false, $sizes = '100vw' ) {
+	$img = sprintf(
 		'<img src="%1$s" width="%2$d" height="%3$d" alt="%4$s" class="%5$s" decoding="async" %6$s>',
 		esc_url( get_stylesheet_directory_uri() . '/images/partner/' . $file ),
 		(int) $width,
@@ -320,6 +320,18 @@ $lc_img = function ( $file, $width, $height, $alt, $class = '', $eager = false )
 		esc_attr( $class ),
 		$eager ? 'fetchpriority="high"' : 'loading="lazy"'
 	);
+	// WebP copies named <name>-<width>.webp (480, 800 and full width) go in a srcset, so phones get a small file.
+	$base   = preg_replace( '/\.(jpe?g|png)$/i', '', $file );
+	$srcset = array();
+	foreach ( array_unique( array( 480, 800, (int) $width ) ) as $w ) {
+		if ( $w <= (int) $width && file_exists( get_stylesheet_directory() . '/images/partner/' . $base . '-' . $w . '.webp' ) ) {
+			$srcset[] = esc_url( get_stylesheet_directory_uri() . '/images/partner/' . $base . '-' . $w . '.webp' ) . ' ' . $w . 'w';
+		}
+	}
+	if ( ! $srcset ) {
+		return $img;
+	}
+	return '<picture><source type="image/webp" srcset="' . implode( ', ', $srcset ) . '" sizes="' . esc_attr( $sizes ) . '">' . $img . '</picture>';
 };
 
 /**
@@ -419,7 +431,7 @@ get_header();
 				</p>
 			</div>
 			<figure class="pk__device">
-				<?php echo $lc_img( 'youtube-channel-learn-crypto.jpg', 1090, 860, __( 'The Learn Crypto YouTube channel page, showing the channel banner, subscriber count and recent videos on Australian crypto regulation, AI agents and borrowing against crypto.', 'learncardano' ), 'pk__device-img', true ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img. ?>
+				<?php echo $lc_img( 'youtube-channel-learn-crypto.jpg', 1090, 860, __( 'The Learn Crypto YouTube channel page, showing the channel banner, subscriber count and recent videos on Australian crypto regulation, AI agents and borrowing against crypto.', 'learncardano' ), 'pk__device-img', true, '(min-width: 981px) 640px, (min-width: 612px) 540px, calc(100vw - 52px)' ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img. ?>
 			</figure>
 		</div>
 
@@ -742,7 +754,7 @@ get_header();
 			</header>
 			<div class="pk__split">
 				<figure class="pk__chart">
-					<?php echo $lc_img( 'views-front-load-chart.jpg', 1400, 683, __( 'Cumulative share of total views by day since publication: “Why the ATO Is Panicking” reached 62% of its views by day 7 and “Bitcoin Tax Free” 65%.', 'learncardano' ), 'pk__chart-img' ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img. ?>
+					<?php echo $lc_img( 'views-front-load-chart.jpg', 1400, 683, __( 'Cumulative share of total views by day since publication: “Why the ATO Is Panicking” reached 62% of its views by day 7 and “Bitcoin Tax Free” 65%.', 'learncardano' ), 'pk__chart-img', false, '(min-width: 981px) 700px, calc(100vw - 32px)' ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img. ?>
 					<figcaption><?php esc_html_e( 'Cumulative share of total views: ATO Is Panicking: 62% at day 7 · Bitcoin Tax Free: 65% at day 7.', 'learncardano' ); ?></figcaption>
 				</figure>
 				<ol class="pk__points">
@@ -995,7 +1007,7 @@ get_header();
 	<section class="pk__section pk__section--white" aria-labelledby="pk-who-am-i">
 		<div class="pk__container pk__bio">
 			<div class="pk__bio-photo">
-				<?php echo $lc_img( 'peter-bui-portrait.jpg', 600, 600, __( 'Portrait of Peter Bui, founder of Learn Crypto', 'learncardano' ), 'pk__portrait' ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img. ?>
+				<?php echo $lc_img( 'peter-bui-portrait.jpg', 600, 600, __( 'Portrait of Peter Bui, founder of Learn Crypto', 'learncardano' ), 'pk__portrait', false, '(min-width: 981px) 380px, 80vw' ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img. ?>
 			</div>
 			<div>
 				<p class="pk__kicker"><?php esc_html_e( 'Who I am', 'learncardano' ); ?></p>
