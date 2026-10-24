@@ -118,7 +118,7 @@ function lc_form_definitions() {
 					'to'        => 'email',
 					'from_name' => 'Learn Crypto',
 					'subject'   => 'Your message has been sent',
-					'body'      => "Hello!\n\nThanks for contacting the Learn Crypto team.\n\nWe do get flooded with requests for support, collaborations, partnerships and interview requests.\n\nWe'll get back to you as soon as possible.\n\nRegards\n\nPeter &amp; the Learn Crypto team\n\n&nbsp;\n<ul>\n \t<li><span style=\"font-size: xx-small;\"><a href=\"https://bit.ly/3Qzf7OI\" target=\"_blank\" rel=\"noopener\">YouTube</a></span></li>\n \t<li><span style=\"font-size: xx-small;\"><a href=\"https://spoti.fi/3PdFXdZ\" target=\"_blank\" rel=\"noopener\">Spotify</a></span></li>\n \t<li><span style=\"font-size: xx-small;\"><a href=\"https://chatsoon.app/id/peter-bui-5ec50167\" target=\"_blank\" rel=\"noopener\">Follow &amp; contact Peter (Chatsoon)</a></span></li>\n</ul>",
+					'body'      => "Hello!\n\nThanks for contacting the Learn Crypto team.\n\nWe do get flooded with requests for support, collaborations, partnerships and interview requests.\n\nWe'll get back to you as soon as possible.\n\nRegards\n\nPeter &amp; the Learn Crypto team\n\n&nbsp;\n<ul>\n \t<li><a href=\"https://www.youtube.com/@LearnCardano?sub_confirmation=1\" target=\"_blank\" rel=\"noopener\">Subscribe on YouTube</a></li>\n \t<li><a href=\"https://open.spotify.com/show/11FpPiHPzivZoSOTgVcfgT\" target=\"_blank\" rel=\"noopener\">Listen on Spotify</a></li>\n \t<li><a href=\"https://chatsoon.app/id/peter-bui-5ec50167\" target=\"_blank\" rel=\"noopener\">Follow Pete's Chatsoon profile</a></li>\n</ul>",
 				),
 			),
 		),
