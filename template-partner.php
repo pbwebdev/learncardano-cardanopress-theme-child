@@ -43,14 +43,14 @@ $lc_stats = array(
 	array( 'text' => '53.4K', 'count' => 53.4, 'decimals' => 1, 'suffix' => 'K', 'label' => __( 'monthly audience', 'learncardano' ) ),
 	array( 'text' => '4.78%', 'count' => 4.78, 'decimals' => 2, 'suffix' => '%', 'label' => __( 'lifetime CTR · 32.5M impressions', 'learncardano' ) ),
 );
-$lc_distribution = __( 'Podcast — Spotify, Apple, iHeart, Spreaker · learncardano.io indexed archive · newsletter · Discord · X · Facebook', 'learncardano' );
+$lc_distribution = __( 'Podcast: Spotify, Apple, iHeart, Spreaker · learncardano.io indexed archive · newsletter · Discord · X · Facebook', 'learncardano' );
 
 // Why partner (four reasons + pull quote).
 $lc_reasons = array(
-	array( __( 'A regulated market', 'learncardano' ), __( 'Australia now licenses crypto businesses. Compliance is what customers ask about first — and it needs explaining, not advertising.', 'learncardano' ) ),
-	array( __( 'A specific audience', 'learncardano' ), __( 'Not general crypto reach. Australian holders researching tax, structure, licensing and liquidity — people with assets and decisions to make.', 'learncardano' ) ),
+	array( __( 'A regulated market', 'learncardano' ), __( 'Australia now licenses crypto businesses. Compliance is what customers ask about first, and it needs explaining, not advertising.', 'learncardano' ) ),
+	array( __( 'A specific audience', 'learncardano' ), __( 'Not general crypto reach. Australian holders researching tax, structure, licensing and liquidity, people with assets and decisions to make.', 'learncardano' ) ),
 	array( __( 'Compliance-aware by default', 'learncardano' ), __( 'Built around ASIC INFO 269 and full disclosure. A low-risk partner for a licensed or licence-seeking brand.', 'learncardano' ) ),
-	array( __( 'Measurable in 30 days', 'learncardano' ), __( 'Australian regulatory content front-loads — most views land in week one, backed by a written delivery guarantee.', 'learncardano' ) ),
+	array( __( 'Measurable in 30 days', 'learncardano' ), __( 'Australian regulatory content front-loads: most views land in week one, backed by a written delivery guarantee.', 'learncardano' ) ),
 );
 $lc_quote = __( 'Trust stories don’t sell themselves through performance marketing. They need explaining, by someone Australians already trust to explain Australian crypto rules.', 'learncardano' );
 
@@ -62,7 +62,7 @@ $lc_pillars = array(
 	array( __( 'Weekly market brief', 'learncardano' ), __( 'Every Monday. Cardano, Midnight and the broader market pulse.', 'learncardano' ), __( 'Reliable weekly reach', 'learncardano' ) ),
 	array( __( 'Conference coverage', 'learncardano' ), __( 'On-the-ground previews and recaps from major industry events.', 'learncardano' ), __( 'Event-tied moments', 'learncardano' ) ),
 );
-$lc_cadence = __( 'Publishing runs three times a week — Monday brief, Wednesday feature, Friday deep dive — so a campaign can be sequenced against a known calendar rather than hoping for a slot.', 'learncardano' );
+$lc_cadence = __( 'Publishing runs three times a week (Monday brief, Wednesday feature, Friday deep dive), so a campaign can be sequenced against a known calendar rather than hoping for a slot.', 'learncardano' );
 
 // Audience comparison: metric, AU tax & ruling videos, everything else.
 $lc_compare = array(
@@ -81,17 +81,17 @@ $lc_multipliers = array(
 // Demographics: figure, label, highlight.
 $lc_demo = array(
 	// YouTube Studio, views, lifetime to 16 Oct 2026.
-	array( '80.5%', __( 'aged 25–54', 'learncardano' ) ),
-	array( '57.5%', __( 'aged 35–54 — the largest cohort', 'learncardano' ) ),
+	array( '80.5%', __( 'aged 25 to 54', 'learncardano' ) ),
+	array( '57.5%', __( 'aged 35 to 54, the largest cohort', 'learncardano' ) ),
 	array( '96.6%', __( 'male', 'learncardano' ) ),
-	array( '0.2%', __( 'aged 13–17', 'learncardano' ) ),
+	array( '0.2%', __( 'aged 13 to 17', 'learncardano' ) ),
 );
 
 // How they watch (YouTube Studio, 16 Oct 2026): figure, label.
 $lc_habits = array(
-	array( '17.1%', __( 'of subscribers have “All notifications” on (5.5K people) — YouTube’s typical range is 10–30%', 'learncardano' ) ),
+	array( '17.1%', __( 'of subscribers have “All notifications” on (5.5K people), YouTube’s typical range is 10% to 30%', 'learncardano' ) ),
 	array( '47.8%', __( 'of all watch time comes from subscribers', 'learncardano' ) ),
-	array( '54.6%', __( 'of the monthly audience are new viewers — reach beyond the existing base', 'learncardano' ) ),
+	array( '54.6%', __( 'of the monthly audience are new viewers, reach beyond the existing base', 'learncardano' ) ),
 	array( '13.6%', __( 'of watch time is on TV screens; 35.3% on computers, 46.6% on mobile', 'learncardano' ) ),
 );
 $lc_also_watches = __( 'Viewers also watch Altcoin Daily, Paul Barron Network and Crypto Capital Venture.', 'learncardano' );
@@ -108,9 +108,9 @@ $lc_proof = array(
 
 // Click-through case: figure, explanation.
 $lc_conversion = array(
-	array( '68', __( 'link clicks on the day of publication, against a 2–5/day baseline', 'learncardano' ) ),
+	array( '68', __( 'link clicks on the day of publication, against a 2 to 5/day baseline', 'learncardano' ) ),
 	array( '398', __( 'human clicks of 858 recorded. We quote the filtered number', 'learncardano' ) ),
-	array( '5–10%', __( 'click-to-purchase in the 72-hour window. Typical e-commerce: 2–3%', 'learncardano' ) ),
+	array( '5% to 10%', __( 'click-to-purchase in the 72-hour window. Typical e-commerce: 2% to 3%', 'learncardano' ) ),
 	array( '72hrs', __( 'from publication to every recorded purchase', 'learncardano' ) ),
 );
 
@@ -119,23 +119,23 @@ $lc_calendar = array(
 	array( __( 'September', 'learncardano' ), __( 'Licensing arc', 'learncardano' ), array( __( 'Australia licenses crypto exchanges', 'learncardano' ), __( 'Is your exchange actually licensed?', 'learncardano' ), __( 'Coins held on trust', 'learncardano' ), __( 'Selling without selling', 'learncardano' ) ) ),
 	array( __( 'October', 'learncardano' ), __( 'Tax season peak', 'learncardano' ), array( __( 'The ATO already knows', 'learncardano' ), __( 'Reporting at Question 18', 'learncardano' ), __( 'The 50% CGT discount', 'learncardano' ), __( 'Last-minute checklist before 31 Oct', 'learncardano' ), __( 'Token2049 recap', 'learncardano' ) ) ),
 	array( __( 'November', 'learncardano' ), __( 'Structure & strategy', 'learncardano' ), array( __( 'Post-tax portfolio reset', 'learncardano' ), __( 'DeFi yields vs TradFi cash', 'learncardano' ), __( 'Crypto inside an SMSF, company or trust', 'learncardano' ), __( 'AusCryptoCon preview', 'learncardano' ) ) ),
-	array( __( 'December', 'learncardano' ), __( 'Industry read', 'learncardano' ), array( __( 'What I learned at AusCryptoCon — where the Australian industry lands post-licensing', 'learncardano' ) ) ),
+	array( __( 'December', 'learncardano' ), __( 'Industry read', 'learncardano' ), array( __( 'What I learned at AusCryptoCon: where the Australian industry lands post-licensing', 'learncardano' ) ) ),
 );
 
 // Where a sponsor fits: title, description, best for.
 $lc_fits = array(
-	array( __( 'Own a pillar', 'learncardano' ), __( 'Attach to a recurring theme for the term — tax, licensing or structure. Dedicated videos plus integrations inside every video in that pillar, so you become the default brand on the subject.', 'learncardano' ), __( 'Best for category ownership', 'learncardano' ) ),
-	array( __( 'Own a moment', 'learncardano' ), __( 'Book against a dated peak already on the calendar — the lodgement deadline, a conference, the post-tax reset. Highest intent, and the date is known months ahead.', 'learncardano' ), __( 'Best for launches & seasonal offers', 'learncardano' ) ),
-	array( __( 'Hold a rapid-response slot', 'learncardano' ), __( 'Retain capacity for the unscheduled. When a ruling, court decision or Treasury announcement lands, we publish within 48 hours with you already integrated — where the biggest numbers come from.', 'learncardano' ), __( 'Best for share of voice', 'learncardano' ) ),
+	array( __( 'Own a pillar', 'learncardano' ), __( 'Attach to a recurring theme for the term: tax, licensing or structure. Dedicated videos plus integrations inside every video in that pillar, so you become the default brand on the subject.', 'learncardano' ), __( 'Best for category ownership', 'learncardano' ) ),
+	array( __( 'Own a moment', 'learncardano' ), __( 'Book against a dated peak already on the calendar: the lodgement deadline, a conference, the post-tax reset. Highest intent, and the date is known months ahead.', 'learncardano' ), __( 'Best for launches & seasonal offers', 'learncardano' ) ),
+	array( __( 'Hold a rapid-response slot', 'learncardano' ), __( 'Retain capacity for the unscheduled. When a ruling, court decision or Treasury announcement lands, we publish within 48 hours with you already integrated, where the biggest numbers come from.', 'learncardano' ), __( 'Best for share of voice', 'learncardano' ) ),
 );
 
 // Rate card (placeholder prices): placement, detail, price, row style ('' | 'feature' | 'hot').
 $lc_rates_single = array(
-	array( __( 'Dedicated video', 'learncardano' ), __( 'AU regulation format, 6–8 min, sponsor is the subject', 'learncardano' ), '$8,800', 'feature' ),
+	array( __( 'Dedicated video', 'learncardano' ), __( 'AU regulation format, 6 to 8 min, sponsor is the subject', 'learncardano' ), '$8,800', 'feature' ),
 	array( __( 'Rapid-response slot', 'learncardano' ), __( 'published within 48h of a qualifying event', 'learncardano' ), '$5,900', 'hot' ),
-	array( __( 'Mid-roll integration, 60–90 sec', 'learncardano' ), __( 'inside an AU regulation / tax video', 'learncardano' ), '$3,650', '' ),
-	array( __( 'Mid-roll integration, 60–90 sec', 'learncardano' ), __( 'inside standard weekly content', 'learncardano' ), '$1,400', '' ),
-	array( __( 'Opening mention, 20–30 sec', 'learncardano' ), __( 'plus pinned comment & description link', 'learncardano' ), '$1,150', '' ),
+	array( __( 'Mid-roll integration, 60 to 90 sec', 'learncardano' ), __( 'inside an AU regulation / tax video', 'learncardano' ), '$3,650', '' ),
+	array( __( 'Mid-roll integration, 60 to 90 sec', 'learncardano' ), __( 'inside standard weekly content', 'learncardano' ), '$1,400', '' ),
+	array( __( 'Opening mention, 20 to 30 sec', 'learncardano' ), __( 'plus pinned comment & description link', 'learncardano' ), '$1,150', '' ),
 	array( __( 'YouTube Short, dedicated', 'learncardano' ), '', '$650', '' ),
 	array( __( 'Podcast audio read', 'learncardano' ), __( 'all feeds', 'learncardano' ), '$720', '' ),
 	array( __( 'Sponsored article on learncardano.io', 'learncardano' ), __( 'permanent & indexed', 'learncardano' ), '$1,950', '' ),
@@ -152,7 +152,7 @@ $lc_rates_addons = array(
 	array( __( 'Live appearance, webinar or event', 'learncardano' ), __( 'per session', 'learncardano' ), '$2,350', '' ),
 );
 /* translators: 1: integration price, 2: AUD CPM, 3: USD CPM */
-$lc_cpm_note      = __( 'Pricing is calculated on average views for the specific content category being bought, not subscriber count. At the category median of 21,081 views, the %1$s integration equates to an AUD CPM of %2$s (~USD %3$s) — inside the published 2026 finance-sponsorship band, before any premium for CTR, watch time or subscriber acquisition.', 'learncardano' );
+$lc_cpm_note      = __( 'Pricing is calculated on average views for the specific content category being bought, not subscriber count. At the category median of 21,081 views, the %1$s integration equates to an AUD CPM of %2$s (~USD %3$s), inside the published 2026 finance-sponsorship band, before any premium for CTR, watch time or subscriber acquisition.', 'learncardano' );
 $lc_cpm_note_nums = array( '$3,650', '$123', '$80' ); // placeholder prices
 
 // "Why $X" value box (placeholder prices): every sum and result is price
@@ -201,9 +201,9 @@ $lc_rr_price = '$5,900';
 
 // Compliance regimes: label, text.
 $lc_regimes = array(
-	array( __( 'Credit · NCCP s8', 'learncardano' ), __( 'Where a credit product is involved, content explains how it works as a category and identifies the sponsor — but won’t tell viewers to apply, carry an application link, or walk through an application. A direct CTA means appointing Learn Crypto an authorised credit representative: a separate conversation, a separate rate.', 'learncardano' ) ),
+	array( __( 'Credit · NCCP s8', 'learncardano' ), __( 'Where a credit product is involved, content explains how it works as a category and identifies the sponsor, but won’t tell viewers to apply, carry an application link, or walk through an application. A direct CTA means appointing Learn Crypto an authorised credit representative: a separate conversation, a separate rate.', 'learncardano' ) ),
 	array( __( 'Financial services · INFO 269', 'learncardano' ), __( 'ASIC issued warning notices to four finfluencers in April 2026 and is reviewing licensee supervision. No content here will recommend borrowing, recommend a target asset for the borrowed capital, or project returns.', 'learncardano' ) ),
-	array( __( 'Tax', 'learncardano' ), __( 'The disposal-vs-collateral point is a factual statement about how the two transactions differ, not tax advice — delivered as such, with a standing direction to see a registered tax agent.', 'learncardano' ) ),
+	array( __( 'Tax', 'learncardano' ), __( 'The disposal-vs-collateral point is a factual statement about how the two transactions differ, not tax advice, delivered as such, with a standing direction to see a registered tax agent.', 'learncardano' ) ),
 );
 $lc_practice = array(
 	__( 'Paid-promotion disclosure, verbal in the first 30 sec and written in the description', 'learncardano' ),
@@ -245,10 +245,10 @@ $lc_bio = array(
 // Glossary: group => term => definition.
 $lc_glossary = array(
 	__( 'Placement types', 'learncardano' )      => array(
-		__( 'Dedicated video', 'learncardano' )        => __( 'a full standalone episode, 6–8 min, where the sponsor is the subject.', 'learncardano' ),
+		__( 'Dedicated video', 'learncardano' )        => __( 'a full standalone episode, 6 to 8 min, where the sponsor is the subject.', 'learncardano' ),
 		__( 'Rapid-response slot', 'learncardano' )    => __( 'a pre-booked video published within 48h of a breaking Australian regulatory event, with the sponsor already integrated.', 'learncardano' ),
-		__( 'Mid-roll integration', 'learncardano' )   => __( 'a 60–90 sec sponsor segment placed inside a longer video.', 'learncardano' ),
-		__( 'Opening mention', 'learncardano' )        => __( 'a 20–30 sec sponsor callout at the top of a video, plus a pinned comment and description link.', 'learncardano' ),
+		__( 'Mid-roll integration', 'learncardano' )   => __( 'a 60 to 90 sec sponsor segment placed inside a longer video.', 'learncardano' ),
+		__( 'Opening mention', 'learncardano' )        => __( 'a 20 to 30 sec sponsor callout at the top of a video, plus a pinned comment and description link.', 'learncardano' ),
 		__( 'YouTube Short', 'learncardano' )          => __( 'a dedicated vertical video under 60 seconds.', 'learncardano' ),
 		__( 'Podcast audio read', 'learncardano' )     => __( 'a scripted sponsor read across all podcast feeds (Spotify, Apple, iHeart, Spreaker).', 'learncardano' ),
 		__( 'Sponsored article', 'learncardano' )      => __( 'a permanent, search-indexed written piece on learncardano.io.', 'learncardano' ),
@@ -268,7 +268,7 @@ $lc_glossary = array(
 
 // Project interviews (the free editorial queue): what's included.
 $lc_interview_includes = array(
-	array( __( 'Full video interview', 'learncardano' ), __( 'Published on YouTube, edited for pacing — we handle all editing, thumbnails and publishing.', 'learncardano' ) ),
+	array( __( 'Full video interview', 'learncardano' ), __( 'Published on YouTube, edited for pacing: we handle all editing, thumbnails and publishing.', 'learncardano' ) ),
 	array( __( 'Short-form clips', 'learncardano' ), __( 'At least 3 clips across YouTube Shorts, Instagram Reels, TikTok and X, released over the two weeks after launch.', 'learncardano' ) ),
 	array( __( 'Article on learncardano.io', 'learncardano' ), __( 'A write-up of the key discussion points, with links to your project and socials, published alongside the video.', 'learncardano' ) ),
 	array( __( 'Podcast episode', 'learncardano' ), __( 'Full audio on Spotify and the major podcast platforms, 7 days after the YouTube release.', 'learncardano' ) ),
@@ -279,7 +279,7 @@ $lc_interview_standards = array(
 	__( 'Token launches, token sales or pre-sale announcements of any kind', 'learncardano' ),
 	__( 'Financial advice or price speculation (buying, selling or investment recommendations)', 'learncardano' ),
 	__( 'Projects in early development without mainnet deployment or demonstrable traction', 'learncardano' ),
-	__( 'Undisclosed paid promotion — any paid placement on the channel is clearly labelled as such', 'learncardano' ),
+	__( 'Undisclosed paid promotion: any paid placement on the channel is clearly labelled as such', 'learncardano' ),
 	__( 'Projects that lack transparency about team, funding or technical implementation', 'learncardano' ),
 	__( 'Pump-and-dump schemes, Ponzi structures or other financially exploitative models', 'learncardano' ),
 	__( 'Unvetted or anonymous team members without verifiable track records', 'learncardano' ),
@@ -289,7 +289,7 @@ $lc_interview_standards = array(
 // Next steps.
 $lc_steps = array(
 	__( 'Confirm the package and window', 'learncardano' ),
-	__( 'Compliance kickoff call — Learn Crypto and your compliance team, 30 minutes', 'learncardano' ),
+	__( 'Compliance kickoff call: Learn Crypto and your compliance team, 30 minutes', 'learncardano' ),
 	__( 'Script development and sign-off', 'learncardano' ),
 	__( 'Production and publication', 'learncardano' ),
 	__( 'Reporting', 'learncardano' ),
@@ -361,7 +361,7 @@ $lc_gate_close = function () use ( $lc_media_kit_url ) {
 	);
 	echo '</div>'; // .pk__gated-body
 	echo '<div class="pk__unlock-card">' . $lock . '<div class="pk__unlock-copy"><p class="pk__unlock-title">' . esc_html__( 'Unlock pricing', 'learncardano' ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput -- static SVG.
-	echo '<p class="pk__unlock-text">' . esc_html__( 'Rates and package pricing are in the media kit — enter your email to view it.', 'learncardano' ) . '</p>';
+	echo '<p class="pk__unlock-text">' . esc_html__( 'Rates and package pricing are in the media kit: enter your email to view it.', 'learncardano' ) . '</p>';
 	echo '</div>' . $link . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput -- escaped above.
 	echo '</div>'; // .pk__gated
 };
@@ -382,7 +382,7 @@ $lc_rate_table = function ( $caption, $rows ) use ( $lc_num ) {
 					<th scope="row">
 						<?php echo esc_html( $row[0] ); ?>
 						<?php if ( $row[1] ) : ?>
-							<span class="pk__rate-detail">— <?php echo esc_html( $row[1] ); ?></span>
+							<span class="pk__rate-detail">(<?php echo esc_html( $row[1] ); ?>)</span>
 						<?php endif; ?>
 					</th>
 					<td><?php echo $lc_num( $row[2] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_num. ?></td>
@@ -408,7 +408,7 @@ get_header();
 			<div class="pk__hero-copy">
 				<p class="pk__kicker"><?php esc_html_e( 'Media kit & rate card', 'learncardano' ); ?></p>
 				<h1 id="pk-title" class="pk__h1"><span class="pk__grad"><?php esc_html_e( 'Learn Crypto', 'learncardano' ); ?></span> <?php esc_html_e( 'Partnership Opportunities', 'learncardano' ); ?></h1>
-				<p class="pk__hero-sub"><?php esc_html_e( 'Australia’s crypto education channel — audience, rates and packages', 'learncardano' ); ?></p>
+				<p class="pk__hero-sub"><?php esc_html_e( 'Australia’s crypto education channel: audience, rates and packages', 'learncardano' ); ?></p>
 				<p class="pk__ctas">
 					<a class="pk__btn pk__btn--kit" href="<?php echo esc_url( $lc_media_kit_url ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Get the media kit', 'learncardano' ); ?><span class="pk__sr"> <?php esc_html_e( '(opens in a new tab)', 'learncardano' ); ?></span></a>
 					<a class="pk__btn" href="#book"><?php esc_html_e( 'Book a 15-min call', 'learncardano' ); ?></a>
@@ -519,7 +519,7 @@ get_header();
 			<p class="pk__note">
 				<?php
 				echo wp_kses(
-					__( 'Those nine have delivered <strong>237,714 views, 13,159 watch hours and 4,356 new subscribers</strong>. The subscriber multiple is the one to sit with — this content converts strangers into an audience at nearly twelve times the rate of anything else on the channel.', 'learncardano' ),
+					__( 'Those nine have delivered <strong>237,714 views, 13,159 watch hours and 4,356 new subscribers</strong>. The subscriber multiple is the one to sit with: this content converts strangers into an audience at nearly twelve times the rate of anything else on the channel.', 'learncardano' ),
 					array( 'strong' => array() )
 				);
 				?>
@@ -532,7 +532,7 @@ get_header();
 		<div class="pk__container">
 			<header class="pk__head">
 				<p class="pk__kicker"><?php esc_html_e( 'Where the audience actually is', 'learncardano' ); ?></p>
-				<h2 id="pk-where" class="pk__h2"><?php esc_html_e( 'Australia is now the channel’s #1 market — and has been for six months.', 'learncardano' ); ?></h2>
+				<h2 id="pk-where" class="pk__h2"><?php esc_html_e( 'Australia is now the channel’s #1 market, and has been for six months.', 'learncardano' ); ?></h2>
 			</header>
 			<div class="pk__split">
 				<figure class="pk__chart">
@@ -580,14 +580,14 @@ get_header();
 					<div class="pk__callouts">
 						<div class="pk__callout">
 							<span class="pk__big">52.1%</span>
-							<span><strong><?php esc_html_e( 'Australian', 'learncardano' ); ?></strong> · <?php esc_html_e( '18 Jun–18 Jul 2026', 'learncardano' ); ?><br><?php esc_html_e( 'ATO case + High Court ruling', 'learncardano' ); ?></span>
+							<span><strong><?php esc_html_e( 'Australian', 'learncardano' ); ?></strong> · <?php esc_html_e( '18 Jun to 18 Jul 2026', 'learncardano' ); ?><br><?php esc_html_e( 'ATO case + High Court ruling', 'learncardano' ); ?></span>
 						</div>
 						<div class="pk__callout">
 							<span class="pk__big">71.9%</span>
-							<span><strong><?php esc_html_e( 'Australian', 'learncardano' ); ?></strong> · <?php esc_html_e( '22 May–21 Jun 2025', 'learncardano' ); ?><br><?php esc_html_e( 'Landmark Bitcoin tax ruling', 'learncardano' ); ?></span>
+							<span><strong><?php esc_html_e( 'Australian', 'learncardano' ); ?></strong> · <?php esc_html_e( '22 May to 21 Jun 2025', 'learncardano' ); ?><br><?php esc_html_e( 'Landmark Bitcoin tax ruling', 'learncardano' ); ?></span>
 						</div>
 					</div>
-					<p class="pk__note"><?php esc_html_e( 'Channel-wide the Australian share is smaller — but it climbs sharply during exactly the content a sponsor would appear in. You wouldn’t be buying a global channel and hoping for Australian spill — you’d be buying the slot where Australians are the majority of the room.', 'learncardano' ); ?></p>				</div>
+					<p class="pk__note"><?php esc_html_e( 'Channel-wide the Australian share is smaller, but it climbs sharply during exactly the content a sponsor would appear in. You wouldn’t be buying a global channel and hoping for Australian spill, you’d be buying the slot where Australians are the majority of the room.', 'learncardano' ); ?></p>				</div>
 			</div>
 
 			<h3 class="pk__subhead" id="pk-who"><?php esc_html_e( 'Who they are', 'learncardano' ); ?></h3>
@@ -600,8 +600,8 @@ get_header();
 				<?php endforeach; ?>
 			</ul>
 			<div class="pk__cols-2">
-				<p><?php esc_html_e( 'The age profile is the point. This is an audience with assets to borrow against and income to service a facility — the 35–54 bracket, the biggest block of this audience by both views and watch time.', 'learncardano' ); ?></p>
-				<p><?php esc_html_e( 'The gender skew is stated plainly rather than buried: a narrow, precisely-targeted audience, not a broad one. And effectively no under-18 viewership — which matters for any regulated financial advertiser.', 'learncardano' ); ?></p>
+				<p><?php esc_html_e( 'The age profile is the point. This is an audience with assets to borrow against and income to service a facility: the 35 to 54 bracket, the biggest block of this audience by both views and watch time.', 'learncardano' ); ?></p>
+				<p><?php esc_html_e( 'The gender skew is stated plainly rather than buried: a narrow, precisely-targeted audience, not a broad one. And effectively no under-18 viewership, which matters for any regulated financial advertiser.', 'learncardano' ); ?></p>
 			</div>
 
 			<h3 class="pk__subhead"><?php esc_html_e( 'How they watch', 'learncardano' ); ?></h3>
@@ -669,7 +669,7 @@ get_header();
 			<p class="pk__note">
 				<?php
 				echo wp_kses(
-					__( 'In June & July 2026 — the ATO case, the High Court ruling and the new tax rules — the channel recorded <strong>141,331</strong> and <strong>131,299</strong> monthly views, against a Jan–May average near 36,000.', 'learncardano' ),
+					__( 'In June & July 2026 (the ATO case, the High Court ruling and the new tax rules), the channel recorded <strong>141,331</strong> and <strong>131,299</strong> monthly views, against a Jan to May average near 36,000.', 'learncardano' ),
 					array( 'strong' => array() )
 				);
 				?>
@@ -706,7 +706,7 @@ get_header();
 				</div>
 				<div class="pk__card pk__card--dark">
 					<h3 class="pk__label"><?php esc_html_e( 'What it does show', 'learncardano' ); ?></h3>
-					<p><?php esc_html_e( 'Given a reason to act during a news moment, this audience acts within days, not weeks. It is the clearest available evidence for the rapid-response slot — the same 48-hour window that produces the biggest view numbers also produces the buying.', 'learncardano' ); ?></p>
+					<p><?php esc_html_e( 'Given a reason to act during a news moment, this audience acts within days, not weeks. It is the clearest available evidence for the rapid-response slot: the same 48-hour window that produces the biggest view numbers also produces the buying.', 'learncardano' ); ?></p>
 				</div>
 				<div class="pk__card pk__card--dark pk__card--caveat">
 					<h3 class="pk__label"><?php esc_html_e( 'What this is not', 'learncardano' ); ?></h3>
@@ -726,11 +726,11 @@ get_header();
 			<div class="pk__split">
 				<figure class="pk__chart">
 					<?php echo $lc_img( 'views-front-load-chart.jpg', 1400, 683, __( 'Cumulative share of total views by day since publication: “Why the ATO Is Panicking” reached 62% of its views by day 7 and “Bitcoin Tax Free” 65%.', 'learncardano' ), 'pk__chart-img' ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_img. ?>
-					<figcaption><?php esc_html_e( 'Cumulative share of total views: ATO Is Panicking — 62% at day 7 · Bitcoin Tax Free — 65% at day 7.', 'learncardano' ); ?></figcaption>
+					<figcaption><?php esc_html_e( 'Cumulative share of total views: ATO Is Panicking: 62% at day 7 · Bitcoin Tax Free: 65% at day 7.', 'learncardano' ); ?></figcaption>
 				</figure>
 				<ol class="pk__points">
-					<li><?php esc_html_e( 'Results are measurable inside 30 days — which is why the delivery guarantee is written against a 30-day window.', 'learncardano' ); ?></li>
-					<li><?php esc_html_e( 'The biggest numbers come from reacting to news, not a fixed calendar — which is why this proposal includes retained rapid-response slots.', 'learncardano' ); ?></li>
+					<li><?php esc_html_e( 'Results are measurable inside 30 days, which is why the delivery guarantee is written against a 30-day window.', 'learncardano' ); ?></li>
+					<li><?php esc_html_e( 'The biggest numbers come from reacting to news, not a fixed calendar, which is why this proposal includes retained rapid-response slots.', 'learncardano' ); ?></li>
 				</ol>
 			</div>
 		</div>
@@ -790,7 +790,7 @@ get_header();
 			<p class="pk__note pk__note--center">
 				<?php
 				echo wp_kses(
-					__( 'Every placement is scripted around <strong>explaining how something works</strong>, with your product as the worked example — never a recommendation, never a projection.', 'learncardano' ),
+					__( 'Every placement is scripted around <strong>explaining how something works</strong>, with your product as the worked example, never a recommendation, never a projection.', 'learncardano' ),
 					array( 'strong' => array() )
 				);
 				?>
@@ -828,7 +828,7 @@ get_header();
 							echo $lc_mask( __( 'Why %s is worth it', 'learncardano' ), array( $lc_dedicated_price ) ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in $lc_mask.
 							?>
 						</h3>
-						<p><?php esc_html_e( 'A 6–8 minute video where your brand is the subject — not a 60-second segment — planned against the category median of roughly 20–21K views in the first 30 days. Here is the arithmetic, done in the open.', 'learncardano' ); ?></p>
+						<p><?php esc_html_e( 'A 6 to 8 minute video where your brand is the subject (not a 60-second segment), planned against the category median of roughly 20 to 21K views in the first 30 days. Here is the arithmetic, done in the open.', 'learncardano' ); ?></p>
 						<ul class="pk__ticks">
 							<li><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput -- static SVG. ?><?php esc_html_e( 'Cohort averages: 26,413 views, 1,462 watch hours and 484 new subscribers per video', 'learncardano' ); ?></li>
 							<li><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput ?><?php esc_html_e( 'Evergreen search traffic keeps adding views for years after the 30-day window', 'learncardano' ); ?></li>
@@ -861,7 +861,7 @@ get_header();
 								<?php endforeach; ?>
 							</tbody>
 						</table>
-						<p class="pk__fineprint"><?php esc_html_e( 'Derived from the media kit figures above (Australian tax & ruling cohort averages and medians); results rounded. Past performance of the cohort, not a forecast for any single video — the delivery guarantee is the commitment.', 'learncardano' ); ?></p>
+						<p class="pk__fineprint"><?php esc_html_e( 'Derived from the media kit figures above (Australian tax & ruling cohort averages and medians); results rounded. Past performance of the cohort, not a forecast for any single video. The delivery guarantee is the commitment.', 'learncardano' ); ?></p>
 					</div>
 				</div>
 			<?php $lc_gate_close(); ?>
@@ -913,7 +913,7 @@ get_header();
 					<p>
 						<?php
 						echo wp_kses(
-							__( 'The highest-value item on the card, and no other creator in this market sells it. When the next ATO ruling or Treasury announcement lands, Learn Crypto publishes <strong>within 48 hours</strong> with the sponsor already integrated — not waiting on a content calendar. The ATO case took 27,628 views in 7 days. Slots are retained, not scheduled; unused slots roll forward.', 'learncardano' ),
+							__( 'The highest-value item on the card, and no other creator in this market sells it. When the next ATO ruling or Treasury announcement lands, Learn Crypto publishes <strong>within 48 hours</strong> with the sponsor already integrated, not waiting on a content calendar. The ATO case took 27,628 views in 7 days. Slots are retained, not scheduled; unused slots roll forward.', 'learncardano' ),
 							array( 'strong' => array() )
 						);
 						?>
@@ -924,7 +924,7 @@ get_header();
 					<p>
 						<?php
 						echo wp_kses(
-							__( 'Dedicated placements are planned against <strong>20,000 views in the first 30 days</strong> (the category median). Across a package, Learn Crypto guarantees <strong>12,000 views per dedicated placement in aggregate over the term</strong>, within 30 days of each publication — or supplies additional dedicated content at no charge until it is met. A floor almost no creator at this size will put in writing.', 'learncardano' ),
+							__( 'Dedicated placements are planned against <strong>20,000 views in the first 30 days</strong> (the category median). Across a package, Learn Crypto guarantees <strong>12,000 views per dedicated placement in aggregate over the term</strong>, within 30 days of each publication, or supplies additional dedicated content at no charge until it is met. A floor almost no creator at this size will put in writing.', 'learncardano' ),
 							array( 'strong' => array() )
 						);
 						?>
@@ -1000,7 +1000,7 @@ get_header();
 	<?php /* 15. Glossary ------------------------------------------- */ ?>
 	<section class="pk__section pk__section--light pk__section--tight" aria-labelledby="pk-glossary">
 		<div class="pk__container">
-			<h2 id="pk-glossary" class="pk__h3"><?php esc_html_e( 'Glossary — what each term means', 'learncardano' ); ?></h2>
+			<h2 id="pk-glossary" class="pk__h3"><?php esc_html_e( 'Glossary: what each term means', 'learncardano' ); ?></h2>
 			<details class="pk__details pk__details--big">
 				<summary><?php esc_html_e( 'Show all definitions', 'learncardano' ); ?></summary>
 				<div class="pk__glossary">
@@ -1027,7 +1027,7 @@ get_header();
 					<p class="pk__kicker"><?php esc_html_e( 'Project interviews', 'learncardano' ); ?></p>
 					<h2 id="pk-interviews" class="pk__h2"><?php esc_html_e( 'Building in crypto, on Cardano, Midnight or beyond?', 'learncardano' ); ?></h2>
 				</div>
-				<p class="pk__lede"><?php esc_html_e( 'Separate from sponsorship: credible projects with a track record of delivering real value can join our free editorial interview queue. We publish roughly 3 a month, and vetting takes 1–2 weeks. The Interviews playlist has drawn 497.2K views, and the Cardano News & Crypto Update podcast 1.8M.', 'learncardano' ); ?></p>
+				<p class="pk__lede"><?php esc_html_e( 'Separate from sponsorship: credible projects with a track record of delivering real value can join our free editorial interview queue. We publish roughly 3 a month, and vetting takes 1 to 2 weeks. The Interviews playlist has drawn 497.2K views, and the Cardano News & Crypto Update podcast 1.8M.', 'learncardano' ); ?></p>
 			</header>
 
 			<h3 class="pk__subhead"><?php esc_html_e( 'What’s included', 'learncardano' ); ?></h3>
@@ -1042,26 +1042,26 @@ get_header();
 
 			<div class="pk__accordions pk__accordions--light">
 				<details class="pk__details">
-					<summary><?php esc_html_e( 'Editorial standards — what we don’t cover', 'learncardano' ); ?></summary>
+					<summary><?php esc_html_e( 'Editorial standards: what we don’t cover', 'learncardano' ); ?></summary>
 					<ul class="pk__crosses">
 						<?php foreach ( $lc_interview_standards as $lc_item ) : ?>
 							<li><?php echo $lc_cross; // phpcs:ignore WordPress.Security.EscapeOutput -- static SVG. ?><?php echo esc_html( $lc_item ); ?></li>
 						<?php endforeach; ?>
 					</ul>
-					<p><?php esc_html_e( 'Learn Crypto exists to surface real innovation across crypto, with Cardano and Midnight at its core. Our audience trusts us to filter signal from noise, so every editorial interview has to represent genuine value, not marketing spend. Paid placements are a separate product and are always disclosed — see Compliance & disclosure above.', 'learncardano' ); ?></p>
+					<p><?php esc_html_e( 'Learn Crypto exists to surface real innovation across crypto, with Cardano and Midnight at its core. Our audience trusts us to filter signal from noise, so every editorial interview has to represent genuine value, not marketing spend. Paid placements are a separate product and are always disclosed (see Compliance & disclosure above).', 'learncardano' ); ?></p>
 				</details>
 				<details class="pk__details">
 					<summary><?php esc_html_e( 'How we vet projects', 'learncardano' ); ?></summary>
-					<p><?php esc_html_e( 'Every submission goes through editorial review. We assess technical merit, team credibility, ecosystem contribution and alignment with the values of the wider crypto community, including Cardano and Midnight, and we prioritise projects that are shipping, not talking. If your project doesn’t fit, we’ll tell you within 1–2 weeks with transparent feedback.', 'learncardano' ); ?></p>
+					<p><?php esc_html_e( 'Every submission goes through editorial review. We assess technical merit, team credibility, ecosystem contribution and alignment with the values of the wider crypto community, including Cardano and Midnight, and we prioritise projects that are shipping, not talking. If your project doesn’t fit, we’ll tell you within 1 to 2 weeks with transparent feedback.', 'learncardano' ); ?></p>
 				</details>
 				<details class="pk__details">
 					<summary><?php esc_html_e( 'Recording & logistics', 'learncardano' ); ?></summary>
 					<ul>
-						<li><?php esc_html_e( 'Interviews run 30–60 minutes.', 'learncardano' ); ?></li>
+						<li><?php esc_html_e( 'Interviews run 30 to 60 minutes.', 'learncardano' ); ?></li>
 						<li>
 							<?php
 							echo wp_kses(
-								__( 'Recorded on <a href="https://riverside.com/" rel="noopener">Riverside</a> — we handle setup and recording.', 'learncardano' ),
+								__( 'Recorded on <a href="https://riverside.com/" rel="noopener">Riverside</a>, we handle setup and recording.', 'learncardano' ),
 								array(
 									'a' => array(
 										'href' => array(),
