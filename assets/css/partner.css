@@ -124,6 +124,11 @@
 .pk__card--mini{padding:22px}
 
 .pk__quote{margin:40px 0 0;padding:28px 32px;border-left:5px solid var(--pk-purple-2);background:var(--pk-tint);border-radius:0 18px 18px 0}
+.pk__quote-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,340px);gap:24px;align-items:end;margin-top:40px}
+.pk__quote-row .pk__quote{margin:0 0 28px;align-self:center}
+.pk__quote-person{position:relative;margin:0;aspect-ratio:400/360;width:100%}
+.pk__quote-shapes{position:absolute;inset:0;width:100%;height:100%}
+.pk__quote-img{position:absolute;left:12%;bottom:0;width:78%;height:auto}
 .pk__quote p{font-family:'Chivo',sans-serif;font-weight:700;font-size:clamp(19px,2.2vw,24px);line-height:1.4;color:var(--pk-ink);font-style:normal;margin:0}
 
 /* ---- tables ---- */
@@ -331,6 +336,9 @@
 	.pk__steps{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media (max-width:980px){
+	.pk__quote-row{grid-template-columns:1fr;gap:8px}
+	.pk__quote-row .pk__quote{margin:0}
+	.pk__quote-person{max-width:300px;justify-self:center}
 	.pk__section{padding:64px 0}
 	.pk__hero{padding:56px 0 48px}
 	.pk__hero-grid,.pk__split,.pk__rate-cols,.pk__value,.pk__bio,.pk__booking{grid-template-columns:minmax(0,1fr)}
