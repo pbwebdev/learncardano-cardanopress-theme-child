@@ -27,7 +27,7 @@ $lc_spotify_id = function_exists('lc_spotify_id') ? lc_spotify_id(get_field('spo
              * PodcastEpisode structured data (Schema.org JSON-LD).
              * Built as a PHP array and emitted with wp_json_encode() so all
              * escaping (quotes, newlines, unicode) is handled automatically.
-             * audio + duration are intentionally omitted — the podcast has no
+             * audio + duration are intentionally omitted, the podcast has no
              * direct MP3/duration data source (episodes are Spotify/YouTube embeds).
              */
             $lc_schema = array(

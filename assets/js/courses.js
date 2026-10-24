@@ -522,7 +522,7 @@
 	function answerLine(className, label, texts) {
 		const line = el('p', className);
 		line.appendChild(el('strong', '', label + ':'));
-		line.appendChild(document.createTextNode(' ' + (texts.length ? texts.join('; ') : '—')));
+		line.appendChild(document.createTextNode(' ' + (texts.length ? texts.join('; ') : 'n/a')));
 		return line;
 	}
 

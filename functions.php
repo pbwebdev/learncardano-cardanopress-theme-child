@@ -608,7 +608,7 @@ add_action( 'wp_enqueue_scripts', function () {
  * @wordpress/* runtime bundles (wp-hooks, wp-dom-ready, wp-i18n, wp-a11y).
  * That broke the live site in two ways:
  *
- *  1. The body element has x-data="cardanoPress" — Alpine evaluates that
+ *  1. The body element has x-data="cardanoPress", Alpine evaluates that
  *     expression as soon as alpinejs.min.js runs. If cardanopress-bootstrap-script
  *     hasn't run yet (because we deferred it), the cardanoPress() function
  *     doesn't exist and every directive that references isConnected / showModal /
@@ -617,7 +617,7 @@ add_action( 'wp_enqueue_scripts', function () {
  *     reference the `wp` global. Deferring the parent module breaks those
  *     inline blocks ("wp is not defined").
  *
- * Reverted to a small, demonstrably safe defer list — purely progressive-
+ * Reverted to a small, demonstrably safe defer list, purely progressive-
  * enhancement assets with no inline-after / Alpine consumers.
  */
 add_filter( 'script_loader_tag', function ( $tag, $handle ) {

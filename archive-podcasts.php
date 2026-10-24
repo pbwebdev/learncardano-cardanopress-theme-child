@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Podcast archive — redesigned episode listing.
+ * Podcast archive: redesigned episode listing.
  *
  * Hero (gradient title + search) followed by a vertical stack of large
  * episode cards (thumbnail + body), then numbered pagination. The site

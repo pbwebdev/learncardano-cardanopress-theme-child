@@ -1,5 +1,5 @@
 /*
-  learncardano.io delegation panel — vanilla JS state machine, ported from
+  learncardano.io delegation panel: vanilla JS state machine, ported from
   cardanode.com.au (src/static/scripts/delegate-panel.js).
 
   Flow:
@@ -18,7 +18,7 @@
   for building the transaction. The wallet itself submits it (CIP-30).
 */
 
-// Wallets shown first if installed (other detected wallets follow, A–Z).
+// Wallets shown first if installed (other detected wallets follow, A to Z).
 const PRIORITY_WALLETS = ["lace", "eternl", "nami", "typhon", "nufi", "begin", "yoroi"];
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -172,7 +172,7 @@ function initPanel() {
       console.error(err);
       clearConnection();
       showError(isConnectRefusal(err)
-        ? "Connection cancelled. No problem — click Connect when you're ready."
+        ? "Connection cancelled. No problem, click Connect when you're ready."
         : `Couldn't connect: ${escapeHtml(errorText(err))}`);
     } finally {
       setStatusBanner("");
@@ -217,7 +217,7 @@ function initPanel() {
 
     $("#dp-balance").textContent = balance != null
       ? balance.toLocaleString("en-US") + " ₳"
-      : "—";
+      : "n/a";
 
     // The delegate button adapts to the account's state.
     const btn = $("#dp-delegate");
@@ -259,7 +259,7 @@ function initPanel() {
       const unsignedTx = await tx.complete();
 
       step = "sign";
-      setWorking("Sign in your wallet", "Your wallet will pop up — review and approve.");
+      setWorking("Sign in your wallet", "Your wallet will pop up, review and approve.");
       const signedTx = await wallet.signTx(unsignedTx);
 
       step = "submit";

@@ -58,7 +58,7 @@ function lc_trim_description( $text, $max ) {
 	}
 	$cut = mb_substr( $text, 0, $max - 1 );
 	$cut = preg_replace( '/\s+\S*$/u', '', $cut );
-	return rtrim( $cut, " \t,;:-–—." ) . '…';
+	return rtrim( $cut, " \t,;:-\u{2013}\u{2014}." ) . '…';
 }
 
 /**

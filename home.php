@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Resources — the blog posts index (the posts page set in Settings → Reading).
+ * Resources: the blog posts index (the posts page set in Settings → Reading).
  *
  * Matches the podcast archive (archive-podcasts.php): hero with gradient title,
  * article search and a category filter, then large cards and numbered

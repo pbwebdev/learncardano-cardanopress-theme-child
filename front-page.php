@@ -22,7 +22,7 @@ get_header();
   - Desktop unchanged
 
   v5 FIX: Avatar images never fetched because img.loading='lazy' on an
-  element not yet in the DOM creates a deadlock — browser waits for
+  element not yet in the DOM creates a deadlock: browser waits for
   visibility, but visibility requires DOM insertion, which only happens
   on onload, which only fires after fetch. Removed lazy attribute and
   switched to createElement + opacity fade-in for a cleaner reveal.
@@ -85,7 +85,7 @@ get_header();
   text-align: center;
 }
 
-/* H1 shell — neutralised, no gradient or text-fill */
+/* H1 shell: neutralised, no gradient or text-fill */
 .lc-hero .lc-center .lc-headline {
   margin: 0 !important;
   padding: 0 !important;
@@ -110,7 +110,7 @@ get_header();
   transform: translateY(0) !important;
 }
 
-/* The styled text — gradient + clip live here and only here */
+/* The styled text: gradient + clip live here and only here */
 .lc-hero .lc-center .lc-headline .lc-headline-text {
   display: inline-block !important;
   visibility: visible !important;
@@ -208,14 +208,14 @@ get_header();
   display: block;
 }
 
-/* TABLET (600–1024px): pills become subtle ambient decoration */
+/* TABLET (600 to 1024px): pills become subtle ambient decoration */
 @media (min-width: 601px) and (max-width: 1024px) {
   .lc-hero .lc-scene { height: 540px; }
   .lc-hero .lc-center .lc-headline .lc-headline-text { font-size: 52px !important; letter-spacing: -1.5px !important; }
   .lc-hero .lc-tag {
     font-size: 13px;
     padding: 6px 12px;
-    /* Reduce visual weight — pills are atmosphere, not content */
+    /* Reduce visual weight: pills are atmosphere, not content */
     filter: saturate(0.4);
   }
   .lc-hero .lc-tag.has-avatar { padding-left: 3px; }
@@ -233,7 +233,7 @@ get_header();
     letter-spacing: -1px !important;
   }
   .lc-hero .lc-center .lc-sub { font-size: 14px; }
-  /* Nuke every pill on mobile — too cramped to be useful (the script
+  /* Nuke every pill on mobile, too cramped to be useful (the script
      doesn't build them at this width either) */
   .lc-hero .lc-tag { display: none !important; }
   /* Mobile shows plain text: paint it straight away, no entrance fade,
@@ -319,7 +319,7 @@ get_header();
       avatar.textContent = initials;
 
       // Add the img to the avatar container immediately (hidden until loaded)
-      // then set src — this guarantees the browser fetches it.
+      // then set src, this guarantees the browser fetches it.
       const img = document.createElement('img');
       img.alt = '';
       img.style.opacity = '0';
@@ -346,7 +346,7 @@ get_header();
     tagEls.push(a);
   });
 
-  // NO per-char split anymore — the gradient handles itself on the single span.
+  // NO per-char split anymore, the gradient handles itself on the single span.
 
   // Entrance
   requestAnimationFrame(function() {

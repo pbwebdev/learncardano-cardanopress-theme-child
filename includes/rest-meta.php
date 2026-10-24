@@ -26,7 +26,7 @@ function lc_rest_meta_schema() {
 	return array(
 		'recipe'     => array(
 			'string'          => array(
-				'est_time_minutes',     // ACF Text — string, not int.
+				'est_time_minutes',     // ACF Text: string, not int.
 				'last_verified',
 				'severity_of_drift',
 				'cardano_era',          // Legacy, kept for existing posts.

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Single article — blog posts, and any post type without its own template.
+ * Single article: blog posts, and any post type without its own template.
  *
  * Laid out like the podcast episode page (centred header, single reading
  * column) in the archive redesign's fonts and accent: category kicker, title

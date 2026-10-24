@@ -522,7 +522,7 @@ function lc_auth_admin_box( $user ) {
 	$wallets = lc_auth_wallets( $user->ID );
 	echo '<h2>' . esc_html__( 'Sign-in methods (Learn Crypto)', 'learncardano' ) . '</h2><table class="form-table" role="presentation">';
 	wp_nonce_field( 'lc_auth_admin_' . $user->ID, 'lc_auth_admin_nonce' );
-	echo '<tr><th>' . esc_html__( 'Email', 'learncardano' ) . '</th><td>' . esc_html( $user->user_email ?: '—' ) . ' &middot; ';
+	echo '<tr><th>' . esc_html__( 'Email', 'learncardano' ) . '</th><td>' . esc_html( $user->user_email ?: 'n/a' ) . ' &middot; ';
 	if ( lc_auth_email_verified( $user ) ) {
 		echo esc_html__( 'verified', 'learncardano' );
 	} elseif ( '' !== $user->user_email ) {

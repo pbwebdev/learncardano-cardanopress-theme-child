@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Latest Episodes — home page (Option B: featured hero + 2-up list).
+ * Latest Episodes: home page (Option B: featured hero + 2-up list).
  *
  * Renders the newest podcast as a large featured card, then the next two as
  * compact list cards. On mobile all three collapse to full-width stacked

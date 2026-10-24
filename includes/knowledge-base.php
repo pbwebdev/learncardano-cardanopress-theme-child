@@ -108,7 +108,7 @@ function lc_kb_term_slugs( $post_id, $taxonomy ) {
 
 /**
  * Short label for a select field's stored value: the ACF choice label up to
- * its first em dash ("High — silent failure…" → "High"). '' when unset.
+ * its first em dash (U+2014), so "High [em dash] silent failure…" gives "High". '' when unset.
  */
 function lc_kb_choice( $field, $post_id, $short = true ) {
 	$value = get_field( $field, $post_id, false );
@@ -118,7 +118,7 @@ function lc_kb_choice( $field, $post_id, $short = true ) {
 	$object = get_field_object( $field, $post_id );
 	$label  = ( $object && isset( $object['choices'][ $value ] ) ) ? $object['choices'][ $value ] : (string) $value;
 	if ( $short ) {
-		$parts = explode( '—', $label );
+		$parts = explode( "\u{2014}", $label );
 		$label = trim( $parts[0] );
 	}
 	return $label;

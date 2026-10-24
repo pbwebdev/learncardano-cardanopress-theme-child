@@ -1,6 +1,6 @@
 <?php
 /**
- * /feed/social/ — one RSS feed with the newest articles and podcast episodes,
+ * /feed/social/: one RSS feed with the newest articles and podcast episodes,
  * for the RSS automation that shares new content to Facebook, X and Reddit.
  * Each item carries its featured image (media:content + enclosure) because
  * some automation services want an image in the feed itself.

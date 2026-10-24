@@ -41,7 +41,7 @@ $lc_check   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 				<p class="dlg__lede">
 					<?php esc_html_e( 'Connect your Cardano wallet and delegate to ADAOZ on-chain in two clicks. First-time delegators pay a one-off', 'learncardano' ); ?>
 					<strong><?php esc_html_e( '2 ₳ stake-key registration deposit', 'learncardano' ); ?></strong>
-					<?php esc_html_e( '— refunded if you ever de-register.', 'learncardano' ); ?>
+					<?php esc_html_e( '(refunded if you ever de-register).', 'learncardano' ); ?>
 				</p>
 
 				<?php if ( trim( get_the_content() ) ) : ?>
@@ -59,7 +59,7 @@ $lc_check   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>
 							<?php esc_html_e( 'Connect wallet', 'learncardano' ); ?>
 						</button>
-						<p class="dlg__hint"><?php echo wp_kses_post( __( 'Works with <strong>Lace</strong>, <strong>Eternl</strong>, Nami, Typhon, NuFi, Begin, Yoroi — any CIP-30 wallet. <strong>We never see your keys.</strong>', 'learncardano' ) ); ?></p>
+						<p class="dlg__hint"><?php echo wp_kses_post( __( 'Works with <strong>Lace</strong>, <strong>Eternl</strong>, Nami, Typhon, NuFi, Begin, Yoroi, any CIP-30 wallet. <strong>We never see your keys.</strong>', 'learncardano' ) ); ?></p>
 					</div>
 
 					<div data-show="picking" hidden>
@@ -77,9 +77,9 @@ $lc_check   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 						<h3><?php esc_html_e( 'Wallet connected', 'learncardano' ); ?></h3>
 						<dl class="dlg__kv">
 							<dt><?php esc_html_e( 'Stake address', 'learncardano' ); ?></dt><dd><code id="dp-stake-addr"></code></dd>
-							<dt><?php esc_html_e( 'Wallet balance', 'learncardano' ); ?></dt><dd id="dp-balance">—</dd>
-							<dt><?php esc_html_e( 'Stake key', 'learncardano' ); ?></dt><dd id="dp-reg-status">—</dd>
-							<dt><?php esc_html_e( 'Currently delegated', 'learncardano' ); ?></dt><dd id="dp-current-pool">—</dd>
+							<dt><?php esc_html_e( 'Wallet balance', 'learncardano' ); ?></dt><dd id="dp-balance">n/a</dd>
+							<dt><?php esc_html_e( 'Stake key', 'learncardano' ); ?></dt><dd id="dp-reg-status">n/a</dd>
+							<dt><?php esc_html_e( 'Currently delegated', 'learncardano' ); ?></dt><dd id="dp-current-pool">n/a</dd>
 						</dl>
 						<p class="dlg__actions">
 							<button type="button" id="dp-delegate" class="dlg__btn dlg__btn--lg" data-action="delegate"><?php esc_html_e( 'Delegate to ADAOZ', 'learncardano' ); ?></button>
@@ -94,14 +94,14 @@ $lc_check   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 
 					<div data-show="success" hidden>
 						<h3><?php esc_html_e( 'Transaction submitted 🎉', 'learncardano' ); ?></h3>
-						<p><?php esc_html_e( 'Your delegation to ADAOZ is on the way. Rewards start flowing in 2–3 epochs (around 10–15 days). Thank you for supporting Learn Crypto.', 'learncardano' ); ?></p>
+						<p><?php esc_html_e( 'Your delegation to ADAOZ is on the way. Rewards start flowing in 2 to 3 epochs (around 10 to 15 days). Thank you for supporting Learn Crypto.', 'learncardano' ); ?></p>
 						<p><?php esc_html_e( 'Transaction:', 'learncardano' ); ?> <a id="dp-tx-link" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'view on Cardanoscan', 'learncardano' ); ?></a></p>
 						<button type="button" class="dlg__btn dlg__btn--ghost" data-action="reset"><?php esc_html_e( 'Done', 'learncardano' ); ?></button>
 					</div>
 
 					<div data-show="already-adaoz" hidden>
 						<h3><?php esc_html_e( 'You’re already delegated to ADAOZ 🎉', 'learncardano' ); ?></h3>
-						<p><?php esc_html_e( 'Thanks for your support. Nothing more to do — rewards keep coming every epoch.', 'learncardano' ); ?></p>
+						<p><?php esc_html_e( 'Thanks for your support. Nothing more to do, rewards keep coming every epoch.', 'learncardano' ); ?></p>
 						<button type="button" class="dlg__btn dlg__btn--ghost" data-action="disconnect"><?php esc_html_e( 'Disconnect', 'learncardano' ); ?></button>
 					</div>
 
@@ -118,7 +118,7 @@ $lc_check   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 					</span>
 					<span class="dlg__calc-text">
 						<strong><?php esc_html_e( 'Curious what you could earn?', 'learncardano' ); ?></strong>
-						<?php esc_html_e( 'Use the Cardano staking calculator to project your ADA rewards over time — including weekly DCA.', 'learncardano' ); ?>
+						<?php esc_html_e( 'Use the Cardano staking calculator to project your ADA rewards over time, including weekly DCA.', 'learncardano' ); ?>
 						<span class="visually-hidden"><?php esc_html_e( '(opens in a new tab)', 'learncardano' ); ?></span>
 					</span>
 					<span class="dlg__calc-arrow" aria-hidden="true">&nearr;</span>
@@ -162,9 +162,9 @@ $lc_check   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 
 				<h2 class="dlg__aside-title"><?php esc_html_e( 'What to expect', 'learncardano' ); ?></h2>
 				<ul class="dlg__expect">
-					<li><span class="dlg__icon"><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput -- static SVG. ?></span><div><h3><?php esc_html_e( 'Non-custodial', 'learncardano' ); ?></h3><p><?php esc_html_e( 'Your ADA never leaves your wallet. Delegating only points your stake — we can’t move or spend it.', 'learncardano' ); ?></p></div></li>
+					<li><span class="dlg__icon"><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput -- static SVG. ?></span><div><h3><?php esc_html_e( 'Non-custodial', 'learncardano' ); ?></h3><p><?php esc_html_e( 'Your ADA never leaves your wallet. Delegating only points your stake, we can’t move or spend it.', 'learncardano' ); ?></p></div></li>
 					<li><span class="dlg__icon"><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput ?></span><div><h3><?php esc_html_e( 'Two clicks', 'learncardano' ); ?></h3><p><?php esc_html_e( 'Connect your wallet, sign one transaction. That’s it.', 'learncardano' ); ?></p></div></li>
-					<li><span class="dlg__icon"><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput ?></span><div><h3><?php esc_html_e( 'One-off 2 ₳ deposit', 'learncardano' ); ?></h3><p><?php esc_html_e( 'A refundable stake-key registration deposit — you get it back if you ever de-register.', 'learncardano' ); ?></p></div></li>
+					<li><span class="dlg__icon"><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput ?></span><div><h3><?php esc_html_e( 'One-off 2 ₳ deposit', 'learncardano' ); ?></h3><p><?php esc_html_e( 'A refundable stake-key registration deposit, so you get it back if you ever de-register.', 'learncardano' ); ?></p></div></li>
 					<li><span class="dlg__icon"><?php echo $lc_check; // phpcs:ignore WordPress.Security.EscapeOutput ?></span><div><h3><?php esc_html_e( 'Rewards every epoch', 'learncardano' ); ?></h3><p><?php esc_html_e( 'Earn roughly every 5 days, automatically compounding. No claiming needed.', 'learncardano' ); ?></p></div></li>
 				</ul>
 			</aside>
