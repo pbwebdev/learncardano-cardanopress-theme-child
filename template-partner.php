@@ -1161,5 +1161,91 @@ get_header();
 </main><!-- .pk -->
 
 <?php
+/*
+ * Structured data for this page, built from the same strings the page shows so
+ * the two can't drift apart. It links to the Organization, WebSite and WebPage
+ * nodes Rank Math already prints (same @id values).
+ */
+$lc_page_url = get_permalink();
+$lc_home     = home_url( '/' );
+$lc_terms_ld = array();
+foreach ( $lc_glossary as $lc_items ) {
+	foreach ( $lc_items as $lc_term => $lc_def ) {
+		$lc_terms_ld[] = array(
+			'@type'       => 'DefinedTerm',
+			'name'        => $lc_term,
+			'description' => ucfirst( rtrim( $lc_def, '.' ) ) . '.',
+		);
+	}
+}
+$lc_faq_ld = array(
+	array(
+		__( 'How do you vet projects for an interview?', 'learncardano' ),
+		__( 'Every submission goes through editorial review. We assess technical merit, team credibility, ecosystem contribution and alignment with the values of the wider crypto community, including Cardano and Midnight, and we prioritise projects that are shipping, not talking. If your project doesn’t fit, we’ll tell you within 1 to 2 weeks with transparent feedback.', 'learncardano' ),
+	),
+	array(
+		__( 'What won’t you cover in an interview?', 'learncardano' ),
+		implode( ' ', array_map( function ( $s ) { return rtrim( $s, '.' ) . '.'; }, $lc_interview_standards ) ) . ' ' . __( 'Paid placements are a separate product and are always disclosed.', 'learncardano' ),
+	),
+	array(
+		__( 'How are interviews recorded?', 'learncardano' ),
+		__( 'Interviews run 30 to 60 minutes and are recorded on Riverside. We handle setup and recording, you receive a copy of the raw video for your own use, and we handle all editing, thumbnails and publishing.', 'learncardano' ),
+	),
+	array(
+		__( 'Can I republish my interview?', 'learncardano' ),
+		__( 'Interviews are exclusive to Learn Crypto for 7 days after the YouTube release. After that you’re welcome to republish them on your own channels and platforms.', 'learncardano' ),
+	),
+	array(
+		__( 'Can I cancel or reschedule an interview?', 'learncardano' ),
+		__( 'We understand things happen. Free interviews can be rescheduled with 6 hours’ notice.', 'learncardano' ),
+	),
+);
+$lc_ld = array(
+	'@context' => 'https://schema.org',
+	'@graph'   => array(
+		array(
+			'@type'           => 'BreadcrumbList',
+			'@id'             => $lc_page_url . '#breadcrumb',
+			'itemListElement' => array(
+				array( '@type' => 'ListItem', 'position' => 1, 'name' => __( 'Home', 'learncardano' ), 'item' => $lc_home ),
+				array( '@type' => 'ListItem', 'position' => 2, 'name' => get_the_title(), 'item' => $lc_page_url ),
+			),
+		),
+		array(
+			'@type'       => 'Service',
+			'@id'         => $lc_page_url . '#service',
+			'name'        => __( 'Learn Crypto sponsorships and partnerships', 'learncardano' ),
+			'serviceType' => __( 'Sponsored video, podcast and newsletter placements', 'learncardano' ),
+			'description' => __( 'Sponsored placements across the Learn Crypto YouTube channel, podcast feeds, newsletter and website, for brands reaching Australian crypto holders. Built around ASIC INFO 269 with full disclosure.', 'learncardano' ),
+			'provider'    => array( '@id' => $lc_home . '#organization' ),
+			'areaServed'  => array( '@type' => 'Country', 'name' => 'Australia' ),
+			'audience'    => array( '@type' => 'Audience', 'audienceType' => __( 'Australian crypto holders', 'learncardano' ) ),
+			'url'         => $lc_page_url,
+		),
+		array(
+			'@type'      => 'FAQPage',
+			'@id'        => $lc_page_url . '#faq',
+			'isPartOf'   => array( '@id' => $lc_page_url . '#webpage' ),
+			'mainEntity' => array_map(
+				function ( $qa ) {
+					return array(
+						'@type'          => 'Question',
+						'name'           => $qa[0],
+						'acceptedAnswer' => array( '@type' => 'Answer', 'text' => $qa[1] ),
+					);
+				},
+				$lc_faq_ld
+			),
+		),
+		array(
+			'@type'          => 'DefinedTermSet',
+			'@id'            => $lc_page_url . '#glossary',
+			'name'           => __( 'Learn Crypto partnership glossary', 'learncardano' ),
+			'url'            => $lc_page_url . '#pk-glossary',
+			'hasDefinedTerm' => $lc_terms_ld,
+		),
+	),
+);
+echo '<script type="application/ld+json">' . wp_json_encode( $lc_ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput -- JSON-encoded.
 
 get_footer();
