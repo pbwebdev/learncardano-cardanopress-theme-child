@@ -456,17 +456,11 @@ get_header();
 			<div class="pk__quote-row">
 				<blockquote class="pk__quote"><p><?php echo esc_html( $lc_quote ); ?></p></blockquote>
 				<figure class="pk__quote-person">
-					<svg class="pk__quote-shapes" viewBox="0 0 400 360" aria-hidden="true" focusable="false">
-						<circle cx="206" cy="170" r="150" fill="#7834F7" fill-opacity=".14"/>
-						<circle cx="206" cy="170" r="112" fill="#7834F7" fill-opacity=".26"/>
-						<path d="M26 360a180 180 0 0 1 360 0z" fill="#05B9F2" fill-opacity=".38"/>
-						<path d="M400 70a62 62 0 0 0 0 124z" fill="#E312F1" fill-opacity=".45"/>
-						<path d="M0 214a46 46 0 0 1 0 92z" fill="#E312F1" fill-opacity=".3"/>
-						<circle cx="70" cy="74" r="28" fill="none" stroke="#E312F1" stroke-opacity=".7" stroke-width="9"/>
-						<circle cx="330" cy="30" r="14" fill="#05B9F2" fill-opacity=".85"/>
-						<circle cx="372" cy="244" r="16" fill="#10134B" fill-opacity=".85"/>
+					<svg class="pk__quote-shapes" viewBox="0 0 400 420" aria-hidden="true" focusable="false">
+						<circle cx="208" cy="250" r="168" fill="#10134B"/>
+						<circle cx="86" cy="118" r="62" fill="#05B9F2" fill-opacity=".85"/>
 					</svg>
-					<img class="pk__quote-img" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/images/partner/peter-quote.webp' ); ?>" width="854" height="760" alt="<?php esc_attr_e( 'Peter Bui, host of the Learn Crypto Podcast', 'learncardano' ); ?>" decoding="async" loading="lazy" />
+					<img class="pk__quote-img" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/images/partner/peter-smile-quote.webp' ); ?>" width="416" height="526" alt="<?php esc_attr_e( 'Peter Bui, host of the Learn Crypto Podcast', 'learncardano' ); ?>" decoding="async" loading="lazy" />
 				</figure>
 			</div>
 		</div>
