@@ -7,7 +7,7 @@
 ( function () {
 	'use strict';
 
-	var nums = document.querySelectorAll( '[data-pk-count]' );
+	var nums = document.querySelectorAll( '[data-pk-count], [data-pk-countup]' );
 	if ( ! nums.length || ! ( 'IntersectionObserver' in window ) ) {
 		return;
 	}
@@ -24,7 +24,41 @@
 		} ) + suffix;
 	}
 
+	// Every number in the text counts up together; everything else stays put.
+	function runText( el ) {
+		var final = el.textContent;
+		var parts = final.split( /(\d+(?:\.\d+)?)/ );
+		var start = null;
+		// Hold the finished size so a wrapping figure does not jump while counting.
+		el.style.minHeight = el.offsetHeight + 'px';
+		function step( now ) {
+			if ( null === start ) {
+				start = now;
+			}
+			var t     = Math.min( ( now - start ) / DURATION, 1 );
+			var eased = 1 - Math.pow( 1 - t, 3 );
+			if ( t < 1 ) {
+				el.textContent = parts.map( function ( part, i ) {
+					if ( 0 === i % 2 ) {
+						return part;
+					}
+					var decimals = ( part.split( '.' )[ 1 ] || '' ).length;
+					return ( parseFloat( part ) * eased ).toFixed( decimals );
+				} ).join( '' );
+				window.requestAnimationFrame( step );
+			} else {
+				el.textContent = final;
+				el.style.minHeight = '';
+			}
+		}
+		window.requestAnimationFrame( step );
+	}
+
 	function run( el ) {
+		if ( el.hasAttribute( 'data-pk-countup' ) ) {
+			runText( el );
+			return;
+		}
 		var target   = parseFloat( el.getAttribute( 'data-pk-count' ) );
 		var decimals = parseInt( el.getAttribute( 'data-pk-decimals' ), 10 ) || 0;
 		var suffix   = el.getAttribute( 'data-pk-suffix' ) || '';

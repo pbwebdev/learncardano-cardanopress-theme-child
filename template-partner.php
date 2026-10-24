@@ -692,7 +692,7 @@ get_header();
 			<ul class="pk__grid pk__grid--4 pk__bigstats">
 				<?php foreach ( $lc_conversion as $lc_c ) : ?>
 					<li>
-						<span class="pk__big"><?php echo esc_html( $lc_c[0] ); ?></span>
+						<span class="pk__big" data-pk-countup><?php echo esc_html( $lc_c[0] ); ?></span>
 						<span><?php echo esc_html( $lc_c[1] ); ?></span>
 					</li>
 				<?php endforeach; ?>
