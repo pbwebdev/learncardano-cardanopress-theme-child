@@ -68,7 +68,7 @@
 .pk__note--center{text-align:center;margin-left:auto;margin-right:auto}
 .pk__note strong,.pk__strong{color:var(--pk-purple);font-weight:800}
 .pk__fineprint{font-size:13.5px;line-height:1.55;color:var(--pk-muted);margin:16px 0 0}
-.pk__muted{color:#7a7a84;font-weight:400}
+.pk__muted{color:#6e6e78;font-weight:400}
 .pk__big{display:block;font-family:'Chivo',sans-serif;font-weight:900;font-size:clamp(36px,4.4vw,52px);line-height:1;letter-spacing:-0.02em;color:var(--pk-purple);margin-bottom:8px}
 .pk__section--dark .pk__big{color:var(--pk-on-dark-accent)}
 
