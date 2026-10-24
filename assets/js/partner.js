@@ -1,11 +1,16 @@
 /**
- * Partner page (template-partner.php): counts the hero stats up from zero the
- * first time they scroll into view. The final figures are already in the HTML
- * (and in a screen-reader copy), so without JS, or with reduced motion, the
- * page simply shows them.
+ * Partner page (template-partner.php), on first scroll into view:
+ * - [data-pk-count] counts one number up from zero (optional suffix);
+ * - [data-pk-countup] counts every number inside its text ("5% to 10%", "72hrs");
+ * - [data-pk-draw] charts draw in: line and area, then points (CSS in partner.css).
+ * The final figures are already in the HTML, so without JS, or with reduced
+ * motion, the page simply shows them.
  */
 ( function () {
 	'use strict';
+
+	// Charts marked [data-pk-draw] start hidden and draw in on first view.
+	var charts = document.querySelectorAll( '[data-pk-draw]' );
 
 	var nums = document.querySelectorAll( '[data-pk-count], [data-pk-countup]' );
 	if ( ! nums.length || ! ( 'IntersectionObserver' in window ) ) {
@@ -95,5 +100,20 @@
 
 	nums.forEach( function ( el ) {
 		observer.observe( el );
+	} );
+
+	var chartObserver = new IntersectionObserver( function ( entries ) {
+		entries.forEach( function ( entry ) {
+			if ( entry.isIntersecting ) {
+				chartObserver.unobserve( entry.target );
+				entry.target.classList.add( 'is-drawn' );
+				entry.target.classList.remove( 'is-pending' );
+			}
+		} );
+	}, { threshold: 0.45 } );
+
+	charts.forEach( function ( el ) {
+		el.classList.add( 'is-pending' );
+		chartObserver.observe( el );
 	} );
 }() );

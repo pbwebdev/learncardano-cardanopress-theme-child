@@ -34,6 +34,9 @@
 // The media kit (DocSend, email-gated): where every real figure lives.
 $lc_media_kit_url = 'https://link.learncardano.io/learncardano-media-kit';
 
+// When the hero stats were last taken from YouTube Studio. Update with the figures.
+$lc_stats_updated = '2026-10-16';
+
 // Hero stat strip. `count` drives the count-up; `text` is what is printed.
 $lc_stats = array(
 	// YouTube Studio, lifetime to 16 Oct 2026 (CTR and impressions from the 2026 media kit).
@@ -433,6 +436,15 @@ get_header();
 					</li>
 				<?php endforeach; ?>
 			</ul>
+			<p class="pk__stats-date">
+				<?php
+				printf(
+					/* translators: %s: date the channel figures were last updated */
+					esc_html__( 'Channel figures from YouTube Studio. Last updated %s.', 'learncardano' ),
+					'<time datetime="' . esc_attr( $lc_stats_updated ) . '">' . esc_html( date_i18n( 'j F Y', strtotime( $lc_stats_updated ) ) ) . '</time>'
+				);
+				?>
+			</p>
 			<p class="pk__distribution"><strong><?php esc_html_e( 'Distribution beyond YouTube:', 'learncardano' ); ?></strong> <?php echo esc_html( $lc_distribution ); ?></p>
 		</div>
 	</section>
@@ -558,7 +570,7 @@ get_header();
 					}
 					$lc_line = implode( ' ', array_map( fn( $c ) => $c[0] . ',' . round( $c[1], 1 ), $lc_coords ) );
 					?>
-					<svg class="pk__chart-svg" viewBox="0 0 700 340" role="img" aria-label="<?php esc_attr_e( 'Chart of the Australian share of channel views, rising from 16.8% lifetime to 42.4% over the last 90 days.', 'learncardano' ); ?>">
+					<svg class="pk__chart-svg" data-pk-draw viewBox="0 0 700 340" role="img" aria-label="<?php esc_attr_e( 'Chart of the Australian share of channel views, rising from 16.8% lifetime to 42.4% over the last 90 days.', 'learncardano' ); ?>">
 						<defs>
 							<linearGradient id="pk-au-fill" x1="0" y1="0" x2="0" y2="1">
 								<stop offset="0" stop-color="#a855f7" stop-opacity="0.95"/>
@@ -570,11 +582,11 @@ get_header();
 							<line x1="70" x2="670" y1="<?php echo esc_attr( $lc_y( $lc_g ) ); ?>" y2="<?php echo esc_attr( $lc_y( $lc_g ) ); ?>" stroke="#ffffff" stroke-opacity="0.18"/>
 							<text x="58" y="<?php echo esc_attr( $lc_y( $lc_g ) + 4 ); ?>" text-anchor="end" fill="#b9b9c6" font-size="13"><?php echo esc_html( $lc_g . '%' ); ?></text>
 						<?php endforeach; ?>
-						<polygon points="<?php echo esc_attr( '110,' . $lc_y( 0 ) . ' ' . $lc_line . ' 650,' . $lc_y( 0 ) ); ?>" fill="url(#pk-au-fill)"/>
-						<polyline points="<?php echo esc_attr( $lc_line ); ?>" fill="none" stroke="#e9d5ff" stroke-width="3"/>
+						<polygon class="pk__au-area" points="<?php echo esc_attr( '110,' . $lc_y( 0 ) . ' ' . $lc_line . ' 650,' . $lc_y( 0 ) ); ?>" fill="url(#pk-au-fill)"/>
+						<polyline class="pk__au-line" pathLength="1" points="<?php echo esc_attr( $lc_line ); ?>" fill="none" stroke="#e9d5ff" stroke-width="3"/>
 						<?php foreach ( $lc_au_points as $lc_i => $lc_pt ) : ?>
-							<circle cx="<?php echo esc_attr( $lc_coords[ $lc_i ][0] ); ?>" cy="<?php echo esc_attr( round( $lc_coords[ $lc_i ][1], 1 ) ); ?>" r="7" fill="#ffffff" stroke="#7b2cbf" stroke-width="3"/>
-							<text x="<?php echo esc_attr( $lc_coords[ $lc_i ][0] ); ?>" y="<?php echo esc_attr( round( $lc_coords[ $lc_i ][1] - 16, 1 ) ); ?>" text-anchor="middle" fill="#ffffff" font-size="22" font-weight="800" font-family="Chivo, sans-serif"><?php echo esc_html( $lc_pt[1] . '%' ); ?></text>
+							<circle class="pk__au-dot" style="--i:<?php echo (int) $lc_i; ?>" cx="<?php echo esc_attr( $lc_coords[ $lc_i ][0] ); ?>" cy="<?php echo esc_attr( round( $lc_coords[ $lc_i ][1], 1 ) ); ?>" r="7" fill="#ffffff" stroke="#7b2cbf" stroke-width="3"/>
+							<text class="pk__au-val" style="--i:<?php echo (int) $lc_i; ?>" x="<?php echo esc_attr( $lc_coords[ $lc_i ][0] ); ?>" y="<?php echo esc_attr( round( $lc_coords[ $lc_i ][1] - 16, 1 ) ); ?>" text-anchor="middle" fill="#ffffff" font-size="22" font-weight="800" font-family="Chivo, sans-serif"><?php echo esc_html( $lc_pt[1] . '%' ); ?></text>
 							<text x="<?php echo esc_attr( $lc_coords[ $lc_i ][0] ); ?>" y="320" text-anchor="middle" fill="<?php echo 3 === $lc_i ? '#e9d5ff' : '#b9b9c6'; ?>" font-size="14" font-weight="<?php echo 3 === $lc_i ? '700' : '400'; ?>"><?php echo esc_html( $lc_pt[0] ); ?></text>
 						<?php endforeach; ?>
 					</svg>

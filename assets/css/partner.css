@@ -98,6 +98,7 @@
 .pk__stat{display:flex;flex-direction:column;gap:6px}
 .pk__stat-num{font-family:'Chivo',sans-serif;font-weight:900;font-size:clamp(28px,2.8vw,38px);line-height:1;letter-spacing:-0.02em;color:#fff;font-variant-numeric:tabular-nums}
 .pk__stat-label{font-size:14px;color:var(--pk-on-dark-muted)}
+.pk__stats-date{margin:14px 0 0;font-size:13px;color:var(--pk-on-dark-muted)}
 .pk__distribution{margin:28px 0 0;font-size:14.5px;color:var(--pk-on-dark-muted)}
 .pk__distribution strong{color:var(--pk-on-dark-accent);font-weight:800;text-transform:uppercase;letter-spacing:0.08em;font-size:12.5px;margin-right:6px}
 
@@ -158,6 +159,15 @@
 .pk__chart{margin:0;background:#fff;border:1px solid var(--pk-line);border-radius:18px;padding:14px}
 .pk__chart-img{border-radius:10px}
 .pk__chart-svg{display:block;width:100%;height:auto;border-radius:10px}
+/* Australian share chart: draws in when it scrolls into view (partner.js adds the classes). */
+.pk__au-line{stroke-dasharray:1;stroke-dashoffset:0}
+.pk__au-dot,.pk__au-val{transform-box:fill-box;transform-origin:center}
+.pk__chart-svg.is-pending .pk__au-area{clip-path:inset(0 100% 0 0)}
+.pk__chart-svg.is-pending .pk__au-line{stroke-dashoffset:1}
+.pk__chart-svg.is-pending .pk__au-dot,.pk__chart-svg.is-pending .pk__au-val{opacity:0;transform:translateY(10px) scale(.6)}
+.pk__chart-svg.is-drawn .pk__au-area{clip-path:inset(0 0 0 0);transition:clip-path 1.5s linear}
+.pk__chart-svg.is-drawn .pk__au-line{stroke-dashoffset:0;transition:stroke-dashoffset 1.5s linear}
+.pk__chart-svg.is-drawn .pk__au-dot,.pk__chart-svg.is-drawn .pk__au-val{opacity:1;transform:none;transition:opacity .35s ease-out,transform .45s cubic-bezier(.34,1.56,.64,1);transition-delay:calc(var(--i) * .5s)}
 .pk__chart figcaption{font-size:14px;color:var(--pk-muted);padding:12px 4px 2px}
 .pk__callouts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0 0}
 .pk__callout{background:#fff;border:1px solid var(--pk-line);border-radius:16px;padding:20px;font-size:14.5px;line-height:1.5}
