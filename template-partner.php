@@ -456,11 +456,7 @@ get_header();
 			<div class="pk__quote-row">
 				<blockquote class="pk__quote"><p><?php echo esc_html( $lc_quote ); ?></p></blockquote>
 				<figure class="pk__quote-person">
-					<svg class="pk__quote-shapes" viewBox="0 0 400 420" aria-hidden="true" focusable="false">
-						<circle cx="208" cy="250" r="168" fill="#10134B"/>
-						<circle cx="86" cy="118" r="62" fill="#05B9F2" fill-opacity=".85"/>
-					</svg>
-					<img class="pk__quote-img" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/images/partner/peter-smile-quote.webp' ); ?>" width="416" height="526" alt="<?php esc_attr_e( 'Peter Bui, host of the Learn Crypto Podcast', 'learncardano' ); ?>" decoding="async" loading="lazy" />
+					<img class="pk__quote-img" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/images/partner/peter-circles-quote.webp' ); ?>" width="700" height="875" alt="<?php esc_attr_e( 'Peter Bui, host of the Learn Crypto Podcast', 'learncardano' ); ?>" decoding="async" loading="lazy" />
 				</figure>
 			</div>
 		</div>
