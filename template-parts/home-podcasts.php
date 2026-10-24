@@ -38,14 +38,14 @@ $index = 0;
 
 		if ( $is_featured ) :
 			?>
-			<a class="lep__featured" href="<?php echo $permalink; ?>" aria-label="<?php echo esc_attr( $title_attr ); ?>">
+			<a class="lep__featured" href="<?php echo $permalink; ?>">
 				<div class="lep__media lep__media--featured">
 					<?php
 					// The home page's LCP element: load it eagerly at high priority.
 					echo lc_card_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in lc_card_image().
 						array(
 							'class' => 'lep__media-img',
-							'sizes' => '(max-width: 899px) 100vw, 610px',
+							'sizes' => '(max-width: 899px) calc(100vw - 38px), (max-width: 1352px) calc((100vw - 112px) * 0.535), 602px',
 							'eager' => true,
 						)
 					);
@@ -73,14 +73,14 @@ $index = 0;
 				echo '<div class="lep__list">';
 			}
 			?>
-			<a class="lep__card" href="<?php echo $permalink; ?>" aria-label="<?php echo esc_attr( $title_attr ); ?>">
+			<a class="lep__card" href="<?php echo $permalink; ?>">
 				<div class="lep__media lep__media--card">
 					<?php
 					echo lc_card_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in lc_card_image().
 						array(
 							'class' => 'lep__media-img',
 							'size'  => 'medium_large',
-							'sizes' => '(max-width: 899px) 100vw, 200px',
+							'sizes' => '(max-width: 899px) calc(100vw - 38px), 200px',
 						)
 					);
 					?>

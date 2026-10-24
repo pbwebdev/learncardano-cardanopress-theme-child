@@ -44,13 +44,14 @@ get_header();
 					$is_newest   = ( $is_first_page && 0 === $i );
 					$comments_no = get_comments_number();
 					?>
-					<a class="pa__card" href="<?php echo $permalink; ?>" aria-label="<?php echo esc_attr( $title_attr ); ?>">
+					<a class="pa__card" href="<?php echo $permalink; ?>">
 						<div class="pa__media<?php echo $is_newest ? ' pa__media--newest' : ''; ?>">
 							<?php
 							// The first card is the mobile LCP element: load it eagerly at high priority.
 							echo lc_card_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in lc_card_image().
 								array(
 									'class' => 'pa__media-img',
+									'sizes' => '(max-width: 780px) calc(100vw - 32px), (max-width: 1128px) calc((100vw - 48px) * 0.505), 521px',
 									'eager' => ( 0 === $i ),
 								)
 							);

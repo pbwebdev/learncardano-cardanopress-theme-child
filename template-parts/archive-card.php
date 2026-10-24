@@ -36,7 +36,7 @@ if ( $is_article ) {
 	$label       = $type_object ? $type_object->labels->singular_name : '';
 }
 ?>
-<a class="pa__card" href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php echo esc_attr( $title_attr ); ?>">
+<a class="pa__card" href="<?php echo esc_url( get_permalink() ); ?>">
 	<div class="pa__media">
 		<?php if ( $thumb_id ) : ?>
 			<?php
@@ -44,6 +44,7 @@ if ( $is_article ) {
 			echo lc_card_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in lc_card_image().
 				array(
 					'class' => 'pa__media-img',
+					'sizes' => '(max-width: 780px) calc(100vw - 32px), (max-width: 1128px) calc((100vw - 48px) * 0.505), 521px',
 					'eager' => ( 0 === $args['index'] ),
 				)
 			);

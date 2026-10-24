@@ -139,7 +139,7 @@
 .pk__table tbody th{font-weight:600;color:var(--pk-ink)}
 .pk__table caption{caption-side:top;text-align:left;font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--pk-purple);padding:0 0 10px}
 
-.pk__compare td{font-family:'Chivo',sans-serif;font-size:20px;color:#7a7a84;font-variant-numeric:tabular-nums}
+.pk__compare td{font-family:'Chivo',sans-serif;font-size:20px;color:#75757f;font-variant-numeric:tabular-nums}
 .pk__compare thead th.pk__compare-hi{background:var(--pk-purple);color:#fff;border-radius:10px 10px 0 0}
 .pk__compare td.pk__compare-hi{background:var(--pk-tint);color:var(--pk-purple);font-weight:900}
 .pk__compare thead td{border-bottom:2px solid var(--pk-purple)}
@@ -149,7 +149,7 @@
 .pk__multi--hi{background:var(--pk-purple-2);box-shadow:0 16px 40px rgba(147,51,234,0.38);transform:translateY(-4px)}
 .pk__multi-num{display:block;font-family:'Chivo',sans-serif;font-weight:900;font-size:clamp(34px,4vw,48px);line-height:1}
 .pk__multi--hi .pk__multi-num{font-size:clamp(40px,5vw,60px)}
-.pk__multi-label{display:block;font-size:14.5px;margin-top:6px;color:#f1e6ff}
+.pk__multi-label{display:block;font-size:14.5px;margin-top:6px;color:#f5ecff}
 
 .pk__proof td{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pk__proof thead th:not(:first-child){text-align:right}

@@ -6,7 +6,8 @@
  * - fetch a fresh nonce and start time when someone starts filling them in,
  *   because the HTML (and its nonce) can come from the page cache;
  * - show/hide conditional fields (data-lc-show-if);
- * - load reCAPTCHA only once a form is near the viewport or in focus;
+ * - load reCAPTCHA on the first interaction with an inline form (focus, pointer or
+ *   key press), or when the popup opens, so the page view stays light;
  * - submit through admin-ajax and show errors or the confirmation inline.
  *
  * The popup opens at 50% scroll unless its closing (7 days) or conversion
@@ -94,7 +95,14 @@
 			box.dataset.widget = String(grecaptcha.render(box, { sitekey: box.dataset.sitekey }));
 		}).catch(function () {
 			delete box.dataset.widget;
+			recaptchaPromise = null;
 		});
+	}
+
+	// True when this form has a captcha box that is not showing a rendered widget yet.
+	function captchaPending(form) {
+		const box = form.querySelector('.lc-form__captcha[data-sitekey]');
+		return !!(cfg.recaptcha && box && !/^\d+$/.test(box.dataset.widget || ''));
 	}
 
 	function resetCaptcha(form) {
@@ -218,24 +226,14 @@
 		applyShowIf(form);
 		form.addEventListener('change', function () { applyShowIf(form); });
 
+		// Nothing heavy loads until someone touches the form.
 		const start = function () {
 			refreshToken(form);
 			renderCaptcha(form);
 		};
-		form.addEventListener('focusin', start, { once: true });
-		form.addEventListener('pointerdown', start, { once: true });
-
-		if ('IntersectionObserver' in window) {
-			const io = new IntersectionObserver(function (entries) {
-				if (entries.some(function (e) { return e.isIntersecting; })) {
-					io.disconnect();
-					renderCaptcha(form);
-				}
-			}, { rootMargin: '300px' });
-			io.observe(form);
-		} else {
-			renderCaptcha(form);
-		}
+		['focusin', 'pointerdown', 'keydown'].forEach(function (type) {
+			form.addEventListener(type, start, { once: true });
+		});
 
 		form.addEventListener('submit', function (event) {
 			if (!window.fetch || !window.FormData) {
@@ -243,6 +241,14 @@
 			}
 			event.preventDefault();
 			if (form.dataset.lcBusy) {
+				return;
+			}
+			// Submitted before the captcha existed: load it and ask them to tick it,
+			// rather than sending the form without a token.
+			if (captchaPending(form)) {
+				renderCaptcha(form);
+				clearErrors(form);
+				showErrors(form, { message: strings.captcha, errors: { captcha: strings.captcha } });
 				return;
 			}
 			form.dataset.lcBusy = '1';

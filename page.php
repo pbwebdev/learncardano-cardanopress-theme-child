@@ -16,6 +16,9 @@ get_header();
 
 		<?php while ( have_posts() ) : ?>
 			<?php the_post(); ?>
+			<?php if ( false === stripos( get_the_content(), '<h1' ) ) : ?>
+				<h1 class="entry-title"><?php echo esc_html( get_the_title() ); ?></h1>
+			<?php endif; ?>
 			<?php the_content(); ?>
 		<?php endwhile; ?>
 
