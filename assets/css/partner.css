@@ -284,7 +284,7 @@
 .pk__glossary dl{margin:0}
 .pk__glossary dl > div{padding:9px 0;border-top:1px solid var(--pk-line);font-size:15px}
 .pk__glossary dt{display:inline;font-weight:800;color:var(--pk-ink)}
-.pk__glossary dt::after{content:" — "}
+.pk__glossary dt::after{content:": "}
 .pk__glossary dd{display:inline;margin:0}
 
 /* ---- booking ---- */
