@@ -57,8 +57,10 @@
 
 /* Cards */
 .bk__grid{display:grid;gap:20px}
-.bk__grid--3{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
-.bk__grid--4{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.bk__grid--3{grid-template-columns:repeat(3,1fr)}
+.bk__grid--4{grid-template-columns:repeat(4,1fr)}
+@media (max-width:991px){.bk__grid--3,.bk__grid--4{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:519px){.bk__grid--3,.bk__grid--4{grid-template-columns:1fr}}
 .bk__card{margin:0;background:#fff;border:1px solid var(--bk-line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
 .bk__preview{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;padding:28px}
 .bk__preview img{max-height:100%;width:auto;max-width:100%;object-fit:contain}
