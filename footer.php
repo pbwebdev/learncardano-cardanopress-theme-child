@@ -109,15 +109,16 @@
 		<div class="container">
 			<div class="row">
         		        <div class="copyright text-center">
-                			<small>Copyright &copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="text-light"><?php bloginfo( 'name' ); ?></a></small> -
+                			<small>Copyright &copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="text-light"><?php bloginfo( 'name' ); ?></a></small> &middot;
 							<span class="small">Built by <a href="https://meshwithus.com.au" target="_blank" rel="noopener" class="text-light" title="WordPress design and development, Gold Coast">Mesh With Us</a></span>
+							&middot; <span class="small"><a href="<?php echo esc_url( home_url( '/brand-assets/' ) ); ?>" class="text-light"><?php esc_html_e( 'Brand assets', 'learncardano' ); ?></a></span>
 							<?php if ( ! function_exists( 'lc_auth_is_private_view' ) || ! lc_auth_is_private_view() ) : ?>
-							- <span class="small"><a href="<?php echo esc_url( get_privacy_policy_url() ); ?>" class="text-light" data-lc-consent-open><?php esc_html_e( 'Cookie settings', 'learncardano' ); ?></a></span>
+							&middot; <span class="small"><a href="<?php echo esc_url( get_privacy_policy_url() ); ?>" class="text-light" data-lc-consent-open><?php esc_html_e( 'Cookie settings', 'learncardano' ); ?></a></span>
 							<?php endif; ?>
 							<?php
 							$lc_build = @include get_stylesheet_directory() . '/build-version.php';
 							if ( is_array( $lc_build ) && ! empty( $lc_build['sha'] ) ) {
-								echo ' - <span class="small">Build ' . esc_html( $lc_build['date'] ) . ' &middot; ' . esc_html( $lc_build['sha'] ) . '</span>';
+								echo ' &middot; <span class="small">Build ' . esc_html( $lc_build['date'] ) . ' &middot; ' . esc_html( $lc_build['sha'] ) . '</span>';
 							}
 							?>
                     		</div>

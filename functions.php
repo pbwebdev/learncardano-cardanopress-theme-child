@@ -20,6 +20,7 @@ require_once 'includes/seo.php';
 require_once 'includes/author.php';
 require_once 'includes/x-embeds.php';
 require_once 'includes/shop-embed.php';
+require_once 'includes/brand-page.php';
 
 // Forms and the newsletter popup (replace Gravity Forms and WP Popups).
 foreach ( array( 'includes/forms.php', 'includes/newsletter-popup.php' ) as $lc_include ) {
