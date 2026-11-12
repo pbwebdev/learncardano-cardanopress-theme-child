@@ -274,6 +274,23 @@ function lc_form_elapsed( $form_id, $signed ) {
 }
 
 /**
+ * False when the request carries an Origin header from another site. Browsers
+ * always send Origin on POST, so a cross-site post is refused; tools that send
+ * no Origin at all still need the nonce and signed time to get anywhere.
+ */
+function lc_form_same_origin() {
+	if ( empty( $_SERVER['HTTP_ORIGIN'] ) ) {
+		return true;
+	}
+	$origin = strtolower( (string) wp_parse_url( sanitize_text_field( wp_unslash( $_SERVER['HTTP_ORIGIN'] ) ), PHP_URL_HOST ) );
+	$hosts  = array(
+		strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) ),
+		strtolower( (string) wp_parse_url( site_url(), PHP_URL_HOST ) ),
+	);
+	return '' !== $origin && in_array( $origin, $hosts, true );
+}
+
+/**
  * The nonce action for a form.
  */
 function lc_form_nonce_action( $form_id ) {
@@ -464,7 +481,10 @@ function lc_form_validate( $form ) {
 			}
 			continue;
 		}
-		if ( ! empty( $field['maxlength'] ) && mb_strlen( $value ) > (int) $field['maxlength'] ) {
+		// Every field has a ceiling: the field's own maxlength, else 254 for an
+		// email address (the longest valid one) and 500 for a URL.
+		$max = ! empty( $field['maxlength'] ) ? (int) $field['maxlength'] : ( 'email' === $field['type'] ? 254 : ( 'url' === $field['type'] ? 500 : 0 ) );
+		if ( $max && mb_strlen( $value ) > $max ) {
 			$errors[ $key ] = 'long';
 			continue;
 		}
@@ -572,6 +592,9 @@ function lc_form_handle() {
 	$form    = lc_form_get( $form_id );
 	if ( ! $form ) {
 		lc_form_respond( $form_id, false, 'failed', array(), 400 );
+	}
+	if ( ! lc_form_same_origin() ) {
+		lc_form_respond( $form_id, false, 'failed', array(), 403 );
 	}
 
 	// Honeypot: bots fill every field. Pretend it worked and do nothing.
@@ -698,6 +721,9 @@ function lc_form_token() {
 	$form_id = isset( $_POST['form'] ) && is_string( $_POST['form'] ) ? sanitize_key( wp_unslash( $_POST['form'] ) ) : '';
 	if ( ! lc_form_get( $form_id ) ) {
 		wp_send_json_error( null, 400 );
+	}
+	if ( ! lc_form_same_origin() ) {
+		wp_send_json_error( null, 403 );
 	}
 	nocache_headers();
 	wp_send_json_success(

@@ -200,6 +200,9 @@
 		});
 	}
 
+	// LC_FORM_MIN_SECONDS in includes/forms.php, plus a little for clock steps.
+	const MIN_AGE = 3300;
+
 	function refreshToken(form) {
 		if (form.lcToken) {
 			return form.lcToken;
@@ -208,6 +211,7 @@
 			if (json && json.success) {
 				form.elements._lc_nonce.value = json.data.nonce;
 				form.elements.lc_ts.value = json.data.ts;
+				form.lcTokenAt = Date.now();
 			}
 		}).catch(function () {
 			// Keep the values from the page.
@@ -261,6 +265,11 @@
 			clearErrors(form);
 
 			refreshToken(form).then(function () {
+				// The server refuses a form sent within 3 seconds of its token, so a
+				// quick person (or autofill) waits out the rest instead of an error.
+				const wait = form.lcTokenAt ? MIN_AGE - (Date.now() - form.lcTokenAt) : 0;
+				return wait > 0 ? new Promise(function (resolve) { setTimeout(resolve, wait); }) : null;
+			}).then(function () {
 				return fetch(cfg.ajaxUrl, {
 					method: 'POST',
 					credentials: 'same-origin',
